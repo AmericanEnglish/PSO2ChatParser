@@ -32,7 +32,7 @@ class Person:
 
     def logtype(self, category):
         for item in self.contents:
-            if item.category == category.lower().title():
+            if item.category == category.upper():
                 print(item)
 
     def loghybrid(self, time=None, category=None, phrase=None):
