@@ -17,6 +17,8 @@ class Person:
     def __gt__(self, other):
         if (self.name) > (other.name):
             return True
+    def __len__(self):
+        return len(self.contents)
 
     def logtime(self, time):
         for item in self.contents:
@@ -78,4 +80,3 @@ def disp(cparsed):
 if __name__ == '__main__':
     var = cparse('ChatLog20140826_00.txt')
     disp(var)
-    len(var)
