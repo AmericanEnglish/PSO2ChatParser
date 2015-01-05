@@ -7,7 +7,7 @@ class Person:
         return self.name
 
     def __eq__(self, other):
-        if self.name, self.ident == other.name, other.ident:
+        if (self.name, self.ident) == (other.name, other.ident):
             return True
 
     def logtime(self, time):
@@ -56,4 +56,9 @@ def cparse(filename):
         elif temp not in players:
             players.append(temp)
             players[players.index(temp)].add(newtext)
+
+    return players
+
+if __name__ == '__main__':
+    var = cparse('ChatLog20140826_00.txt')
 
