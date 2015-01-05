@@ -10,6 +10,14 @@ class Person:
         if (self.name) == (other.name):
             return True
 
+    def __lt__(self, other):
+        if (self.name) < (other.name):
+            return True
+
+    def __gt__(self, other):
+        if (self.name) > (other.name):
+            return True
+
     def logtime(self, time):
         for item in self.contents:
             if time in item.time:
@@ -40,7 +48,7 @@ class Chat:
         self.toon = items[4]
 
     def __str__(self):
-        return '[{}]: {}'.format(self.toon, self.contents)
+        return '[{}][{}]: {}'.format(self.toon, self.time, self.contents)
 
 def cparse(filename):
     players = []
@@ -59,8 +67,15 @@ def cparse(filename):
 
     return players
 
+
+def disp(cparsed):
+    x = 0
+    for item in cparsed:
+        print('{}: {}'.format(x, str(item)))
+        x += 1
+
+
 if __name__ == '__main__':
     var = cparse('ChatLog20140826_00.txt')
-    for item in var:
-        print(item)
+    disp(var)
     len(var)
