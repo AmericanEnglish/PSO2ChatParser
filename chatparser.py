@@ -7,7 +7,7 @@ class Person:
         return self.name
 
     def __eq__(self, other):
-        if (self.name, self.ident) == (other.name, other.ident):
+        if (self.name) == (other.name):
             return True
 
     def logtime(self, time):
