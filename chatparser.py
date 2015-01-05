@@ -61,4 +61,6 @@ def cparse(filename):
 
 if __name__ == '__main__':
     var = cparse('ChatLog20140826_00.txt')
-
+    for item in var:
+        print(item)
+    len(var)
