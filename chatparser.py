@@ -6,6 +6,10 @@ class Person:
     def __str__(self):
         return self.name
 
+    def __eq__(self, other):
+        if self.name, self.ident == other.name, other.ident:
+            return True
+
     def logtime(self, time):
         for item in self.contents:
             if time in item.time:
@@ -13,7 +17,7 @@ class Person:
 
     def logword(self, phrase):
         for item in self.contents:
-            if phrase in item.words:
+            if phrase in item.contents:
                 print(item)
 
     def logtype(self, category):
@@ -36,9 +40,20 @@ class Chat:
         self.toon = items[4]
 
     def __str__(self):
+        return '[{}]: {}'.format(self.toon, self.contents)
 
 def cparse(filename):
     players = []
     newfile = open(filename,'r',encoding='utf-16')
     for line in newfile:
         line = line.strip().split('\t')
+        newtext = Chat(line)
+        temp = Person(line[4])
+        
+        if temp in players:
+            players[players.index(temp)].add(newtext)
+        
+        elif temp not in players:
+            players.append(temp)
+            players[players.index(temp)].add(newtext)
+
