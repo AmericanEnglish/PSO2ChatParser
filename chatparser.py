@@ -66,18 +66,18 @@ class Chat:
 class Speech:
     def __init__(self, filename):
         players = []
-        newfile = open(filename,'r',encoding='utf-16')
-        for line in newfile:
-            line = line.strip().split('\t')
-            newtext = Chat(line)
-            temp = Person(line[4])
-            
-            if temp in players:
-                players[players.index(temp)].add(newtext)
-            
-            elif temp not in players:
-                players.append(temp)
-                players[players.index(temp)].add(newtext)
+        with open(filename,'r',encoding='utf-16') as newfile:
+            for line in newfile:
+                line = line.strip().split('\t')
+                newtext = Chat(line)
+                temp = Person(line[4])
+                
+                if temp in players:
+                    players[players.index(temp)].add(newtext)
+                
+                elif temp not in players:
+                    players.append(temp)
+                    players[players.index(temp)].add(newtext)
         self.players = players[:]
         players.sort()
         self.splayers = players
