@@ -137,7 +137,7 @@ class Speech:
                 rez.sort()
 
                 for item in rez:
-                    print(item)
+                    print(str(item))
                 print('==============')
 
 
@@ -148,8 +148,10 @@ def timezip(obj, interval):
     >>>timezip('00:00:00')
     ('23:55:00', '00:05:00')
     """
-    time = obj.time.split(':')
-    
+    try:
+        time = obj.time.split(':')
+    except AttributeError:
+        time = obj.split(':')
     for index, numeral in enumerate(time):
         time[index] = int(numeral)
     
@@ -163,7 +165,7 @@ def timezip(obj, interval):
         if time[0] < 0:
             time[0] += 24
     
-    if time2[1] > 60:
+    if time2[1] >= 60:
         time2[0] += 1
         time2[1] -= 60
         if time2[0] > 24:
@@ -173,11 +175,17 @@ def timezip(obj, interval):
     newtime2 = ''
 
     for numeral in time:
-        newtime1 += '{}:'.format(numeral)
+        if len(str(numeral)) == 1:
+            newtime1 += '0{}:'.format(numeral)
+        else:
+            newtime1 += '{}:'.format(numeral)
     newtime1 = newtime1[:-1]
 
     for numeral in time2:
-        newtime2 += '{}:'.format(numeral)
+        if len(str(numeral)) == 1:
+            newtime2 += '0{}:'.format(numeral)
+        else:
+            newtime2 += '{}:'.format(numeral)
     newtime2 = newtime2[:-1]
 
     return newtime1, newtime2
@@ -187,3 +195,8 @@ def timezip(obj, interval):
 if __name__ == '__main__':
     var = Speech('ChatLog20150125_00.txt')
     var.order()
+    examine = input('#, phrase: ').split(',')
+    for index, item in enumerate(examine):
+        examine[index] = item.strip()
+    while True:
+        var.psearch(var.splayers[int(examine[0])].name, examine[1])
