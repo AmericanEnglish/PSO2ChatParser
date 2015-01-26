@@ -58,7 +58,7 @@ class Chat:
         self.toon = items[4]
 
     def __str__(self):
-        return '[{}][{}]: {}'.format(self.toon, self.time, self.contents)
+        return '[{}][{}]: {}'.format(self.time, self.toon, self.contents)
 
     def __eq__(self, other):
         if self.time == other.time:
@@ -115,30 +115,47 @@ class Speech:
             print('{}: {}'.format(x, str(item)))
             x += 1
 
-    def psearch(self, pname, query):
+    def psearch(self, pname, query, interval=5, msgs=5):
         #searches for player and surround text
         if pname in self.names:
             index = self.names.index(pname)
             results = self.splayers[index].logword2(query)
-            if results = []:
+            if results == []:
                 print('Phrase not found')
             for log in results:
-                timetup = timezip(log)
+                timetup = timezip(log, 5)
+                mid = self.total.index(log)
+                cur = mid
+                rez = []
+                while self.total[cur].time > timetup[0] and len(rez) < 1 + msgs:
+                    rez.append(self.total[cur])
+                    cur -= 1
+                cur = mid + 1
+                while self.total[cur].time < timetup[1] and len(rez) < 1 + 2 * msgs:
+                    rez.append(self.total[cur])
+                    cur += 1
+                rez.sort()
 
-def timezip(obj):
+                for item in rez:
+                    print(item)
+                print('==============')
+
+
+
+def timezip(obj, interval):
     """(Chat obj) -> tuple of strs
 
     >>>timezip('00:00:00')
     ('23:55:00', '00:05:00')
     """
-    time = log.obj.split(':')
+    time = obj.time.split(':')
     
     for index, numeral in enumerate(time):
         time[index] = int(numeral)
     
     time2 = time[:]
-    time[1] -= 5
-    time2[1] += 5
+    time[1] -= interval
+    time2[1] += interval
 
     if time[1] < 0:
         time[0] -= 1
