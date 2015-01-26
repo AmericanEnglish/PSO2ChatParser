@@ -195,8 +195,8 @@ def timezip(obj, interval):
 if __name__ == '__main__':
     var = Speech('ChatLog20150125_00.txt')
     var.order()
-    examine = input('#, phrase: ').split(',')
-    for index, item in enumerate(examine):
-        examine[index] = item.strip()
     while True:
+        examine = input('#, phrase: ').split(',')
+        for index, item in enumerate(examine):
+            examine[index] = item.strip()
         var.psearch(var.splayers[int(examine[0])].name, examine[1])
