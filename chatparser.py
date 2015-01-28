@@ -1,6 +1,7 @@
 class Person:
-    def __init__(self, name):
+    def __init__(self, name, ident):
         self.name = name
+        self.ident = ident
         self.contents = []
 
     def __str__(self):
@@ -82,7 +83,7 @@ class Speech:
             for line in newfile:
                 line = line.strip().split('\t')
                 newtext = Chat(line)
-                temp = Person(line[4])
+                temp = Person(line[4], line[3])
                 self.total.append(newtext)
                 if temp in players:
                     players[players.index(temp)].add(newtext)
@@ -91,7 +92,7 @@ class Speech:
                     players.append(temp)
                     self.names.append(line[4])
                     players[players.index(temp)].add(newtext)
-        self.players = players[:]
+                  if 
         players.sort()
         self.names.sort()
         self.splayers = players
@@ -103,17 +104,9 @@ class Speech:
 
         return names
 
-    def disp(self):
-        x = 0
-        for item in self.players:
-            print('{}: {}'.format(x, str(item)))
-            x += 1
-
     def order(self):
-        x = 0
-        for item in self.splayers:
-            print('{}: {}'.format(x, str(item)))
-            x += 1
+        for index, item in enumerate(self.splayers):
+            print('{}: {}'.format(index, str(item)))
 
     def psearch(self, pname, query, interval=5, msgs=5):
         #searches for player and surround text
