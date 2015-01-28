@@ -103,6 +103,30 @@ class Speech:
 
         return names
 
+    def filler(self, filename):
+    	pass
+        players = []
+        self.total = []
+        self.names = []
+        with open(filename,'r',encoding='utf-16') as newfile:
+            for line in newfile:
+                line = line.strip().split('\t')
+                newtext = Chat(line)
+                self.total.append(newtext)
+                temp = Person(line[4], line[3])
+                if temp.ident in players:
+                    players[players.index(temp)].add(newtext)
+                
+                elif temp not in players:
+                    players.append(temp)
+                    self.names.append(line[4])
+                    players[players.index(temp)].add(newtext)
+        players.sort()
+        self.splayers = players
+
+    def newstr(self):
+    	pass
+
     def order(self):
         for index, item in enumerate(self.splayers):
             print('{}: {}'.format(index, str(item)))
@@ -119,11 +143,11 @@ class Speech:
                 mid = self.total.index(log)
                 cur = mid
                 rez = []
-                while self.total[cur].time > timetup[0] and len(rez) < 1 + msgs:
+                while self.total[cur].time >= timetup[0] and len(rez) < 1 + msgs:
                     rez.append(self.total[cur])
                     cur -= 1
                 cur = mid + 1
-                while self.total[cur].time < timetup[1] and len(rez) < 1 + 2 * msgs:
+                while self.total[cur].time <= timetup[1] and len(rez) < 1 + 2 * msgs:
                     rez.append(self.total[cur])
                     cur += 1
                 rez.sort()
