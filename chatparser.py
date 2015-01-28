@@ -92,7 +92,6 @@ class Speech:
                     players.append(temp)
                     self.names.append(line[4])
                     players[players.index(temp)].add(newtext)
-                  if 
         players.sort()
         self.names.sort()
         self.splayers = players
