@@ -104,7 +104,6 @@ class Speech:
         return names
 
     def filler(self, filename):
-    	pass
         players = []
         self.total = []
         self.names = []
@@ -114,6 +113,7 @@ class Speech:
                 newtext = Chat(line)
                 self.total.append(newtext)
                 temp = Person(line[4], line[3])
+                temp2 = [line[3]]
                 if temp.ident in players:
                     players[players.index(temp)].add(newtext)
                 
