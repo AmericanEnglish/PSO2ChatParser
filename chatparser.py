@@ -1,3 +1,5 @@
+from os import listdir
+
 class Person:
     def __init__(self, name, ident):
         self.name = name
@@ -82,6 +84,9 @@ class Speech:
         with open(filename,'r',encoding='utf-16') as newfile:
             for line in newfile:
                 line = line.strip().split('\t')
+                if len(line) < 6:
+                    continue
+
                 newtext = Chat(line)
                 temp = Person(line[4], line[3])
                 self.total.append(newtext)
@@ -144,11 +149,13 @@ class Speech:
                 cur = mid
                 rez = []
                 while self.total[cur].time >= timetup[0] and len(rez) < 1 + msgs:
-                    rez.append(self.total[cur])
+                    if self.total[cur].category == log.category:
+                        rez.append(self.total[cur])
                     cur -= 1
                 cur = mid + 1
                 while self.total[cur].time <= timetup[1] and len(rez) < 1 + 2 * msgs:
-                    rez.append(self.total[cur])
+                    if self.total[cur].category == log.category:
+                        rez.append(self.total[cur])
                     cur += 1
                 rez.sort()
 
@@ -207,12 +214,52 @@ def timezip(obj, interval):
     return newtime1, newtime2
 
 
+def seperate_chat():            
+    answer = input('Extract: \n[T]eam, [P]arty, Pu[B]lic, [W]hispers, [A]ll: ').lower()
+    work = open(some_files[int(file_num)], 'r', encoding='utf-16')
+    if answer == 't':
+        team = open(some_files[int(file_num)][:-4] + '_TeamOnly.txt','w', encoding='utf-16')
+    elif answer == 'p':
+        party = open(some_files[int(file_num)][:-4] + '_PartyOnly.txt','w', encoding='utf-16')
+    elif answer == 'w':
+        whisper = open(some_files[int(file_num)][:-4] + '_WhisperOnly.txt','w', encoding='utf-16')
+    elif answer == 'b':
+        public = open(some_files[int(file_num)][:-4] + '_PublicOnly.txt','w', encoding='utf-16')
+    else:
+        team = open(some_files[int(file_num)][:-4] + '_TeamOnly.txt','w', encoding='utf-16')
+        party = open(some_files[int(file_num)][:-4] + '_PartyOnly.txt','w', encoding='utf-16')
+        whisper = open(some_files[int(file_num)][:-4] + '_WhisperOnly.txt','w', encoding='utf-16')
+        public = open(some_files[int(file_num)][:-4] + '_PublicOnly.txt','w', encoding='utf-16')
+    for line in work:
+        newline = line.split('\t')
+        if newline[2] == 'GUILD' and (answer == 'a' or answer == 't'):
+            team.write(line)
+        elif newline[2] == 'PARTY' and (answer == 'a' or answer == 'p'):
+            party.write(line)
+        elif newline[2] == 'REPLY' and (answer == 'a' or answer == 'w'):
+            whisper.write(line)
+        elif newline[2] == 'PUBLIC' and (answer == 'a' or answer == 'b'):
+            public.write(line)
 
 if __name__ == '__main__':
-    var = Speech('ChatLog20150125_00.txt')
-    var.order()
+    all_files = listdir()
+    some_files = []
+    for item in all_files:
+        if 'ChatLog' in item:
+            some_files.append(item)
+    for index, item in enumerate(some_files):
+        print('{}: {}/{}/{}'.format(index, item[11:13], item[13:15], item[7:11]))
+
+    file_num = input('Log #: ')
     while True:
-        examine = input('#, phrase: ').split(',')
-        for index, item in enumerate(examine):
-            examine[index] = item.strip()
-        var.psearch(var.splayers[int(examine[0])].name, examine[1])
+        answer = input('Se[A]rch or Se[P]erate?: ').lower()
+        if answer == 'a':
+            var = Speech(some_files[int(file_num)])
+            var.order()
+            examine = input('#, phrase: ').split(',')
+            for index, item in enumerate(examine):
+                examine[index] = item.strip()
+            var.psearch(var.splayers[int(examine[0])].name, examine[1])
+        else:
+            seperate_chat()
+            break
