@@ -130,7 +130,7 @@ class Speech:
         self.splayers = players
 
     def newstr(self):
-    	pass
+        pass
 
     def order(self):
         for index, item in enumerate(self.splayers):
@@ -232,7 +232,9 @@ def seperate_chat():
         public = open(some_files[int(file_num)][:-4] + '_PublicOnly.txt','w', encoding='utf-16')
     for line in work:
         newline = line.split('\t')
-        if newline[2] == 'GUILD' and (answer == 'a' or answer == 't'):
+        if len(newline) < 3:
+            continue
+        elif newline[2] == 'GUILD' and (answer == 'a' or answer == 't'):
             team.write(line)
         elif newline[2] == 'PARTY' and (answer == 'a' or answer == 'p'):
             party.write(line)
