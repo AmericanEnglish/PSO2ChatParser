@@ -217,19 +217,20 @@ def timezip(obj, interval):
 def seperate_chat():            
     answer = input('Extract: \n[T]eam, [P]arty, Pu[B]lic, [W]hispers, [A]ll: ').lower()
     work = open(some_files[int(file_num)], 'r', encoding='utf-16')
+    file_name = file_name
     if answer == 't':
-        team = open(some_files[int(file_num)][:-4] + '_TeamOnly.txt','w', encoding='utf-16')
+        team = open(file_name + '_TeamOnly.txt','w', encoding='utf-16')
     elif answer == 'p':
-        party = open(some_files[int(file_num)][:-4] + '_PartyOnly.txt','w', encoding='utf-16')
+        party = open(file_name + '_PartyOnly.txt','w', encoding='utf-16')
     elif answer == 'w':
-        whisper = open(some_files[int(file_num)][:-4] + '_WhisperOnly.txt','w', encoding='utf-16')
+        whisper = open(file_name + '_WhisperOnly.txt','w', encoding='utf-16')
     elif answer == 'b':
-        public = open(some_files[int(file_num)][:-4] + '_PublicOnly.txt','w', encoding='utf-16')
+        public = open(file_name + '_PublicOnly.txt','w', encoding='utf-16')
     else:
-        team = open(some_files[int(file_num)][:-4] + '_TeamOnly.txt','w', encoding='utf-16')
-        party = open(some_files[int(file_num)][:-4] + '_PartyOnly.txt','w', encoding='utf-16')
-        whisper = open(some_files[int(file_num)][:-4] + '_WhisperOnly.txt','w', encoding='utf-16')
-        public = open(some_files[int(file_num)][:-4] + '_PublicOnly.txt','w', encoding='utf-16')
+        team = open(file_name + '_TeamOnly.txt','w', encoding='utf-16')
+        party = open(file_name + '_PartyOnly.txt','w', encoding='utf-16')
+        whisper = open(file_name + '_WhisperOnly.txt','w', encoding='utf-16')
+        public = open(file_name + '_PublicOnly.txt','w', encoding='utf-16')
     for line in work:
         newline = line.split('\t')
         if len(newline) < 3:
