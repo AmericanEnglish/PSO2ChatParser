@@ -245,7 +245,7 @@ if __name__ == '__main__':
     all_files = listdir()
     some_files = []
     for item in all_files:
-        if 'ChatLog' in item:
+        if 'ChatLog' in item[0:8]:
             some_files.append(item)
     for index, item in enumerate(some_files):
         print('{}: {}/{}/{}'.format(index, item[11:13], item[13:15], item[7:11]))
