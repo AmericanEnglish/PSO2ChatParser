@@ -217,7 +217,7 @@ def timezip(obj, interval):
 def seperate_chat():            
     answer = input('Extract: \n[T]eam, [P]arty, Pu[B]lic, [W]hispers, [A]ll: ').lower()
     work = open(some_files[int(file_num)], 'r', encoding='utf-16')
-    file_name = file_name
+    file_name = some_files[int(file_num)][:-4]
     if answer == 't':
         team = open(file_name + '_TeamOnly.txt','w', encoding='utf-16')
     elif answer == 'p':
