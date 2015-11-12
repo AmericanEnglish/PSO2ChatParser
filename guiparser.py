@@ -18,3 +18,11 @@ class GUI:
     # Database Command Util
 
     # Displaying Chat
+
+
+# Database Skeleton
+# Select
+# Insert
+# Update
+# Delete
+
