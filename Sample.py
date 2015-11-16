@@ -12,8 +12,11 @@ try:
                             user=username, password=password)
     cur = conn.cursor()
     print("Try: 2")
-except psycopg2.OperationalError:
+except psycopg2.OperationalError as err:
     print("Except: 1")
+    if "authentication failed" in str(err):
+        print(err)
+        exit()
     conn = psycopg2.connect(host="localhost", database="postgres", user=username, password=password)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cur = conn.cursor()
