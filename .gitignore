@@ -1,3 +1,4 @@
 *.txt
 .python-version
 Chats/
+__pycache__/
