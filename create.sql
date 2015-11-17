@@ -3,7 +3,7 @@ CREATE TABLE logs
     name CHAR(22),
     PRIMARY KEY (name)
 );
-
+--
 CREATE TABLE chat
 (
     log_name CHAR(22),
