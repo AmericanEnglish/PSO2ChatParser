@@ -38,8 +38,8 @@ except psycopg2.OperationalError as err:
 allfiles = listdir("./Chats/")
 # allfiles.sort()
 print('Loop Begin')
-for item in allfiles[:10]:
-    print(item)
+for index, item in enumerate(allfiles):
+    print("Processing: {}/{}\n{}".format(index + 1, len(allfiles), item))
     with open("./Chats/" + item, 'r', encoding='utf-16') as doc:
         buff = []
         cur.execute("""INSERT INTO logs VALUES (%s);""", [item])
@@ -57,7 +57,7 @@ for item in allfiles[:10]:
                 conn.commit()
                 buff = [line[1], line[2], line[4]]
             else:
-                print('Problem Line {}'.format(buff))
+                # print('Problem Line {}'.format(buff))
                 cur.execute("""UPDATE chat
                     SET info = info || %s
                     WHERE stamp = %s AND
