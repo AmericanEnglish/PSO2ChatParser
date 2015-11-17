@@ -1,8 +1,6 @@
 PSO2ChatParser
 ==============
 
-PSO2 Chat Parser
-
 Sample.py
  - Used as a workspace for testing the validity of SQL insertion. The main focus is on pumping chatlogs into a PostgreSQL server.
 
@@ -20,3 +18,10 @@ guiparser.py
 
 main.bat
  - Runs chatparser.py on windows.
+
+Packages Used
+=============
+ 1. psycopg2
+  * For using PostgreSQL as an option 
+ 2. sqlite3
+  * For using SQLite3
