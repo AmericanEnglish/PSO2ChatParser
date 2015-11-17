@@ -38,7 +38,8 @@ except psycopg2.OperationalError as err:
 allfiles = listdir("./Chats/")
 # allfiles.sort()
 print('Loop Begin')
-for item in allfiles[:1]:
+for item in allfiles[:10]:
+    print(item)
     with open("./Chats/" + item, 'r', encoding='utf-16') as doc:
         buff = []
         cur.execute("""INSERT INTO logs VALUES (%s);""", [item])
