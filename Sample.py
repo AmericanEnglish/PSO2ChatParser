@@ -3,9 +3,9 @@ from timestamp import timestamp
 from os import listdir
 from sys import argv
 import psycopg2
-import sqlite3
 import re
 
+# Sample PostgreSQL File Reader
 try:
     print("Try: 1")
     conn = psycopg2.connect(host="localhost", database="pso2chat",
@@ -54,7 +54,6 @@ for index, item in enumerate(allfiles):
                 line = temp
                 cur.execute("""INSERT INTO chat VALUES
                     (%s, %s, %s, %s, %s, %s, %s)""", line)
-                conn.commit()
                 buff = [line[1], line[2], line[4]]
             else:
                 # print('Problem Line {}'.format(buff))
@@ -62,6 +61,6 @@ for index, item in enumerate(allfiles):
                     SET info = info || %s
                     WHERE stamp = %s AND
                         uid = %s AND
-                        line_num = %s;""", 
-                        [' '.join(line), buff[0], buff[1], buff[2]])
-                conn.commit()
+                        line_num = %s;""",
+                            [' '.join(line), buff[0], buff[1], buff[2]])
+conn.commit()
