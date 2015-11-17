@@ -6,6 +6,7 @@ import psycopg2
 import sqlite3
 import re
 
+
 # Sample PostgreSQL File Reader
 def postgres():
     try:
