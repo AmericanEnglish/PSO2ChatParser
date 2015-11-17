@@ -115,3 +115,11 @@ def sqlite():
                             uid = ? AND
                             line_num = ?;""",
                                 [' '.join(line), buff[0], buff[1], buff[2]])
+    conn.commit()
+
+
+if __name__ == "__main__":
+    if len(argv) > 2:
+        postgres()
+    else:
+        sqlite()
