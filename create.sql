@@ -11,7 +11,7 @@ CREATE TABLE chat
     line_num INTEGER,
     chat_type VARCHAR(6),
     uid INTEGER, 
-    username VARCHAR(15),
+    username VARCHAR(20),
     info TEXT,
     CHECK (chat_type = 'PUBLIC' OR 
             chat_type = 'GUILD' OR
