@@ -69,6 +69,7 @@ def postgres():
                             uid = %s AND
                             line_num = %s;""",
                                 [' '.join(line), buff[0], buff[1], buff[2]])
+    # cur.execute("""INSERT INTO logs VALUES (%s)""", [iv])
     conn.commit()
 
 
@@ -120,6 +121,7 @@ def sqlite():
                             uid = ? AND
                             line_num = ?;""",
                                 [' '.join(line), buff[0], buff[1], buff[2]])
+    # cur.execute("""INSERT INTO logs VALUES (?)""", [iv])
     conn.commit()
 
 
