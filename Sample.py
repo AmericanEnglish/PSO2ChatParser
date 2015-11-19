@@ -48,8 +48,9 @@ def postgres():
             for line in doc:
                 line = re.split("\t", line)
                 if len(line) > 6:
-                    line = line[:6]
-                    line.append('\t'.join(line[6:]))
+                    temp = line[:6]
+                    temp.append('\t'.join(line[6:]))
+                    line = temp
                 if timestamp(line[0]):
                     temp = [item]
                     temp.extend(line)
@@ -98,8 +99,9 @@ def sqlite():
             for line in doc:
                 line = re.split("\t", line)
                 if len(line) > 6:
-                    line = line[:6]
-                    line.append('\t'.join(line[6:]))
+                    temp = line[:6]
+                    temp.append('\t'.join(line[6:]))
+                    line = temp
                 if timestamp(line[0]):
                     temp = [item]
                     temp.extend(line)
