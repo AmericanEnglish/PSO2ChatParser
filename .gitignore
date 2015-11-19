@@ -3,3 +3,5 @@
 Chats/
 __pycache__/
 *.db
+Make*
+sip*
