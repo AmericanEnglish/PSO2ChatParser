@@ -1,4 +1,7 @@
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from Crypto.Hash import SHA256 as SHA
+from Crypto.Cipher import AES
+from Crypto.Random import random
 from timestamp import timestamp
 from os import listdir
 from sys import argv
@@ -118,6 +121,16 @@ def sqlite():
                             line_num = ?;""",
                                 [' '.join(line), buff[0], buff[1], buff[2]])
     conn.commit()
+
+
+def encrypt_gen(password):
+    """(str, str) -> AES, byte object"""
+    iv = random.getrandbits(16)
+    key = SHA.new()
+    key.update(password.decode())
+    key = key.digest()
+    mode = AES.MODE_CBC
+    return AES.new(key, mode, IV=iv), iv
 
 
 if __name__ == "__main__":
