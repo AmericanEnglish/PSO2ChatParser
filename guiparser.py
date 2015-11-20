@@ -90,11 +90,3 @@ class DB():
                         else:
                             self.commit()
                             return 1, None
-
-
-
-# Select
-# Insert
-# Update
-# Delete
-
