@@ -1,4 +1,3 @@
-# Will be cleaner when finished, for not just use it all
 from PyQt5.QtWidgets import QApplication, QWidget
 
 # Mulit DB Support
