@@ -1,5 +1,5 @@
 # Will be cleaner when finished, for not just use it all
-from tkinter import *
+from PyQt5 import QtWidgets
 
 # Mulit DB Support
 import psycopg2
