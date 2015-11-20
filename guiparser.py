@@ -1,17 +1,20 @@
 # Will be cleaner when finished, for not just use it all
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QWidget
 
 # Mulit DB Support
 import psycopg2
 import sqlite3
 
-class GUI:
+class GUI(QWidget):
     def __init__(self):
         # Ground Work
-        self.root = Tk()
-        self.master = root.frame()
+        super().__init__() 
+        self.initGui()
 
-        # Setup Visuals
+    # Setup Visuals
+    def initGui(self):
+        pass
+
 
     # Parsing Commands
 
@@ -19,8 +22,78 @@ class GUI:
 
     # Displaying Chat
 
+class DB():
 
-# Database Skeleton
+    # Database Skeleton
+    def __init__(self, db_type, db_name, host='localhost', username=None, password=None):
+        self.db_type = db_type
+        self.host = localhost
+        self.username = username
+        self.password = password
+        self.con = None
+        self.cur = None
+
+    def connect(self):
+        if db_type == 'sqlite3':
+            self.con = sqlite3.connect(database=db_name)
+            return True, None
+
+        elif db_type == 'postgres':
+            try:
+                self.con = psycopg2.connect(host=host, database=db_name, user=username, password=password)
+                self.password = None
+                return True, None
+            except psycopg2.OperationalError as err:
+                return False, err
+
+    def cur_gen(self):
+        self.cur = self.con.cursor()
+
+    def commit(self):
+        self.con.commit()
+
+    def execute(self, string, arguments=None):
+        if arguments == None:
+            try:
+                self.cur.execute(string)
+                return True, None
+            except psycopg2.Error as err:
+                self.con.rollback()
+                return False, err
+        else:
+            try:
+                self.cur.execute(string, arguments)
+                return True, None
+            except psycopg2.Error as err:
+                self.con.rollback()
+                return False, err 
+
+    def table_gen(self):
+        """(DB object) -> int, str
+
+        This method will submite the correct SQL statements to the database.
+        table_gen returns 1 if the tables waere successfully created, a 0 if
+        the tables were not created because they already existed, or a -1 if 
+        the tables were not created because of some eror."""
+        if self.cur == None:
+            return -1, "Database cursor hasn't been generated"
+        elif self.con == None:
+            return -1, "Database hasn't been connected too yet"
+        else:
+                cmd = self.execute("""SELECT * FROM logs;""")
+                if cmd[0] == True:
+                    return 0, None
+                else:
+                    with open('create.sql', 'r') as exe:
+                        cmd = self.execute(exe.read())
+                        if cmd[0] == False:
+                            return -1, str(cmd[1])
+                        else:
+                            self.commit()
+                            return 1, None
+
+
+
 # Select
 # Insert
 # Update
