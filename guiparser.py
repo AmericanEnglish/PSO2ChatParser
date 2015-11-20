@@ -78,7 +78,7 @@ class DB():
         if self.cur == None:
             return -1, "Database cursor hasn't been generated"
         elif self.con == None:
-            return -1, "Database hasn't been connected too yet"
+            return -1, "Database hasn't been connected to yet"
         else:
                 cmd = self.execute("""SELECT * FROM logs;""")
                 if cmd[0] == True:
