@@ -1,8 +1,8 @@
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from Crypto.Hash import SHA256 as SHA
-from Crypto.Cipher import AES
 from Crypto.Random import random
 from timestamp import timestamp
+from Crypto.Cipher import AES
 from os import listdir
 from sys import argv
 import psycopg2
