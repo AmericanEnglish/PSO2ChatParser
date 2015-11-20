@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget
+import sys
 
 # Mulit DB Support
 import psycopg2
@@ -12,7 +13,7 @@ class GUI(QWidget):
 
     # Setup Visuals
     def initGui(self):
-        pass
+        self.show()
 
 
     # Parsing Commands
@@ -22,7 +23,8 @@ class GUI(QWidget):
     # Displaying Chat
 
 class DB():
-
+    """Used for interacting with a database by cutting down on some database
+    specific interactions."""
     # Database Skeleton
     def __init__(self, db_type, db_name, host='localhost', username=None, password=None):
         self.db_type = db_type
@@ -90,3 +92,8 @@ class DB():
                         else:
                             self.commit()
                             return 1, None
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    obj = Gui()
+    sys.exit(app.exec_())
