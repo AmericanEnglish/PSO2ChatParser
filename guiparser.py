@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout
 import sys
 
 # Mulit DB Support
@@ -13,6 +13,9 @@ class GUI(QWidget):
 
     # Setup Visuals
     def initGui(self):
+        self.grid = QGridLayout()
+        self.grid.setSpacing(10)
+        self.setWindowTitle('PSO2Chat Parser ~ Hoes Not Included')
         self.show()
 
 
