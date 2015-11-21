@@ -16,6 +16,7 @@ class GUI(QWidget):
         self.grid = QGridLayout()
         self.grid.setSpacing(10)
         self.setWindowTitle('PSO2Chat Parser ~ Hoes Not Included')
+        self.resize(200, 200)
         self.show()
 
 
@@ -98,5 +99,5 @@ class DB():
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    obj = Gui()
+    obj = GUI()
     sys.exit(app.exec_())
