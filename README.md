@@ -11,6 +11,7 @@ PSO2ChatParser
  * C++
 
 ## New Stipulations
+
 * With the release of Microsoft's Standalone compilers this seems more than feasible. 
 * The database will remain entirely SQLite for now as I doubt the average user will be using PostgreSQL or MySQL.
 * Gtk will be the GUI with the hopes that Glade will speed up the GUI building.
