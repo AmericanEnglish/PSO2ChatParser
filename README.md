@@ -1,23 +1,6 @@
 PSO2ChatParser
 ==============
 
-## I've decided to give up on the python implmentation for now. I may expand when making new features. Write test functions in Python and then write them in C/C++. Due to the lack of Windows compiling success from PyInstaller I've decided to just start this project over in C/C++. Breaking it down as such:
-
-* GUI
-  * C++ / GTK (For dat Glade)
-* SQL & Parsing
- * C
-* Query building and some basic input
- * C++
-
-## New Stipulations
-
-* With the release of Microsoft's Standalone compilers this seems more than feasible. 
-* The database will remain entirely SQLite for now as I doubt the average user will be using PostgreSQL or MySQL.
-* Gtk will be the GUI with the hopes that Glade will speed up the GUI building.
-* The python version of this program will most likely remain and be expanded but will not be officially supported or well maintained.
-* Wish me luck.
-
 Python
 =============
 
@@ -45,3 +28,9 @@ Packages Used
   * For using PostgreSQL as an option 
  2. sqlite3
   * For using SQLite3
+
+
+Updates
+=======
+
+Updates will start being pushed out in python now! As luck would have the pyinstaller people have managed to get a "passing" build for windows. So I will continue to push this through. Although my alterior reason is that C++ has very poor UTF16 support when it comes to cross compiling. Excluding the UTF8CPP package which would take more time than it is worth for me to learn it the in's and out's of.
