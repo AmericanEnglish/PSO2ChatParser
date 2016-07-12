@@ -23,7 +23,6 @@ main.bat
  - Runs chatparser.py on windows.
 
 
-########## News
 Updates will start being pushed out in python now! As luck would have the pyinstaller people have managed to get a "passing" build for windows. So I will continue to push this through. Although my alterior reason is that C++ has very poor UTF16 support when it comes to cross compiling. Excluding the UTF8CPP package which would take more time than it is worth for me to learn it the in's and out's of.
 
 Packages Used
