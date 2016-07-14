@@ -1,12 +1,13 @@
 CREATE TABLE logs
 (
     name CHAR(22),
+    hashed_contents CHAR(64)
     PRIMARY KEY (name)
 );
 --
 CREATE TABLE chat
 (
-    log_name CHAR(22),
+    log_hash CHAR(64),
     stamp TIMESTAMP,
     line_num INTEGER,
     chat_type VARCHAR(6),
@@ -18,6 +19,6 @@ CREATE TABLE chat
             chat_type = 'REPLY' OR
             chat_type = 'PARTY'),
     PRIMARY KEY (stamp, uid, line_num),
-    FOREIGN KEY (log_name)
-        REFERENCES logs (name)
+    FOREIGN KEY (log_hash)
+        REFERENCES logs (hashed_contents)
 );

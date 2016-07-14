@@ -48,7 +48,7 @@ class GUI(QWidget):
             self.prompt_for_posgres()
         # Else prompt for default server settings
         else:
-            server_type = prompt_for_server_type()
+            server_type = self.prompt_for_server_type()
             # Create "ParserDefaults.db"
             if server_type == "postgres":
                 self.defaults = DB("sqlite3", "ParserDefaults.db")
@@ -138,6 +138,9 @@ class GUI(QWidget):
         # cur.execute("""INSERT INTO logs VALUES (%s)""", [iv])
 
     def prompt_for_file(self):
+        pass
+
+    def prompt_for_server_type(self):
         pass
 
     def display_query_results(self):
