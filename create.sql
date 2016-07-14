@@ -1,7 +1,7 @@
 CREATE TABLE logs
 (
     name CHAR(22),
-    hashed_contents CHAR(64)
+    hashed_contents CHAR(64),
     PRIMARY KEY (name)
 );
 --
