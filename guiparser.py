@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox
 from Crypto.Hash import SHA256 # for hashing
 import sys
 import re
@@ -80,10 +80,11 @@ class MainGUI(QMainWindow):
         # Ask for chat directory
         default_path = QFileDialog.getExistingDirectory(self, 'Select default chat directory', './', QFileDialog.ShowDirsOnly)
         # Store directory into defaults table
-        self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s)""", default_path)
+        self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s)""", [str(default_path)])
         return default_path
 
     def scan_for_new(self, default_path):
+        ################ ADD A PROGRESS BAR AT SOME POINT
         # Scan directory for new files to be imported
         allfiles = listdir("default_path")
         chat_files = []
@@ -99,9 +100,9 @@ class MainGUI(QMainWindow):
                     contents = doc.read()
                 key.update(contents.encode(encoding="utf16"))
                 true_hash = key.hexdigest()
-                self.db.execute("""SELECT hash FROM logs WHERE name = %s;""", item)
+                self.db.execute("""SELECT hash FROM logs WHERE name = %s;""", [item])
                 queried_hash = self.db.fetchall()[0][0]
-                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", true_hash)
+                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [true_hash])
                 queried_name = self.db.fetchall()[0][0]
                 # If filename and hash do not match 
                 if queried_name == item:
@@ -170,8 +171,9 @@ class MainGUI(QMainWindow):
 
     def failed_to_select_database(self):
         # Throw error popup
+        QMessageBox.question(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
         # Quit out
-        pass
+        exit()
 
 
 def count(collection, extension):
