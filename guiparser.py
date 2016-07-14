@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout
 from Crypto.Hash import SHA256 # for hashing
 import sys
+import re
 
 # Mulit DB Support
 from database import DB
@@ -82,57 +83,52 @@ class GUI(QWidget):
             with open(default_path + item, 'r', encoding='utf-16') as doc:
                 # Obtain hash and filenames
                 contents = doc.read()
-                key.update(contents.encode(encoding="utf16"))
-                true_hash = key.hexdigest()
-                self.db.execute("""SELECT hash FROM logs WHERE name =%s """, item)
-                queried_hash = self.db.fetchall()[0][0]
-                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s """, true_hash)
-                queried_name = self.db.fetchall()[0][0]
-                # If filename and hash do not match 
-                if queried_name == item:
-                    if queried_hash == true_hash:
-                        print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
-                    else:
-                        add_new_file(default_path + item, do_hash=False)
-                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s""", [true_hash, item])
-                elif queried_hash == true_hash:
-                    print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
+            key.update(contents.encode(encoding="utf16"))
+            true_hash = key.hexdigest()
+            self.db.execute("""SELECT hash FROM logs WHERE name =%s """, item)
+            queried_hash = self.db.fetchall()[0][0]
+            self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s """, true_hash)
+            queried_name = self.db.fetchall()[0][0]
+            # If filename and hash do not match 
+            if queried_name == item:
+                if queried_hash == true_hash:
+                    print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
                 else:
-                    add_new_file(default_path + item)
+                    add_new_file(default_path + item, do_hash=False)
+                    self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s""", [true_hash, item])
+            elif queried_hash == true_hash:
+                print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
+            else:
+                add_new_file(true_hash, default_path + item)
 
-
-        for index, item in enumerate(chat_files):
-            print("Processing: {}/{}\n{}".format(index + 1, len(allfiles), item))
-            with open(default_path + item, 'r', encoding='utf-16') as doc:
-                buff = []
-                cur.execute("""INSERT INTO logs VALUES (%s);""", [item])
-                for line in doc:
-                    line = re.split("\t", line)
-                    if len(line) > 6:
-                        temp = line[:6]
-                        temp.append('\t'.join(line[6:]))
-                        line = temp
-                    if timestamp(line[0]):
-                        temp = [item]
-                        temp.extend(line)
-                        line = temp
-                        cur.execute("""INSERT INTO chat VALUES
-                            (%s, %s, %s, %s, %s, %s, %s)""", line)
-                        buff = [line[1], line[2], line[4]]
-                    else:
-                        # print('Problem Line {}'.format(buff))
-                        cur.execute("""UPDATE chat
-                            SET info = info || %s
-                            WHERE stamp = %s AND
-                                uid = %s AND
-                                line_num = %s;""",
-                                    [' '.join(line), buff[0], buff[1], buff[2]])
-        # cur.execute("""INSERT INTO logs VALUES (%s)""", [iv])
-        conn.commit()
-
-    def add_new_file(self, path_to_file, do_hash=True):
+    def add_new_file(self, log_hash, path_to_file, do_hash=True):
         # Add new file to the database
-        pass
+        key = SHA256.new()
+        with open(default_path + item, 'r', encoding='utf-16') as doc:
+            buff = []
+            cur.execute("""INSERT INTO logs VALUES (%s);""", [item])
+            for line in doc:
+                line = re.split("\t", line)
+                if len(line) > 6:
+                    temp = line[:6]
+                    temp.append('\t'.join(line[6:]))
+                    line = temp
+                if timestamp(line[0]):
+                    temp = [item]
+                    temp.extend(line)
+                    line = temp
+                    cur.execute("""INSERT INTO chat VALUES
+                        (%s, %s, %s, %s, %s, %s, %s, %s)""", line)
+                    buff = [line[1], line[2], line[4]]
+                else:
+                    # print('Problem Line {}'.format(buff))
+                    cur.execute("""UPDATE chat
+                        SET info = info || %s
+                        WHERE stamp = %s AND
+                            uid = %s AND
+                            line_num = %s;""",
+                                [' '.join(line), buff[0], buff[1], buff[2]])
+        # cur.execute("""INSERT INTO logs VALUES (%s)""", [iv])
 
 
     def display_query_results(self):
