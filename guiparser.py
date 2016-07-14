@@ -38,7 +38,7 @@ class GUI(QWidget):
             default_path = self.db.fetchall()[0][1]
             scan_for_new(default_path)
         # Else scan for "ParserDefaults.db"
-        elif "ParserDefaults.db" in lsitdir("./"):
+        elif "ParserDefaults.db" in listdir("./"):
             # Dispatch default values
             self.defaults = DB("sqlite3", "ParserDefaults.db")
             prompt_for_posgres()
@@ -48,16 +48,20 @@ class GUI(QWidget):
             # Create "ParserDefaults.db"
             if server_type == "postgres":
                 self.defaults = DB("sqlite3", "ParserDefaults.db")
-                prompt_for_posgres()
+                prompt_for_posgres(create_new=True)
             # Else create "PSO2ChatParser.db"
             else:
                 self.db = DB("sqlite3", "PSO2ChatParser.db")
                 self.defaults = self.db
                 # Create the tables needed
                 self.db.create_table("create.sql")
+                default_path = prompt_for_chat()
+                scan_for_new(default_path)
 
-    def prompt_for_posgres(self):
+
+    def prompt_for_posgres(self, create_new=False):
         # For logging into postgresql and handiling postgres startup stuff
+        # Open dialog for entering username and password
         pass
 
     def prompt_for_chat(self):
