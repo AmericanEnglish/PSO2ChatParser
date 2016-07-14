@@ -36,14 +36,14 @@ class GUI(QWidget):
         elif "ParserDefaults.db" in listdir("./"):
             # Dispatch default values
             self.defaults = DB("sqlite3", "ParserDefaults.db")
-            prompt_for_posgres()
+            self.prompt_for_posgres()
         # Else prompt for default server settings
         else:
             server_type = prompt_for_server_type()
             # Create "ParserDefaults.db"
             if server_type == "postgres":
                 self.defaults = DB("sqlite3", "ParserDefaults.db")
-                prompt_for_posgres(create_new=True)
+                self.prompt_for_posgres(create_new=True)
             # Else create "PSO2ChatParser.db"
             else:
                 self.db = DB("sqlite3", "PSO2ChatParser.db")
@@ -94,19 +94,19 @@ class GUI(QWidget):
                 if queried_hash == true_hash:
                     print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
                 else:
-                    add_new_file(default_path + item, do_hash=False)
+                    self.add_new_file(default_path + item, do_hash=False)
                     self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s""", [true_hash, item])
             elif queried_hash == true_hash:
                 print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
             else:
-                add_new_file(default_path + item)
+                self.add_new_file(default_path + item)
 
     def add_new_file(self, path_to_file, do_hash=True):
         # Add new file to the database
         key = SHA256.new()
         with open(default_path + item, 'r', encoding='utf-16') as doc:
             buff = []
-            cur.execute("""INSERT INTO logs VALUES (%s);""", [item])
+            self.db.execute("""INSERT INTO logs VALUES (%s);""", [item])
             for line in doc:
                 line = re.split("\t", line)
                 if len(line) > 6:
@@ -117,12 +117,12 @@ class GUI(QWidget):
                     temp = [item]
                     temp.extend(line)
                     line = temp
-                    cur.execute("""INSERT INTO chat VALUES
+                    self.db.execute("""INSERT INTO chat VALUES
                         (%s, %s, %s, %s, %s, %s, %s)""", line)
                     buff = [line[1], line[2], line[4]]
                 else:
                     # print('Problem Line {}'.format(buff))
-                    cur.execute("""UPDATE chat
+                    self.db.execute("""UPDATE chat
                         SET info = info || %s
                         WHERE stamp = %s AND
                             uid = %s AND
