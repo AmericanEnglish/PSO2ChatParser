@@ -11,6 +11,15 @@ class GUI(QWidget):
     def __init__(self):
         # Ground Work
         super().__init__() 
+        self.query_arguments = {
+        "SELECT":(
+                ("stamp", False),
+                ("chat_type", False),
+                ("uid", False),
+                ("username", False),
+                ("text", False))
+        "WHERE":{}
+        }
         self.initGui()
         self.initDB()
 
