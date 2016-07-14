@@ -38,7 +38,7 @@ class GUI(QWidget):
             self.db = DB("sqlite3", "./PSO2ChatParser.db")
             self.defaults = self.db
             # If more defaults besides the database become available
-            self.db.execute("""SELECT name, value FROM defaults WHERE name="path" """)
+            self.db.execute("""SELECT name, value FROM defaults WHERE name = chat_directory;""")
             default_path = self.db.fetchall()[0][1]
             self.scan_for_new(default_path)
         # Else scan for "ParserDefaults.db"
@@ -94,9 +94,9 @@ class GUI(QWidget):
                     contents = doc.read()
                 key.update(contents.encode(encoding="utf16"))
                 true_hash = key.hexdigest()
-                self.db.execute("""SELECT hash FROM logs WHERE name =%s """, item)
+                self.db.execute("""SELECT hash FROM logs WHERE name = %s;""", item)
                 queried_hash = self.db.fetchall()[0][0]
-                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s """, true_hash)
+                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", true_hash)
                 queried_name = self.db.fetchall()[0][0]
                 # If filename and hash do not match 
                 if queried_name == item:
@@ -104,7 +104,7 @@ class GUI(QWidget):
                         print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
                     else:
                         self.add_new_file(default_path + item, do_hash=False)
-                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s""", [true_hash, item])
+                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s;""", [true_hash, item])
                 elif queried_hash == true_hash:
                     print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
                 else:
@@ -115,7 +115,7 @@ class GUI(QWidget):
         key = SHA256.new()
         with open(default_path + item, 'r', encoding='utf-16') as doc:
             buff = []
-            self.db.execute("""INSERT INTO logs VALUES (%s);""", [item])
+            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", [item, log_hash])
             for line in doc:
                 line = re.split("\t", line)
                 if len(line) > 6:
@@ -125,7 +125,7 @@ class GUI(QWidget):
                 if timestamp(line[0]):
                     line.insert(0, log_hash)
                     self.db.execute("""INSERT INTO chat VALUES
-                        (%s, %s, %s, %s, %s, %s, %s)""", line)
+                        (%s, %s, %s, %s, %s, %s, %s);""", line)
                     buff = [line[1], line[2], line[4]]
                 else:
                     # print('Problem Line {}'.format(buff))
