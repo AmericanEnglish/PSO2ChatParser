@@ -39,7 +39,7 @@ class MainGUI(QMainWindow):
             self.db = DB("sqlite3", "./PSO2ChatParser.db")
             self.defaults = self.db
             # If more defaults besides the database become available
-            self.db.execute("""SELECT name, value FROM defaults WHERE name = chat_directory;""")
+            self.db.execute("""SELECT name, value FROM defaults WHERE name = "default_path";""")
             default_path = self.db.fetchall()[0][1]
             self.scan_for_new(default_path)
         # Else scan for "ParserDefaults.db"
@@ -49,20 +49,25 @@ class MainGUI(QMainWindow):
             self.prompt_for_posgres()
         # Else prompt for default server settings
         else:
-            server_type = self.prompt_for_server_type()
+            # Will finish this bit later
+            # server_type = self.prompt_for_server_type()
+            server_type = "sqlite3"
             if server_type == None or server_type == "":
                 self.failed_to_select_database()
             # Create "ParserDefaults.db"
             elif server_type == "postgres":
                 self.defaults = DB("sqlite3", "ParserDefaults.db")
+                self.default.connect()
                 self.prompt_for_posgres(create_new=True)
             # Else create "PSO2ChatParser.db"
             else:
                 self.db = DB("sqlite3", "PSO2ChatParser.db")
+                self.db.connect()
                 self.defaults = self.db
                 # Create the tables needed
+                self.db.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30), PRIMARY KEY (name));""")
                 self.db.create_table("./create.sql")
-                self.default_path = prompt_for_chat()
+                self.prompt_for_chat()
                 self.scan_for_new()
 
 
@@ -79,9 +84,14 @@ class MainGUI(QMainWindow):
     def prompt_for_chat(self):
         # Ask for chat directory
         self.default_path = QFileDialog.getExistingDirectory(self, 'Select default chat directory', './', QFileDialog.ShowDirsOnly)
+        ################### 
+        # Check to see if default path was returned
+            # If so then proceed as normal
+            # elseif check to see if defined in the database if so proceed
+            # else return failure prompt
+        ###################
         # Store directory into defaults table
         self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s)""", [str(self.default_path)])
-        return default_path
 
     def scan_for_new(self):
         ################ ADD A PROGRESS BAR AT SOME POINT
@@ -109,7 +119,7 @@ class MainGUI(QMainWindow):
                     if queried_hash == log_hash:
                         print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
                     else:
-                        self.add_new_file(self.default_path + item, do_hash=False, log_hash)
+                        self.add_new_file(self.default_path + item, do_hash=False, log_hash=log_hash)
                         self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s;""", [log_hash, item])
                 elif queried_hash == log_hash:
                     print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
@@ -194,7 +204,7 @@ class MainGUI(QMainWindow):
 
     def failed_to_select_database(self):
         # Throw error popup
-        QMessageBox.critical(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
+        w = QMessageBox.critical(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
         # Quit out
         exit()
 
