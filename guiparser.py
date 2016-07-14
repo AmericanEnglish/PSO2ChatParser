@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout
-from Crypto.Hash import SHA256 as SHA # for hashing
+from Crypto.Hash import SHA256 # for hashing
 import sys
 
 # Mulit DB Support
@@ -70,14 +70,70 @@ class GUI(QWidget):
 
     def scan_for_new(self, default_path):
         # Scan directory for new files to be imported
-        # Compare hashed file contents
-            # If filename and hash do not match
-            # Prompt for dropping old and importing new
-        pass
+        allfiles = listdir("default_path")
+        chat_files = []
+        key = SHA256.new()
+        total = count(allfiles, ".txt")
+        current = 0
+        for item in allfiles:
+            if item[-4:] == ".txt" and "ChatLog" in item:    
+            current += 1
+            # Compare hashed file contents
+            with open(default_path + item, 'r', encoding='utf-16') as doc:
+                # Obtain hash and filenames
+                contents = doc.read()
+                key.update(contents.encode(encoding="utf16"))
+                true_hash = key.hexdigest()
+                self.db.execute("""SELECT hash FROM logs WHERE name =%s """, item)
+                queried_hash = self.db.fetchall()[0][0]
+                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s """, true_hash)
+                queried_name = self.db.fetchall()[0][0]
+                # If filename and hash do not match 
+                if queried_name == item:
+                    if queried_hash == true_hash:
+                        print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
+                    else:
+                        add_new_file(default_path + item, do_hash=False)
+                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s""", [true_hash, item])
+                elif queried_hash == true_hash:
+                    print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
+                else:
+                    add_new_file(default_path + item)
 
-    def add_new_file(self, path_to_file):
+
+        for index, item in enumerate(chat_files):
+            print("Processing: {}/{}\n{}".format(index + 1, len(allfiles), item))
+            with open(default_path + item, 'r', encoding='utf-16') as doc:
+                buff = []
+                cur.execute("""INSERT INTO logs VALUES (%s);""", [item])
+                for line in doc:
+                    line = re.split("\t", line)
+                    if len(line) > 6:
+                        temp = line[:6]
+                        temp.append('\t'.join(line[6:]))
+                        line = temp
+                    if timestamp(line[0]):
+                        temp = [item]
+                        temp.extend(line)
+                        line = temp
+                        cur.execute("""INSERT INTO chat VALUES
+                            (%s, %s, %s, %s, %s, %s, %s)""", line)
+                        buff = [line[1], line[2], line[4]]
+                    else:
+                        # print('Problem Line {}'.format(buff))
+                        cur.execute("""UPDATE chat
+                            SET info = info || %s
+                            WHERE stamp = %s AND
+                                uid = %s AND
+                                line_num = %s;""",
+                                    [' '.join(line), buff[0], buff[1], buff[2]])
+        # cur.execute("""INSERT INTO logs VALUES (%s)""", [iv])
+        conn.commit()
+
+    def add_new_file(self, path_to_file, do_hash=True):
         # Add new file to the database
         pass
+
 
     def display_query_results(self):
         # Query database
@@ -100,7 +156,12 @@ class GUI(QWidget):
         # Checkboxes
 
 
-
+def count(collection, extension):
+    total = 0
+    for item in collection:
+        if item[-4:] == extension:
+            total += 1
+    return total
 
 
 if __name__ == '__main__':
