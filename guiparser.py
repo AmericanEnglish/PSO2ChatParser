@@ -99,9 +99,9 @@ class GUI(QWidget):
             elif queried_hash == true_hash:
                 print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
             else:
-                add_new_file(true_hash, default_path + item)
+                add_new_file(default_path + item)
 
-    def add_new_file(self, log_hash, path_to_file, do_hash=True):
+    def add_new_file(self, path_to_file, do_hash=True):
         # Add new file to the database
         key = SHA256.new()
         with open(default_path + item, 'r', encoding='utf-16') as doc:
@@ -118,7 +118,7 @@ class GUI(QWidget):
                     temp.extend(line)
                     line = temp
                     cur.execute("""INSERT INTO chat VALUES
-                        (%s, %s, %s, %s, %s, %s, %s, %s)""", line)
+                        (%s, %s, %s, %s, %s, %s, %s)""", line)
                     buff = [line[1], line[2], line[4]]
                 else:
                     # print('Problem Line {}'.format(buff))
@@ -130,6 +130,8 @@ class GUI(QWidget):
                                 [' '.join(line), buff[0], buff[1], buff[2]])
         # cur.execute("""INSERT INTO logs VALUES (%s)""", [iv])
 
+    def prompt_for_file(self):
+        pass
 
     def display_query_results(self):
         # Query database
