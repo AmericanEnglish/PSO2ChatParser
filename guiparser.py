@@ -99,9 +99,9 @@ class GUI(QWidget):
                 elif queried_hash == true_hash:
                     print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
                 else:
-                    self.add_new_file(default_path + item)
+                    self.add_new_file(true_hash, default_path + item)
 
-    def add_new_file(self, path_to_file, do_hash=True):
+    def add_new_file(self, log_hash, path_to_file, do_hash=True):
         # Add new file to the database
         key = SHA256.new()
         with open(default_path + item, 'r', encoding='utf-16') as doc:
@@ -114,9 +114,7 @@ class GUI(QWidget):
                     temp.append('\t'.join(line[6:]))
                     line = temp
                 if timestamp(line[0]):
-                    temp = [item]
-                    temp.extend(line)
-                    line = temp
+                    line.insert(0, log_hash)
                     self.db.execute("""INSERT INTO chat VALUES
                         (%s, %s, %s, %s, %s, %s, %s)""", line)
                     buff = [line[1], line[2], line[4]]
