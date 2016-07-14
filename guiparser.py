@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QMainWindow, QFileDialog
 from Crypto.Hash import SHA256 # for hashing
 import sys
 import re
@@ -7,7 +7,7 @@ import re
 from database import DB
 from os import listdir
 
-class GUI(QWidget):
+class MainGUI(QMainWindow):
     def __init__(self):
         # Ground Work
         super().__init__() 
@@ -22,6 +22,7 @@ class GUI(QWidget):
         }
         self.initGui()
         self.initDB()
+        self.popups = []
 
     # Setup Visuals
     def initGui(self):
@@ -49,8 +50,10 @@ class GUI(QWidget):
         # Else prompt for default server settings
         else:
             server_type = self.prompt_for_server_type()
+            if server_type == None or server_type == "":
+                self.failed_to_select_database()
             # Create "ParserDefaults.db"
-            if server_type == "postgres":
+            elif server_type == "postgres":
                 self.defaults = DB("sqlite3", "ParserDefaults.db")
                 self.prompt_for_posgres(create_new=True)
             # Else create "PSO2ChatParser.db"
@@ -75,8 +78,10 @@ class GUI(QWidget):
 
     def prompt_for_chat(self):
         # Ask for chat directory
+        default_path = QFileDialog.getExistingDirectory(self, 'Select default chat directory', './', QFileDialog.ShowDirsOnly)
         # Store directory into defaults table
-        pass
+        self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s)""", default_path)
+        return default_path
 
     def scan_for_new(self, default_path):
         # Scan directory for new files to be imported
@@ -163,6 +168,11 @@ class GUI(QWidget):
     # Chat Type filter
         # Checkboxes
 
+    def failed_to_select_database(self):
+        # Throw error popup
+        # Quit out
+        pass
+
 
 def count(collection, extension):
     total = 0
@@ -174,5 +184,5 @@ def count(collection, extension):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    obj = GUI()
+    obj = MainGUI()
     sys.exit(app.exec_())
