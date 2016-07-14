@@ -17,7 +17,7 @@ class GUI(QWidget):
                 ("chat_type", False),
                 ("uid", False),
                 ("username", False),
-                ("text", False))
+                ("text", False)),
         "WHERE":{}
         }
         self.initGui()
