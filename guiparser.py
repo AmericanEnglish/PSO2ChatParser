@@ -62,8 +62,8 @@ class MainGUI(QMainWindow):
                 self.defaults = self.db
                 # Create the tables needed
                 self.db.create_table("./create.sql")
-                default_path = prompt_for_chat()
-                self.scan_for_new(default_path)
+                self.default_path = prompt_for_chat()
+                self.scan_for_new()
 
 
     def prompt_for_posgres(self, create_new=False):
@@ -78,15 +78,15 @@ class MainGUI(QMainWindow):
 
     def prompt_for_chat(self):
         # Ask for chat directory
-        default_path = QFileDialog.getExistingDirectory(self, 'Select default chat directory', './', QFileDialog.ShowDirsOnly)
+        self.default_path = QFileDialog.getExistingDirectory(self, 'Select default chat directory', './', QFileDialog.ShowDirsOnly)
         # Store directory into defaults table
-        self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s)""", [str(default_path)])
+        self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s)""", [str(self.default_path)])
         return default_path
 
-    def scan_for_new(self, default_path):
+    def scan_for_new(self):
         ################ ADD A PROGRESS BAR AT SOME POINT
         # Scan directory for new files to be imported
-        allfiles = listdir("default_path")
+        allfiles = listdir(self.default_path)
         chat_files = []
         key = SHA256.new()
         total = count(allfiles, ".txt")
@@ -95,33 +95,54 @@ class MainGUI(QMainWindow):
             if item[-4:] == ".txt" and "ChatLog" in item:    
                 current += 1
                 # Compare hashed file contents
-                with open(default_path + item, 'r', encoding='utf-16') as doc:
+                with open(self.default_path + item, 'r', encoding='utf-16') as doc:
                     # Obtain hash and filenames
                     contents = doc.read()
                 key.update(contents.encode(encoding="utf16"))
-                true_hash = key.hexdigest()
+                log_hash = key.hexdigest()
                 self.db.execute("""SELECT hash FROM logs WHERE name = %s;""", [item])
                 queried_hash = self.db.fetchall()[0][0]
-                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [true_hash])
+                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [log_hash])
                 queried_name = self.db.fetchall()[0][0]
                 # If filename and hash do not match 
                 if queried_name == item:
-                    if queried_hash == true_hash:
+                    if queried_hash == log_hash:
                         print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
                     else:
-                        self.add_new_file(default_path + item, do_hash=False)
-                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s;""", [true_hash, item])
-                elif queried_hash == true_hash:
+                        self.add_new_file(self.default_path + item, do_hash=False, log_hash)
+                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s;""", [log_hash, item])
+                elif queried_hash == log_hash:
                     print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
                 else:
-                    self.add_new_file(true_hash, default_path + item)
+                    self.add_new_file(log_hash, self.default_path + item)
 
-    def add_new_file(self, log_hash, path_to_file, do_hash=True):
+    def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
+        # Begin Hashing process
+        if (do_hash):
+            with open(path_to_file, 'r', encoding='utf-16') as doc:
+                # Obtain hash and filenames
+                contents = doc.read()
+            key.update(contents.encode(encoding="utf16"))
+            log_hash = key.hexdigest()
+            ################ COME BACK AND FIX THIS BECAUSE path_to_file != filename
+            self.db.execute("""SELECT hash FROM logs WHERE name = %s;""", [path_to_file])
+            ################
+            queried_hash = self.db.fetchall()[0][0]
+            self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [log_hash])
+            queried_name = self.db.fetchall()[0][0]
+            # If filename and hash do not match 
+            if queried_name == item:
+                if queried_hash == log_hash:
+                    print("File has alread been imported! -> Skipped")
+                    return # Quit out
+            elif queried_hash == log_hash:
+                print("File already import but filename is different? -> Skipped")
+                return # Quit out
         # Add new file to the database
         key = SHA256.new()
-        with open(default_path + item, 'r', encoding='utf-16') as doc:
+        with open(path_to_file, 'r', encoding='utf-16') as doc:
             buff = []
-            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", [item, log_hash])
+            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", [path_to_file, log_hash])
             for line in doc:
                 line = re.split("\t", line)
                 if len(line) > 6:
@@ -144,7 +165,9 @@ class MainGUI(QMainWindow):
         # cur.execute("""INSERT INTO logs VALUES (%s)""", [iv])
 
     def prompt_for_file(self):
-        pass
+        filename = QFileDialog.getOpenFileName(self, 'Open file', self.default_path)
+        self.add_new_file(filename)
+
 
     def prompt_for_server_type(self):
         pass
@@ -171,14 +194,14 @@ class MainGUI(QMainWindow):
 
     def failed_to_select_database(self):
         # Throw error popup
-        QMessageBox.question(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
+        QMessageBox.critical(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
         # Quit out
         exit()
 
 
 def count(collection, extension):
     total = 0
-    for item in collection:
+    for path_to_file in collection:
         if item[-4:] == extension:
             total += 1
     return total
