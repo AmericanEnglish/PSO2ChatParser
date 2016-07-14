@@ -11,13 +11,7 @@ class GUI(QWidget):
         # Ground Work
         super().__init__() 
         self.initGui()
-
-        # Detect if a PSOChat.db exists
-            # Check if defaults table exists
-            # Else create defaults table
-        # Else check for a defaults.db
-            # Check defaults if not
-            # Else create one and collect
+        self.initDB()
 
     # Setup Visuals
     def initGui(self):
@@ -27,7 +21,7 @@ class GUI(QWidget):
         self.resize(400, 400)
         self.show()
 
-        ########################## Database stuff
+    def initDB(self):
         # Scan for "PSO2ChatParser.db"
         if "PSO2ChatParser.db" in listdir("./"):
             # Scan for defaults table
@@ -36,7 +30,7 @@ class GUI(QWidget):
             # If more defaults besides the database become available
             self.db.execute("""SELECT name, value FROM defaults WHERE name="path" """)
             default_path = self.db.fetchall()[0][1]
-            scan_for_new(default_path)
+            self.scan_for_new(default_path)
         # Else scan for "ParserDefaults.db"
         elif "ParserDefaults.db" in listdir("./"):
             # Dispatch default values
@@ -54,15 +48,20 @@ class GUI(QWidget):
                 self.db = DB("sqlite3", "PSO2ChatParser.db")
                 self.defaults = self.db
                 # Create the tables needed
-                self.db.create_table("create.sql")
+                self.db.create_table("./create.sql")
                 default_path = prompt_for_chat()
-                scan_for_new(default_path)
+                self.scan_for_new(default_path)
 
 
     def prompt_for_posgres(self, create_new=False):
         # For logging into postgresql and handiling postgres startup stuff
         # Open dialog for entering username and password
-        pass
+
+        # Connect
+        self.db = DB("postgres", hostname=hostname, username=username, password=password)
+        # Create?
+        if create_new = True:
+            self.db.create_table("./create.sql")
 
     def prompt_for_chat(self):
         # Ask for chat directory
