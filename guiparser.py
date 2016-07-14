@@ -70,7 +70,7 @@ class GUI(QWidget):
         # Connect
         self.db = DB("postgres", hostname=hostname, username=username, password=password)
         # Create?
-        if create_new = True:
+        if create_new == True:
             self.db.create_table("./create.sql")
 
     def prompt_for_chat(self):
