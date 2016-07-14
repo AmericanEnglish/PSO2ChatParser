@@ -78,28 +78,28 @@ class GUI(QWidget):
         current = 0
         for item in allfiles:
             if item[-4:] == ".txt" and "ChatLog" in item:    
-            current += 1
-            # Compare hashed file contents
-            with open(default_path + item, 'r', encoding='utf-16') as doc:
-                # Obtain hash and filenames
-                contents = doc.read()
-            key.update(contents.encode(encoding="utf16"))
-            true_hash = key.hexdigest()
-            self.db.execute("""SELECT hash FROM logs WHERE name =%s """, item)
-            queried_hash = self.db.fetchall()[0][0]
-            self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s """, true_hash)
-            queried_name = self.db.fetchall()[0][0]
-            # If filename and hash do not match 
-            if queried_name == item:
-                if queried_hash == true_hash:
-                    print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
+                current += 1
+                # Compare hashed file contents
+                with open(default_path + item, 'r', encoding='utf-16') as doc:
+                    # Obtain hash and filenames
+                    contents = doc.read()
+                key.update(contents.encode(encoding="utf16"))
+                true_hash = key.hexdigest()
+                self.db.execute("""SELECT hash FROM logs WHERE name =%s """, item)
+                queried_hash = self.db.fetchall()[0][0]
+                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s """, true_hash)
+                queried_name = self.db.fetchall()[0][0]
+                # If filename and hash do not match 
+                if queried_name == item:
+                    if queried_hash == true_hash:
+                        print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
+                    else:
+                        self.add_new_file(default_path + item, do_hash=False)
+                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s""", [true_hash, item])
+                elif queried_hash == true_hash:
+                    print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
                 else:
-                    self.add_new_file(default_path + item, do_hash=False)
-                    self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s""", [true_hash, item])
-            elif queried_hash == true_hash:
-                print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
-            else:
-                self.add_new_file(default_path + item)
+                    self.add_new_file(default_path + item)
 
     def add_new_file(self, path_to_file, do_hash=True):
         # Add new file to the database
