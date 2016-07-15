@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox
 from Crypto.Hash import SHA256 # for hashing
+from timestamp import timestamp
 import sys
 import re
 
@@ -39,8 +40,12 @@ class MainGUI(QMainWindow):
             self.db = DB("sqlite3", "./PSO2ChatParser.db")
             self.defaults = self.db
             # If more defaults besides the database become available
-            self.db.execute("""SELECT name, value FROM defaults WHERE name = "default_path";""")
-            self.default_path = self.db.fetchall()[0][1]
+            self.db.execute("""SELECT value FROM defaults WHERE name = "default_path";""")
+            self.default_path = self.db.fetchall()
+            if self.default_path == []:
+                self.prompt_for_chat()
+            else:
+                self.default_path = self.default_path[0][0]
             self.scan_for_new()
         # Else scan for "ParserDefaults.db"
         elif "ParserDefaults.db" in listdir("./"):
@@ -89,13 +94,17 @@ class MainGUI(QMainWindow):
         if self.default_path == None or self.default_path == '':
             # Check to see if defined in the database if so proceed
             self.db.execute("""SELECT value FROM defaults WHERE name =  "default_path";""")
-            self.default_path = self.db.fetchall()[0][0]
+            self.default_path = self.db.fetchall()
+            print(self.default_path)
             # If no results returned, failure. 
-            if self.default_path == None or self.default_path == '':
+            if self.default_path == []:
                 self.failed_to_select_database()
+            else:
+                self.default_path = self.default_path[0][0]
         ###################
         # Store directory into defaults table
         else:
+            self.default_path += "/"
             self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s);""", [self.default_path])
 
     def scan_for_new(self):
@@ -115,10 +124,17 @@ class MainGUI(QMainWindow):
                     contents = doc.read()
                 key.update(contents.encode(encoding="utf16"))
                 log_hash = key.hexdigest()
-                self.db.execute("""SELECT hash FROM logs WHERE name = %s;""", [item])
-                queried_hash = self.db.fetchall()[0][0]
+                # Pull hashed_contents from the db
+                self.db.execute("""SELECT hashed_contents FROM logs WHERE name = %s;""", [item])
+                queried_hash = self.db.fetchall()
+                if queried_hash != []:
+                    queried_hash = queried_hash[0][0]
+
+                # Double check for renamed files
                 self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [log_hash])
-                queried_name = self.db.fetchall()[0][0]
+                queried_name = self.db.fetchall()
+                if queried_name != []:
+                    queried_name = queried_name[0][0]
                 # If filename and hash do not match 
                 if queried_name == item:
                     if queried_hash == log_hash:
@@ -129,7 +145,7 @@ class MainGUI(QMainWindow):
                 elif queried_hash == log_hash:
                     print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
                 else:
-                    self.add_new_file(log_hash, self.default_path + item)
+                    self.add_new_file(self.default_path + item, do_hash=False, log_hash=log_hash)
 
     def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
         # Begin Hashing process
