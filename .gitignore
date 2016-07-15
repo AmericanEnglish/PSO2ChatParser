@@ -2,6 +2,6 @@
 .python-version
 Chats/
 __pycache__/
-*.db
+*.db*
 Make*
 sip*
