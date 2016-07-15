@@ -116,39 +116,15 @@ class MainGUI(QMainWindow):
         total = count(allfiles, ".txt")
         current = 0
         for item in allfiles:
+            # print(item)
             if item[-4:] == ".txt" and "ChatLog" in item:    
                 current += 1
-                # Compare hashed file contents
-                with open(self.default_path + item, 'r', encoding='utf-16') as doc:
-                    # Obtain hash and filenames
-                    contents = doc.read()
-                key.update(contents.encode(encoding="utf16"))
-                log_hash = key.hexdigest()
-                # Pull hashed_contents from the db
-                self.db.execute("""SELECT hashed_contents FROM logs WHERE name = %s;""", [item])
-                queried_hash = self.db.fetchall()
-                if queried_hash != []:
-                    queried_hash = queried_hash[0][0]
-
-                # Double check for renamed files
-                self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [log_hash])
-                queried_name = self.db.fetchall()
-                if queried_name != []:
-                    queried_name = queried_name[0][0]
-                # If filename and hash do not match 
-                if queried_name == item:
-                    if queried_hash == log_hash:
-                        print("Processing: {}/{} -> {} -> File Present -> Skipped", current, total, item[7:-4])
-                    else:
-                        self.add_new_file(self.default_path + item, do_hash=False, log_hash=log_hash)
-                        self.db.execute("""UPDATE logs SET hashed_contents = %s WHERE name = %s;""", [log_hash, item])
-                elif queried_hash == log_hash:
-                    print("Processing: {}/{} -> {}\n\tFile already import but filename is different? -> Skipped", current, total, item[7:-4])
-                else:
-                    self.add_new_file(self.default_path + item, do_hash=False, log_hash=log_hash)
+                print("Processing: {}/{} -> {}".format(str(current).zfill(len(str(total))), total, item[-15:-5]))
+                self.add_new_file(self.default_path + item)
 
     def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
         # Begin Hashing process
+        key = SHA256.new()
         if (do_hash):
             with open(path_to_file, 'r', encoding='utf-16') as doc:
                 # Obtain hash and filenames
@@ -156,25 +132,34 @@ class MainGUI(QMainWindow):
             key.update(contents.encode(encoding="utf16"))
             log_hash = key.hexdigest()
             ################ COME BACK AND FIX THIS BECAUSE path_to_file != filename
-            self.db.execute("""SELECT hash FROM logs WHERE name = %s;""", [path_to_file])
+            self.db.execute("""SELECT hashed_contents FROM logs WHERE name = %s;""", [path_to_file])
             ################
-            queried_hash = self.db.fetchall()[0][0]
+            queried_hash = self.db.fetchall()
+            if queried_hash != []:
+                queried_hash = queried_hash[0][0]
             self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [log_hash])
-            queried_name = self.db.fetchall()[0][0]
+            queried_name = self.db.fetchall()
+            if queried_name != []:
+                queried_name = queried_name[0][0]
             # If filename and hash do not match 
-            if queried_name == item:
+            if queried_name == path_to_file:
                 if queried_hash == log_hash:
                     print("File has alread been imported! -> Skipped")
                     return # Quit out
             elif queried_hash == log_hash:
-                print("File already import but filename is different? -> Skipped")
+                print("File already imported but filename is different? -> Skipped")
                 return # Quit out
         # Add new file to the database
         key = SHA256.new()
         with open(path_to_file, 'r', encoding='utf-16') as doc:
+            total_lines = doc.read().count("\n")
+        current = 0
+        with open(path_to_file, 'r', encoding='utf-16') as doc:
             buff = []
             self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", [path_to_file, log_hash])
             for line in doc:
+                current += 1
+                # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
                 line = re.split("\t", line)
                 if len(line) > 6:
                     temp = line[:6]
