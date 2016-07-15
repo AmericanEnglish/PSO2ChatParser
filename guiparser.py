@@ -40,8 +40,8 @@ class MainGUI(QMainWindow):
             self.defaults = self.db
             # If more defaults besides the database become available
             self.db.execute("""SELECT name, value FROM defaults WHERE name = "default_path";""")
-            default_path = self.db.fetchall()[0][1]
-            self.scan_for_new(default_path)
+            self.default_path = self.db.fetchall()[0][1]
+            self.scan_for_new()
         # Else scan for "ParserDefaults.db"
         elif "ParserDefaults.db" in listdir("./"):
             # Dispatch default values
@@ -65,7 +65,7 @@ class MainGUI(QMainWindow):
                 self.db.connect()
                 self.defaults = self.db
                 # Create the tables needed
-                self.db.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30), PRIMARY KEY (name));""")
+                self.db.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
                 self.db.create_table("./create.sql")
                 self.prompt_for_chat()
                 self.scan_for_new()
@@ -86,12 +86,17 @@ class MainGUI(QMainWindow):
         self.default_path = QFileDialog.getExistingDirectory(self, 'Select default chat directory', './', QFileDialog.ShowDirsOnly)
         ################### 
         # Check to see if default path was returned
-            # If so then proceed as normal
-            # elseif check to see if defined in the database if so proceed
-            # else return failure prompt
+        if self.default_path == None or self.default_path == '':
+            # Check to see if defined in the database if so proceed
+            self.db.execute("""SELECT value FROM defaults WHERE name =  "default_path";""")
+            self.default_path = self.db.fetchall()[0][0]
+            # If no results returned, failure. 
+            if self.default_path == None or self.default_path == '':
+                self.failed_to_select_database()
         ###################
         # Store directory into defaults table
-        self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s)""", [str(self.default_path)])
+        else:
+            self.defaults.execute("""INSERT INTO defaults VALUES ("default_path", %s);""", [self.default_path])
 
     def scan_for_new(self):
         ################ ADD A PROGRESS BAR AT SOME POINT
@@ -204,14 +209,14 @@ class MainGUI(QMainWindow):
 
     def failed_to_select_database(self):
         # Throw error popup
-        w = QMessageBox.critical(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
+        QMessageBox.critical(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
         # Quit out
         exit()
 
 
 def count(collection, extension):
     total = 0
-    for path_to_file in collection:
+    for item in collection:
         if item[-4:] == extension:
             total += 1
     return total
