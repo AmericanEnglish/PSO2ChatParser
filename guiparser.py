@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox, QProgressDialog
 from Crypto.Hash import SHA256 # for hashing
 from timestamp import timestamp
+from time import sleep
 import sys
 import re
 
@@ -30,7 +31,7 @@ class MainGUI(QMainWindow):
         self.grid = QGridLayout()
         self.grid.setSpacing(10)
         self.setWindowTitle('PSO2Chat Parser ~ Hoes Not Included')
-        self.resize(400, 400)
+        self.resize(400, 100)
         self.show()
 
     def initDB(self):
@@ -111,16 +112,43 @@ class MainGUI(QMainWindow):
         ################ ADD A PROGRESS BAR AT SOME POINT
         # Scan directory for new files to be imported
         allfiles = listdir(self.default_path)
-        chat_files = []
+        chat_files = seize_chats(allfiles)
+        chat_files.sort()
+        if chat_files == []:
+            return
+
         key = SHA256.new()
-        total = count(allfiles, ".txt")
+        
         current = 0
-        for item in allfiles:
+        ################ First Progress bar
+        gui_val = 0
+        total = len(chat_files)
+        FirstProgressBar = QProgressDialog("Starting", "Quit Importing", 0, total, self)
+        FirstProgressBar.setWindowTitle('Importing Chat Files . . .')
+        FirstProgressBar.setFixedSize(400, 150)
+        FirstProgressBar.setMinimumDuration(4)
+        FirstProgressBar.show()
+        print("Progress bar setup")
+        ################
+        for index, item in enumerate(chat_files):
+            # FirstProgressBar.show()
+            # print("Loop over {}".format(item))
             # print(item)
-            if item[-4:] == ".txt" and "ChatLog" in item:    
-                current += 1
-                print("Processing: {}/{} -> {}".format(str(current).zfill(len(str(total))), total, item[-15:-5]))
-                self.add_new_file(self.default_path + item)
+            if FirstProgressBar.wasCanceled():
+                break
+            FirstProgressBar.setValue(index + 1)
+            FirstProgressBar.setLabelText(item)
+            print("Processing: {}/{} -> {}".format(str(index + 1).zfill(len(str(total))), total, item[-15:-5]))
+            QApplication.processEvents()
+            FirstProgressBar.show()
+
+            premature_quit = self.add_new_file(self.default_path + item)
+            if FirstProgressBar.wasCanceled() or (premature_quit != None and premature_quit):
+                break
+
+            # print("Loop Progressed")
+        FirstProgressBar.cancel()
+        print("Progress bar closed")
 
     def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
         # Begin Hashing process
@@ -154,6 +182,7 @@ class MainGUI(QMainWindow):
         with open(path_to_file, 'r', encoding='utf-16') as doc:
             total_lines = doc.read().count("\n")
         current = 0
+        ############## Second progress bar
         with open(path_to_file, 'r', encoding='utf-16') as doc:
             buff = []
             self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", [path_to_file, log_hash])
@@ -214,6 +243,20 @@ class MainGUI(QMainWindow):
         # Quit out
         exit()
 
+# This will allow a popup with a progress bar
+# class ImportDirectory(QWidget):
+#     def __init__(self):
+#         super().__init__()
+
+# # Sega ID Window
+# class SegaID(QWidget):
+#     def __init__(self):
+#         super().__init__()
+
+# # Player ID Window
+# class PlayerID(QWidget):
+#     def __init__(self):
+#         super().__init__()
 
 def count(collection, extension):
     total = 0
@@ -221,6 +264,14 @@ def count(collection, extension):
         if item[-4:] == extension:
             total += 1
     return total
+
+
+def seize_chats(some_list):
+    new_list = []
+    for item in some_list:
+        if ".txt" == item[-4:] and "ChatLog" in item:
+            new_list.append(item)
+    return new_list
 
 
 if __name__ == '__main__':
