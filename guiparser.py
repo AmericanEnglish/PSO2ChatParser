@@ -161,23 +161,23 @@ class MainGUI(QMainWindow):
                 contents = doc.read()
             key.update(contents.encode(encoding="utf16"))
             log_hash = key.hexdigest()
-            self.db.execute("""SELECT hashed_contents FROM logs WHERE name = %s;""", [path_to_file])
+            # Grab everything
+            self.db.execute("""SELECT hashed_contents FROM logs;""")
             queried_hash = self.db.fetchall()
-            if queried_hash != []:
-                queried_hash = queried_hash[0][0]
+
             self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [log_hash])
             queried_name = self.db.fetchall()
             if queried_name != []:
                 queried_name = queried_name[0][0]
             # If filename and hash do not match 
             if queried_name == path_to_file:
-                if queried_hash == log_hash:
+                if (log_hash,) in queried_hash:
                     print("File has alread been imported! -> Skipped")
                     return # Quit out
                 elif queried_hash != log_hash:
                     ### Prepping for reprocessing
                     print("Contents Changed? -> Reprocessing!")
-            elif queried_hash == log_hash:
+            elif (log_hash,) in queried_hash:
                 print("File already imported but filename is different? -> Skipped")
                 return # Quit out
         # Add new file to the database
@@ -192,7 +192,7 @@ class MainGUI(QMainWindow):
                 [path_to_file, log_hash])
             for line in doc:
                 current += 1
-                # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
+                print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
                 line = re.split("\t", line)
                 if len(line) > 6:
                     temp = line[:6]
@@ -215,6 +215,8 @@ class MainGUI(QMainWindow):
                             self.db.execute("""UPDATE chat
                                 SET occur = occur + 1
                                 WHERE line_hash = %s;""", [results[0][1]])
+                            # print("Area 1")
+                        previous_line = line[1]
                     else:
                         # Else insert 
                         line.insert(0, line_hash)
@@ -222,8 +224,14 @@ class MainGUI(QMainWindow):
                         line.append(1)
                         self.db.execute("""INSERT INTO chat VALUES
                             (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", line)
+                        # print("Area 2")
                         previous_line = line[1]
+                        # print(previous_line)
                 else:
+                    # print("Area 3")
+                    # print("Log_Hash ", log_hash)
+                    # print("Line_Has ", line_hash)
+                    # print("Previous ", previous_line)
                     self.db.execute("""UPDATE chat
                         SET info = info || %s
                         WHERE line_hash = %s;""",
