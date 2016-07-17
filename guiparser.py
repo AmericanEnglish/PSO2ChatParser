@@ -234,7 +234,7 @@ def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
                     results = self.db.fetchall()[0]
                     new_line_hash = key.update((results[0] + results[1] + results[2] + results[3]).encode(
                         encoding="utf-16"))
-                    self.db.execute("""UPDATE chat SET line_hash = %s WHERE line_hash = %s""",
+                    self.db.execute("""UPDATE chat SET line_hash = %s WHERE line_hash = %s;""",
                         [line_hash, new_line_hash])
 
     def prompt_for_file(self):
