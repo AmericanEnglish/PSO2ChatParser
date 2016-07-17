@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox, QProgressDialog
+from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox, QProgressDialog
 from Crypto.Hash import SHA256 # for hashing
 from timestamp import timestamp
 from time import sleep
@@ -127,6 +127,7 @@ class MainGUI(QMainWindow):
         FirstProgressBar.setWindowTitle('Importing Chat Files . . .')
         FirstProgressBar.setFixedSize(400, 150)
         FirstProgressBar.setMinimumDuration(4)
+        FirstProgressBar.setModal(True)
         FirstProgressBar.show()
         print("Progress bar setup")
         ################
@@ -147,7 +148,8 @@ class MainGUI(QMainWindow):
                 break
 
             # print("Loop Progressed")
-        FirstProgressBar.cancel()
+        FirstProgressBar.setValue(total)
+        FirstProgressBar.destroy()
         print("Progress bar closed")
 
     def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
@@ -243,10 +245,13 @@ class MainGUI(QMainWindow):
         # Quit out
         exit()
 
-# This will allow a popup with a progress bar
-# class ImportDirectory(QWidget):
-#     def __init__(self):
-#         super().__init__()
+# This will allow a popup with two progress bars
+class DoubleProgressBar(QDialog):
+    def __init__(self):
+        super().__init__()
+
+    def initGui():
+        pass
 
 # # Sega ID Window
 # class SegaID(QWidget):
