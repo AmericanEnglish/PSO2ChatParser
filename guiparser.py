@@ -152,7 +152,7 @@ class MainGUI(QMainWindow):
         FirstProgressBar.destroy()
         print("Progress bar closed")
 
-def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
+    def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
         # Begin Hashing process
         key = SHA256.new()
         if (do_hash):
@@ -188,7 +188,8 @@ def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
         ############## Second progress bar
         with open(path_to_file, 'r', encoding='utf-16') as doc:
             buff = []
-            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", [path_to_file, log_hash])
+            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
+                [path_to_file, log_hash])
             for line in doc:
                 current += 1
                 # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
@@ -200,12 +201,12 @@ def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
                 if timestamp(line[0]):
                     # Hash the line
                     # Timestamp, SegaID, ChatType, Info
-                    key.update((line[0] + line[3] + line[2] + line[-1]).encode(
+                    key.update((line[0] + str(line[3]) + line[2] + line[-1]).encode(
                         encoding="utf-16"))
                     line_hash = key.hexdigest()
                     # Check to see if line exists
-                    self.db.execute("""SELECT log_hash, line_hash FROM chat WHERE line_hash = %s;""",
-                        [line_hash])
+                    self.db.execute("""SELECT log_hash, line_hash 
+                        FROM chat WHERE line_hash = %s;""", [line_hash])
                     results = self.db.fetchall()
                     # If so update the "count"
                     if results != []:
@@ -232,15 +233,15 @@ def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
                         FROM chat 
                         WHERE line_hash = %s;""", [previous_line])
                     results = self.db.fetchall()[0]
-                    new_line_hash = key.update((results[0] + results[1] + results[2] + results[3]).encode(
-                        encoding="utf-16"))
-                    self.db.execute("""UPDATE chat SET line_hash = %s WHERE line_hash = %s;""",
-                        [line_hash, new_line_hash])
+                    new_line_hash = key.update((results[0] + str(results[1]) + 
+                        results[2] + results[3]).encode(encoding="utf-16"))
+                    self.db.execute("""UPDATE chat 
+                        SET line_hash = %s 
+                        WHERE line_hash = %s;""", [line_hash, new_line_hash])
 
     def prompt_for_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file', self.default_path)
         self.add_new_file(filename)
-
 
     def prompt_for_server_type(self):
         pass
