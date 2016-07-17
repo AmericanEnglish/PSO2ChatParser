@@ -55,4 +55,7 @@ Packages Used
   * For using PostgreSQL as an option 
  2. sqlite3
   * For using SQLite3
-
+ 3. PyCrypto
+  * For SHA256 hashing
+ 4. PyQt5
+  * The GUI packages
