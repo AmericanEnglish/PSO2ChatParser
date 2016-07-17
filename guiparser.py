@@ -192,7 +192,7 @@ class MainGUI(QMainWindow):
                 [path_to_file, log_hash])
             for line in doc:
                 current += 1
-                print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
+                # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
                 line = re.split("\t", line)
                 if len(line) > 6:
                     temp = line[:6]
