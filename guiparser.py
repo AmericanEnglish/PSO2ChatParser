@@ -30,7 +30,7 @@ class MainGUI(QMainWindow):
     def initGui(self):
         self.grid = QGridLayout()
         self.grid.setSpacing(10)
-        self.setWindowTitle('PSO2Chat Parser ~ Hoes Not Included')
+        self.setWindowTitle('PSO2ChatParser ~ Hoes Not Included')
         self.resize(400, 100)
         self.show()
 
