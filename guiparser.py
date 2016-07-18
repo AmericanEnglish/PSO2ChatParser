@@ -142,7 +142,7 @@ class MainGUI(QMainWindow):
             FirstProgressBar.show()
             QApplication.processEvents()
 
-            premature_quit = self.add_new_file(self.default_path + item)
+            premature_quit = self.add_new_file(self.default_path + item, ProgressBarTuple=(FirstProgressBar, item))
             FirstProgressBar.setValue(index + 1)
             QApplication.processEvents()
             if FirstProgressBar.wasCanceled() or (premature_quit != None and premature_quit):
@@ -153,7 +153,7 @@ class MainGUI(QMainWindow):
         FirstProgressBar.destroy()
         print("Progress bar closed")
 
-    def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
+    def add_new_file(self, path_to_file, do_hash=True, log_hash=None, ProgressBarTuple=None):
         # Begin Hashing process
         update_log_hash = False
         key = SHA256.new()
@@ -219,6 +219,12 @@ class MainGUI(QMainWindow):
         for line in split_body:
             key = SHA256.new()
             current += 1
+            # Update the progress bar
+            if ProgressBarTuple != None:
+                ProgressBarTuple[0].setLabelText(ProgressBarTuple[1] + "\n{}/{}".format(current, len(split_body)))
+                ProgressBarTuple[0].show()
+                QApplication.processEvents()
+            #########################
             # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
             # Hash the line
             # Timestamp, SegaID, ChatType, Info
