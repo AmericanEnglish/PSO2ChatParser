@@ -43,7 +43,9 @@ Goals
     * Time slider 00:00:00 -> 23:59:59
 7. Chat Type filter
     * Checkboxes
-8. Query SEGA's player database in hopes of build a similar, more local, version of a player's character structure
+8. Search by logname
+    * This would allow a user to pseudo-filter a log by filename if they wanted too
+9. Query SEGA's player database in hopes of build a similar, more local, version of a player's character structure
     * SID: 123456789
     * PID: 123456 <- autofilled
     * Character Names <- autofilled
