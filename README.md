@@ -61,3 +61,10 @@ Packages Used
   * For SHA256 hashing
  4. PyQt5
   * The GUI packages
+
+Current Progress
+================
+1. ~~Getting the database entry stuff down. It would seem that after much work SQLite3 just isn't a fan of ON UPDATE CASCADE.~~
+    * Fixed by just dropping the older log file
+2. Adding a double progress bar for the "scanning" feature to show the progress of each file and the overall progress of the job
+    * Currently designing a custom QDialog
