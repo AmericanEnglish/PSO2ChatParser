@@ -117,7 +117,6 @@ class MainGUI(QMainWindow):
         if chat_files == []:
             return
 
-        key = SHA256.new()
         
         current = 0
         ################ First Progress bar
@@ -132,18 +131,20 @@ class MainGUI(QMainWindow):
         print("Progress bar setup")
         ################
         for index, item in enumerate(chat_files):
+            key = SHA256.new()
             # FirstProgressBar.show()
             # print("Loop over {}".format(item))
             # print(item)
             if FirstProgressBar.wasCanceled():
                 break
-            FirstProgressBar.setValue(index + 1)
             FirstProgressBar.setLabelText(item)
             print("Processing: {}/{} -> {}".format(str(index + 1).zfill(len(str(total))), total, item[-15:-5]))
-            QApplication.processEvents()
             FirstProgressBar.show()
+            QApplication.processEvents()
 
             premature_quit = self.add_new_file(self.default_path + item)
+            FirstProgressBar.setValue(index + 1)
+            QApplication.processEvents()
             if FirstProgressBar.wasCanceled() or (premature_quit != None and premature_quit):
                 break
 
@@ -154,6 +155,7 @@ class MainGUI(QMainWindow):
 
     def add_new_file(self, path_to_file, do_hash=True, log_hash=None):
         # Begin Hashing process
+        update_log_hash = False
         key = SHA256.new()
         if (do_hash):
             with open(path_to_file, 'r', encoding='utf-16') as doc:
@@ -164,33 +166,45 @@ class MainGUI(QMainWindow):
             # Grab everything
             self.db.execute("""SELECT hashed_contents FROM logs;""")
             queried_hash = self.db.fetchall()
-
-            self.db.execute("""SELECT name FROM logs WHERE hashed_contents = %s;""", [log_hash])
+            ######################################
+            self.db.execute("""SELECT name FROM logs;""")
             queried_name = self.db.fetchall()
-            if queried_name != []:
-                queried_name = queried_name[0][0]
+            ######################################
             # If filename and hash do not match 
-            if queried_name == path_to_file:
+            if (path_to_file,) in queried_name:
                 if (log_hash,) in queried_hash:
                     print("File has alread been imported! -> Skipped")
                     return # Quit out
-                elif queried_hash != log_hash:
+                else:
                     ### Prepping for reprocessing
                     print("Contents Changed? -> Reprocessing!")
+                    update_log_hash = True
             elif (log_hash,) in queried_hash:
                 print("File already imported but filename is different? -> Skipped")
                 return # Quit out
         # Add new file to the database
-        key = SHA256.new()
+        # key = SHA256.new()
         with open(path_to_file, 'r', encoding='utf-16') as doc:
             total_lines = doc.read().count("\n")
         current = 0
         ############## Second progress bar
         with open(path_to_file, 'r', encoding='utf-16') as doc:
-            buff = []
-            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
-                [path_to_file, log_hash])
+            if update_log_hash:
+                success, err = self.db.execute("""UPDATE logs 
+                    SET hashed_contents = %s
+                    WHERE name = %s;""", [log_hash, path_to_file])
+                if not success:
+                    print(err)
+                # success, err = self.db.execute("""UPDATE chat 
+                #     SET log_hash = %s 
+                #     FROM logs 
+                #         INNER JOIN chat
+                #         ON logs.hashed_contents;""", )
+            else:
+                self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
+                    [path_to_file, log_hash])
             for line in doc:
+                key = SHA256.new()
                 current += 1
                 # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
                 line = re.split("\t", line)
@@ -201,22 +215,26 @@ class MainGUI(QMainWindow):
                 if timestamp(line[0]):
                     # Hash the line
                     # Timestamp, SegaID, ChatType, Info
+                    # print(line[0] + str(line[3]) + line[2] + line[-1])
                     key.update((line[0] + str(line[3]) + line[2] + line[-1]).encode(
                         encoding="utf-16"))
                     line_hash = key.hexdigest()
+                    # print(line_hash)
                     # Check to see if line exists
                     self.db.execute("""SELECT log_hash, line_hash 
                         FROM chat WHERE line_hash = %s;""", [line_hash])
                     results = self.db.fetchall()
                     # If so update the "count"
+                    # print(results)
                     if results != []:
                         # Only insert if it's detected in the original file
                         if results[0][0] == log_hash:
                             self.db.execute("""UPDATE chat
                                 SET occur = occur + 1
                                 WHERE line_hash = %s;""", [results[0][1]])
+                        # print("Line hash exists!")
                             # print("Area 1")
-                        previous_line = line[1]
+                        previous_line = line_hash
                     else:
                         # Else insert 
                         line.insert(0, line_hash)
@@ -225,27 +243,32 @@ class MainGUI(QMainWindow):
                         self.db.execute("""INSERT INTO chat VALUES
                             (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", line)
                         # print("Area 2")
-                        previous_line = line[1]
+                        # print(line)
+                        previous_line = line_hash
                         # print(previous_line)
                 else:
                     # print("Area 3")
-                    # print("Log_Hash ", log_hash)
-                    # print("Line_Has ", line_hash)
-                    # print("Previous ", previous_line)
+                    # print("Log_Hash  ", log_hash)
+                    # print("Line_Hash ", line_hash)
+                    # print("Previous  ", previous_line)
                     self.db.execute("""UPDATE chat
                         SET info = info || %s
                         WHERE line_hash = %s;""",
-                                [' '.join(line), previous_line])
+                                [' '.join(line), line_hash])
                     # Update the line_hash to keep the database consistent
                     self.db.execute("""SELECT stamp, uid, chat_type, info 
                         FROM chat 
-                        WHERE line_hash = %s;""", [previous_line])
+                        WHERE line_hash = %s;""", [line_hash])
                     results = self.db.fetchall()[0]
-                    new_line_hash = key.update((results[0] + str(results[1]) + 
+                    # print(key)
+                    key.update((results[0] + str(results[1]) + 
                         results[2] + results[3]).encode(encoding="utf-16"))
+                    new_line_hash = key.hexdigest()
                     self.db.execute("""UPDATE chat 
                         SET line_hash = %s 
-                        WHERE line_hash = %s;""", [line_hash, new_line_hash])
+                        WHERE line_hash = %s;""", [new_line_hash, line_hash])
+                    # print(new_line_hash)
+                    line_hash = new_line_hash
 
     def prompt_for_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file', self.default_path)
