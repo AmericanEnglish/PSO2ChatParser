@@ -184,91 +184,76 @@ class MainGUI(QMainWindow):
                 return # Quit out
         # Add new file to the database
         # key = SHA256.new()
-        with open(path_to_file, 'r', encoding='utf-16') as doc:
-            total_lines = doc.read().count("\n")
-        current = 0
-        ############## Second progress bar
-        with open(path_to_file, 'r', encoding='utf-16') as doc:
-            if update_log_hash:
-                success, err = self.db.execute("""UPDATE logs 
-                    SET hashed_contents = %s
-                    WHERE name = %s;""", [log_hash, path_to_file])
-                if not success:
-                    print(err)
-                # success, err = self.db.execute("""UPDATE chat 
-                #     SET log_hash = %s 
-                #     FROM logs 
-                #         INNER JOIN chat
-                #         ON logs.hashed_contents;""", )
+        if update_log_hash:
+            #### This will be a fix for sqlite only because ON UPDATE CASCADE fails
+            if self.db.db_type == "sqlite3":
+                # First pull down the original value
+                print("SQLite3 DB, DROPPING OLD FILE CONTENTS")
+                self.db.execute("""SELECT hashed_contents FROM logs WHERE name = %s;""",
+                    [path_to_file])
+                results = self.db.fetchall()
+                results = results[0][0]
+                # Then drop everything because yolo i guess
+                self.db.execute("""DELETE FROM chat WHERE log_hash = %s;""", [results])
+                self.db.execute("""DELETE FROM logs WHERE hashed_contents = %s""", [results])
+                print("-> REDOING FILE CONTENTS")
             else:
-                self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
-                    [path_to_file, log_hash])
-            for line in doc:
-                key = SHA256.new()
-                current += 1
-                # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
-                line = re.split("\t", line)
-                if len(line) > 6:
-                    temp = line[:6]
-                    temp.append('\t'.join(line[6:]))
-                    line = temp
-                if timestamp(line[0]):
-                    # Hash the line
-                    # Timestamp, SegaID, ChatType, Info
-                    # print(line[0] + str(line[3]) + line[2] + line[-1])
-                    key.update((line[0] + str(line[3]) + line[2] + line[-1]).encode(
-                        encoding="utf-16"))
-                    line_hash = key.hexdigest()
-                    # print(line_hash)
-                    # Check to see if line exists
-                    self.db.execute("""SELECT log_hash, line_hash 
-                        FROM chat WHERE line_hash = %s;""", [line_hash])
-                    results = self.db.fetchall()
-                    # If so update the "count"
-                    # print(results)
-                    if results != []:
-                        # Only insert if it's detected in the original file
-                        if results[0][0] == log_hash:
-                            self.db.execute("""UPDATE chat
-                                SET occur = occur + 1
-                                WHERE line_hash = %s;""", [results[0][1]])
-                        # print("Line hash exists!")
-                            # print("Area 1")
-                        previous_line = line_hash
-                    else:
-                        # Else insert 
-                        line.insert(0, line_hash)
-                        line.insert(0, log_hash)
-                        line.append(1)
-                        self.db.execute("""INSERT INTO chat VALUES
-                            (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", line)
-                        # print("Area 2")
-                        # print(line)
-                        previous_line = line_hash
-                        # print(previous_line)
-                else:
-                    # print("Area 3")
-                    # print("Log_Hash  ", log_hash)
-                    # print("Line_Hash ", line_hash)
-                    # print("Previous  ", previous_line)
+                self.db.execute("""UPDATE logs
+                        SET hashed_contents = %s
+                        WHERE name = %s;""", [log_hash, path_to_file]) # Update the log hash value here
+        else:
+            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
+            [path_to_file, log_hash])
+        contents = re.split("\n", contents)
+        split_body = []
+        for line in contents:
+            line = re.split("\t", line)
+            if len(line) > 6:
+                line[5] = '\t'.join(line[5:])
+            elif len(line) < 6:
+                split_body[-1][-1] += "\n" + '\t'.join(line)
+                continue
+            split_body.append(line)
+        ############################################
+        current = 0
+        for line in split_body:
+            key = SHA256.new()
+            current += 1
+            # print("Line {}/{} -> {}".format(current, total_lines, path_to_file[-15:-7]))
+            # Hash the line
+            # Timestamp, SegaID, ChatType, Info
+            # print(line[0] + str(line[3]) + line[2] + line[-1])
+            key.update((line[0] + str(line[3]) + line[2] + line[-1]).encode(
+                encoding="utf-16"))
+            line_hash = key.hexdigest()
+            # print(line_hash)
+            # Check to see if line exists
+            self.db.execute("""SELECT log_hash, line_hash 
+                FROM chat WHERE line_hash = %s;""", [line_hash])
+            results = self.db.fetchall()
+            # If so update the "count"
+            # print(results)
+            if results != [] and len(results) == 1:
+                # Only insert if it's detected in the original file
+                if results[0][0] == log_hash:
                     self.db.execute("""UPDATE chat
-                        SET info = info || %s
-                        WHERE line_hash = %s;""",
-                                [' '.join(line), line_hash])
-                    # Update the line_hash to keep the database consistent
-                    self.db.execute("""SELECT stamp, uid, chat_type, info 
-                        FROM chat 
-                        WHERE line_hash = %s;""", [line_hash])
-                    results = self.db.fetchall()[0]
-                    # print(key)
-                    key.update((results[0] + str(results[1]) + 
-                        results[2] + results[3]).encode(encoding="utf-16"))
-                    new_line_hash = key.hexdigest()
-                    self.db.execute("""UPDATE chat 
-                        SET line_hash = %s 
-                        WHERE line_hash = %s;""", [new_line_hash, line_hash])
-                    # print(new_line_hash)
-                    line_hash = new_line_hash
+                        SET occur = occur + 1
+                        WHERE line_hash = %s;""", [results[0][1]])
+                # print("Line hash exists!")
+                    # print("Area 1")
+            elif len(results) > 1:
+                print("Results of line 215 > 1")
+                print(results)
+                print(line)
+            else:
+                # Else insert 
+                line.insert(0, line_hash)
+                line.insert(0, log_hash)
+                line.append(1)
+                self.db.execute("""INSERT INTO chat VALUES
+                    (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", line)
+                # print("Area 2")
+                # print(line)
 
     def prompt_for_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file', self.default_path)
