@@ -23,4 +23,5 @@ CREATE TABLE chat
     PRIMARY KEY (line_hash),
     FOREIGN KEY (log_hash)
         REFERENCES logs (hashed_contents)
+        ON UPDATE CASCADE
 );
