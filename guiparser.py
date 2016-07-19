@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox, QProgressDialog
+from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox, QProgressDialog, QPushButton
 from Crypto.Hash import SHA256 # for hashing
 from timestamp import timestamp
 from time import sleep
@@ -9,7 +9,8 @@ import re
 from database import DB
 from os import listdir
 
-class MainGUI(QMainWindow):
+# class MainGUI(QMainWindow):
+class MainGUI(QWidget):
     def __init__(self):
         # Ground Work
         super().__init__() 
@@ -24,14 +25,48 @@ class MainGUI(QMainWindow):
         }
         self.initGui()
         self.initDB()
-        self.popups = []
+        self.popups = {}
 
     # Setup Visuals
     def initGui(self):
-        self.grid = QGridLayout()
-        self.grid.setSpacing(10)
+        # self.resize(400, 100)
+        grid = QGridLayout()
+        grid.setSpacing(10)
         self.setWindowTitle('PSO2ChatParser ~ Hoes Not Included')
-        self.resize(400, 100)
+        # SID       search / filter
+        SID = QPushButton("SegaID", self)
+        SID.clicked.connect(lambda:print("SID Open"))
+        grid.addWidget(SID, 0, 0)
+        #     Pull down checkboxes
+        # PID       search / filter
+        PlayerID = QPushButton("PlayerID", self)
+        PlayerID.clicked.connect(lambda:print("PlayerID Open"))
+        grid.addWidget(PlayerID, 0, 1)
+        #     Pull down checkboxes
+        # Name      search /filter
+        Username = QPushButton("Username", self)
+        Username.clicked.connect(lambda:print("Username Open"))
+        grid.addWidget(Username, 0, 2)
+        #     Pull down checkboxes
+        # Keyword   search
+        Keyword = QPushButton("Keyword", self)
+        Keyword.clicked.connect(lambda:print("Keyword Open"))
+        grid.addWidget(Keyword, 0, 3)
+        #     Fill in blank
+        # Day       search / filter
+        TimeDat = QPushButton("Time", self)
+        TimeDat.clicked.connect(lambda:print("TimeDat Open"))
+        grid.addWidget(TimeDat,0, 4)
+
+        #     Calendar Widget
+        # Time      search / filter
+        #     Time slider 00:00:00 -> 23:59:59
+        #########THESE GO ON ANOTHER WINDOW##
+        # Chat Type filter
+        #     Checkboxes
+
+        #####################################
+        self.setLayout(grid)
         self.show()
 
     def initDB(self):
