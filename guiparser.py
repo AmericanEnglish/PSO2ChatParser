@@ -36,27 +36,37 @@ class MainGUI(QWidget):
         # SID       search / filter
         SID = QPushButton("SegaID", self)
         SID.clicked.connect(lambda:print("SID Open"))
+        SID.setFixedSize(80,80)
         grid.addWidget(SID, 0, 0)
         #     Pull down checkboxes
         # PID       search / filter
         PlayerID = QPushButton("PlayerID", self)
+        PlayerID.setFixedSize(80, 80)
         PlayerID.clicked.connect(lambda:print("PlayerID Open"))
         grid.addWidget(PlayerID, 0, 1)
         #     Pull down checkboxes
         # Name      search /filter
         Username = QPushButton("Username", self)
+        Username.setFixedSize(80, 80)
         Username.clicked.connect(lambda:print("Username Open"))
         grid.addWidget(Username, 0, 2)
         #     Pull down checkboxes
         # Keyword   search
         Keyword = QPushButton("Keyword", self)
+        Keyword.setFixedSize(80, 80)
         Keyword.clicked.connect(lambda:print("Keyword Open"))
         grid.addWidget(Keyword, 0, 3)
         #     Fill in blank
         # Day       search / filter
         TimeDat = QPushButton("Time", self)
+        TimeDat.setFixedSize(80, 80)
         TimeDat.clicked.connect(lambda:print("TimeDat Open"))
         grid.addWidget(TimeDat,0, 4)
+
+        GO = QPushButton("GO ->", self)
+        GO.setFixedSize(80, 80)
+        GO.clicked.connect(lambda:print("Begin Search"))
+        grid.addWidget(GO, 0, 5)
 
         #     Calendar Widget
         # Time      search / filter
