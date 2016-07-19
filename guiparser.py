@@ -99,7 +99,7 @@ class MainGUI(QMainWindow):
             print(self.default_path)
             # If no results returned, failure. 
             if self.default_path == []:
-                self.failed_to_select_database()
+                self.failed_to_select_folder()
             else:
                 self.default_path = self.default_path[0][0]
         ###################
@@ -294,6 +294,11 @@ class MainGUI(QMainWindow):
         # Quit out
         exit()
 
+    def failed_to_select_folder(self):
+        # Throw error popup
+        QMessageBox.critical(self, 'ERROR', "No default folder selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
+        # Quit out
+        exit()        
 # This will allow a popup with two progress bars
 
 # # Sega ID Window
