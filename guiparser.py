@@ -51,11 +51,14 @@ class MainGUI(QWidget):
         Username.clicked.connect(lambda:print("Username Open"))
         grid.addWidget(Username, 0, 2)
         #     Pull down checkboxes
-        # Keyword   search
-        Keyword = QPushButton("Keyword", self)
-        Keyword.setFixedSize(80, 80)
-        Keyword.clicked.connect(lambda:print("Keyword Open"))
-        grid.addWidget(Keyword, 0, 3)
+
+        # Chat Type filter
+        ChatTypeButton = QPushButton("Chat Type", self)
+        ChatTypeButton.setFixedSize(80, 80)
+        ChatTypeButton.clicked.connect(lambda:print("Chat Type Open"))
+        grid.addWidget(ChatTypeButton, 0, 5)
+        #     Checkboxes
+
         #     Fill in blank
         # Day       search / filter
         TimeDat = QPushButton("Time", self)
@@ -63,17 +66,27 @@ class MainGUI(QWidget):
         TimeDat.clicked.connect(lambda:print("TimeDat Open"))
         grid.addWidget(TimeDat,0, 4)
 
+        # Keyword   search
+        Keyword = QPushButton("Keyword", self)
+        Keyword.setFixedSize(80, 80)
+        Keyword.clicked.connect(lambda:print("Keyword Open"))
+        grid.addWidget(Keyword, 0, 5)
+
+        SettingsButton = QPushButton("Settings", self)
+        SettingsButton.setFixedSize(80, 80)
+        SettingsButton.clicked.connect(lambda:print("Settings Open"))
+        grid.addWidget(SettingsButton, 0, 6)
+
+        # Begin query button
         GO = QPushButton("GO ->", self)
         GO.setFixedSize(80, 80)
         GO.clicked.connect(lambda:print("Begin Search"))
-        grid.addWidget(GO, 0, 5)
+        grid.addWidget(GO, 0, 7)
 
         #     Calendar Widget
         # Time      search / filter
         #     Time slider 00:00:00 -> 23:59:59
-        #########THESE GO ON ANOTHER WINDOW##
-        # Chat Type filter
-        #     Checkboxes
+
 
         #####################################
         self.setLayout(grid)
