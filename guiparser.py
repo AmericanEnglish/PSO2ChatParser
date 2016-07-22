@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox, QProgressDialog, QPushButton
+from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QGridLayout, QMainWindow, QFileDialog, QMessageBox, QProgressDialog, QPushButton, QLabel, QLineEdit, QCheckBox
 from Crypto.Hash import SHA256 # for hashing
 from timestamp import timestamp
 from time import sleep
@@ -15,27 +15,30 @@ class MainGUI(QWidget):
         # Ground Work
         super().__init__() 
         self.query_arguments = {
-        "SELECT":(
-                ("stamp", False),
-                ("chat_type", False),
-                ("uid", False),
-                ("username", False),
-                ("text", False)),
+        "SELECT":{
+                    "stamp":False,
+                    "chat_type":False,
+                    "uid":False,
+                    "username":False,
+                    "text":False
+                },
         "WHERE":{}
         }
         self.initGui()
         self.initDB()
-        self.popups = {}
 
     # Setup Visuals
     def initGui(self):
+        self.popups = {}
+        self.latest_popup = None
         # self.resize(400, 100)
         grid = QGridLayout()
         grid.setSpacing(10)
         self.setWindowTitle('PSO2ChatParser ~ Hoes Not Included')
         # SID       search / filter
+        self.popups["SID"] = SegaID()
         SID = QPushButton("SegaID", self)
-        SID.clicked.connect(lambda:print("SID Open"))
+        SID.clicked.connect(lambda:self.show_latest_popup("SID"))
         SID.setFixedSize(80,80)
         grid.addWidget(SID, 0, 0)
         #     Pull down checkboxes
@@ -330,6 +333,16 @@ class MainGUI(QWidget):
         # Query database
             # Display results in meaningful way
         pass
+
+    def show_latest_popup(self, popup):
+        if self.latest_popup == None:
+            self.popups[popup].show()
+            self.latest_popup = popup
+        else:
+            self.popups[self.latest_popup].hide()
+            self.latest_popup = popup
+            self.popups[self.latest_popup].show()
+
     # Buttons that concatenate the string to make a query
     # SID       search
         # Pull down checkboxes
@@ -359,15 +372,33 @@ class MainGUI(QWidget):
         exit()        
 # This will allow a popup with two progress bars
 
-# # Sega ID Window
-# class SegaID(QWidget):
-#     def __init__(self):
-#         super().__init__()
+# Sega ID Window
+class SegaID(QWidget):
+    def __init__(self):
+        super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        SIDEdit = QLineEdit(self)
+        SIDLabel = QLabel("SID#: ", self)
+        SIDLabel.setBuddy(SIDEdit)
+        SearchByCheckbox = QCheckBox("Search For SID", self)
+        FilterByCheckbox = QCheckBox("Filter By SID", self)
+        # SearchByLabel = QLabel("Search By:", self)
+        # FilterByLabel = QLabel("Filter By:", self)
+        grid.addWidget(SIDLabel, 0, 0)
+        grid.addWidget(SIDEdit, 0,1)
+        grid.addWidget(SearchByCheckbox, 1, 1)
+        grid.addWidget(FilterByCheckbox, 2, 1)
+        # QCheckBox.isChecked() -> Bool
+        self.setWindowTitle("Sega ID Options")
 
-# # Player ID Window
-# class PlayerID(QWidget):
-#     def __init__(self):
-#         super().__init__()
+
+# Player ID Window
+class PlayerID(QWidget):
+    def __init__(self):
+        super().__init__()
+
+
 
 def count(collection, extension):
     total = 0
