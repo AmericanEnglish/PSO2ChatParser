@@ -43,10 +43,11 @@ class MainGUI(QWidget):
         grid.addWidget(SID, 0, 0)
         #     Pull down checkboxes
         # PID       search / filter
-        PlayerID = QPushButton("PlayerID", self)
-        PlayerID.setFixedSize(80, 80)
-        PlayerID.clicked.connect(lambda:print("PlayerID Open"))
-        grid.addWidget(PlayerID, 0, 1)
+        self.popups["PID"] = PlayerID()
+        PID = QPushButton("PlayerID", self)
+        PID.setFixedSize(80, 80)
+        PID.clicked.connect(lambda:self.show_latest_popup("PID"))
+        grid.addWidget(PID, 0, 1)
         #     Pull down checkboxes
         # Name      search /filter
         Username = QPushButton("Username", self)
@@ -383,12 +384,13 @@ class SegaID(QWidget):
         SIDLabel.setBuddy(SIDEdit)
         SearchByCheckbox = QCheckBox("Search For SID", self)
         FilterByCheckbox = QCheckBox("Filter By SID", self)
-        # SearchByLabel = QLabel("Search By:", self)
-        # FilterByLabel = QLabel("Filter By:", self)
-        grid.addWidget(SIDLabel, 0, 0)
-        grid.addWidget(SIDEdit, 0,1)
-        grid.addWidget(SearchByCheckbox, 1, 1)
-        grid.addWidget(FilterByCheckbox, 2, 1)
+        SearchForAnIDButton = QPushButton("Search For SID#", self)
+        # Setup Grid
+        grid.addWidget(SIDLabel,            0, 0)
+        grid.addWidget(SIDEdit,             0, 1)
+        grid.addWidget(SearchByCheckbox,    1, 1)
+        grid.addWidget(FilterByCheckbox,    2, 1)
+        grid.addWidget(SearchForAnIDButton, 3, 1)
         # QCheckBox.isChecked() -> Bool
         self.setWindowTitle("Sega ID Options")
 
@@ -397,6 +399,25 @@ class SegaID(QWidget):
 class PlayerID(QWidget):
     def __init__(self):
         super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        PIDEdit = QLineEdit(self)
+        PIDLabel = QLabel("PlayerID: ", self)
+        PIDLabel.setBuddy(PIDEdit)
+        SearchByCheckbox = QCheckBox("Search For PID", self)
+        FilterByCheckbox = QCheckBox("Filter By PID", self)
+        SearchForAnIDButton = QPushButton("Search For PID", self)
+        # Setup Grid
+        grid.addWidget(PIDLabel,            0, 0)
+        grid.addWidget(PIDEdit,             0, 1)
+        grid.addWidget(SearchByCheckbox,    1, 1)
+        grid.addWidget(FilterByCheckbox,    2, 1)
+        grid.addWidget(SearchForAnIDButton, 3, 1)
+        # QCheckBox.isChecked() -> Bool
+        self.setWindowTitle("Player ID Options")
+
+        # Add an option later so that you can comb through ALL usernames for searching
+        # each with their own filter and search by settings
 
 
 
