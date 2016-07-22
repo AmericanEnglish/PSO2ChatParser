@@ -64,10 +64,10 @@ class MainGUI(QWidget):
 
         #     Fill in blank
         # Day       search / filter
-        self.popups["TimeDat"] = ChatTime()
-        TimeDat = QPushButton("Time", self)
+        self.popups["DateDat"] = ChatTime()
+        TimeDat = QPushButton("Date", self)
         TimeDat.setFixedSize(80, 80)
-        TimeDat.clicked.connect(lambda:self.show_latest_popup("TimeDat"))
+        TimeDat.clicked.connect(lambda:self.show_latest_popup("DateDat"))
         grid.addWidget(TimeDat,0, 3)
 
 
