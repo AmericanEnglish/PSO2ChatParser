@@ -35,57 +35,54 @@ class MainGUI(QWidget):
         grid = QGridLayout()
         grid.setSpacing(10)
         self.setWindowTitle('PSO2ChatParser ~ Hoes Not Included')
+        
         # SID       search / filter
         self.popups["SID"] = SegaID()
         SID = QPushButton("SegaID", self)
         SID.clicked.connect(lambda:self.show_latest_popup("SID"))
         SID.setFixedSize(80,80)
         grid.addWidget(SID, 0, 0)
+        
         #     Pull down checkboxes
         # PID       search / filter
         self.popups["PID"] = PlayerID()
-        PID = QPushButton("PlayerID", self)
+        PID = QPushButton("Username", self)
         PID.setFixedSize(80, 80)
         PID.clicked.connect(lambda:self.show_latest_popup("PID"))
         grid.addWidget(PID, 0, 1)
         #     Pull down checkboxes
-        # Name      search /filter
-        Username = QPushButton("Username", self)
-        Username.setFixedSize(80, 80)
-        Username.clicked.connect(lambda:print("Username Open"))
-        grid.addWidget(Username, 0, 2)
-        #     Pull down checkboxes
 
         # Chat Type filter
+        self.popups["ChatType"] = ChatTypeWidget()
         ChatTypeButton = QPushButton("Chat Type", self)
         ChatTypeButton.setFixedSize(80, 80)
-        ChatTypeButton.clicked.connect(lambda:print("Chat Type Open"))
-        grid.addWidget(ChatTypeButton, 0, 5)
-        #     Checkboxes
+        ChatTypeButton.clicked.connect(lambda:self.show_latest_popup("ChatType"))
+        grid.addWidget(ChatTypeButton, 0, 2)
 
         #     Fill in blank
         # Day       search / filter
         TimeDat = QPushButton("Time", self)
         TimeDat.setFixedSize(80, 80)
         TimeDat.clicked.connect(lambda:print("TimeDat Open"))
-        grid.addWidget(TimeDat,0, 4)
+        grid.addWidget(TimeDat,0, 3)
+
 
         # Keyword   search
         Keyword = QPushButton("Keyword", self)
         Keyword.setFixedSize(80, 80)
         Keyword.clicked.connect(lambda:print("Keyword Open"))
-        grid.addWidget(Keyword, 0, 5)
+        grid.addWidget(Keyword, 0, 4)
 
         SettingsButton = QPushButton("Settings", self)
         SettingsButton.setFixedSize(80, 80)
         SettingsButton.clicked.connect(lambda:print("Settings Open"))
-        grid.addWidget(SettingsButton, 0, 6)
+        grid.addWidget(SettingsButton, 0, 5)
 
         # Begin query button
         GO = QPushButton("GO ->", self)
         GO.setFixedSize(80, 80)
         GO.clicked.connect(lambda:print("Begin Search"))
-        grid.addWidget(GO, 0, 7)
+        grid.addWidget(GO, 0, 6)
 
         #     Calendar Widget
         # Time      search / filter
@@ -419,6 +416,26 @@ class PlayerID(QWidget):
         # Add an option later so that you can comb through ALL usernames for searching
         # each with their own filter and search by settings
 
+
+class ChatTypeWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setFixedWidth(200)
+        grid = QGridLayout()
+        self.setLayout(grid)
+        PUBLIC = QCheckBox("Public", self)
+        PUBLIC.setChecked(True)
+        PARTY = QCheckBox("Party", self)
+        PARTY.setChecked(True)
+        GUILD = QCheckBox("Team", self)
+        GUILD.setChecked(True)
+        WHISPER = QCheckBox("Whisper", self)
+        WHISPER.setChecked(True)
+        grid.addWidget(PUBLIC,  0, 0)
+        grid.addWidget(PARTY,   1, 0)
+        grid.addWidget(GUILD,   2, 0)
+        grid.addWidget(WHISPER, 3, 0)
+        self.setWindowTitle("Chat Options")
 
 
 def count(collection, extension):
