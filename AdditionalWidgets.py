@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QDateEdit
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget
 # Sega ID Window
 class SegaID(QWidget):
     def __init__(self):
@@ -72,35 +72,35 @@ class ChatTime(QWidget):
         super().__init__()
         grid = QGridLayout()
         self.setLayout(grid)
-        self.contents = {}
-        # Label From
-        self.contents["FromCheckBox"] = QCheckBox("Enable From Date", self)
-        self.contents["FromCheckBox"].clicked.connect(lambda:self.options("From"))
-        self.contents["FromDateLabel"] = QLabel("From:", self)
-        self.contents["FromDateCal"] = QDateEdit(self)
-        self.contents["FromDateCal"].setCalendarPopup(True)
-        # self.ChoosenDateFromLabel = QLabel("", self)
-        # ChooseDateTo = QPushButton("Date?", self)
-        # ChooseDateTo.connect(lambda:pick_date("To"))
-        # ClearFromLabel = QPushButton("Clear", self)
-        # ClearFromLabel.connect(lambda:self.ChoosenDateFromLabel.setText(""))
-        grid.addWidget(self.contents["FromCheckBox"],  0, 0)
-        grid.addWidget(self.contents["FromDateLabel"], 1, 0)
-        grid.addWidget(self.contents["FromDateCal"],   1, 1)
+        # Calendar Widget
+        self.BigCalendar = QCalendarWidget(self)
+        grid.addWidget(self.BigCalendar, 0, 0, 3, 4)
+        # Begin button and date
+        BeginButton = QPushButton("Begin:", self)
+        BeginLabel = QLabel("", self)
+        BeginLabel.setBuddy(BeginButton)
+        BeginButton.clicked.connect(lambda:BeginLabel.setText(
+                                        self.getdate()))
+        grid.addWidget(BeginLabel,  4, 1)
+        grid.addWidget(BeginButton, 4, 0)
+        # End Date
+        EndButton = QPushButton("End:", self)
+        EndLabel = QLabel("", self)
+        EndLabel.setBuddy(EndButton)
+        EndButton.clicked.connect(lambda:EndLabel.setText(self.getdate()))
+        grid.addWidget(EndLabel,  5, 1)
+        grid.addWidget(EndButton, 5, 0)
+        # Use Checkboxes
+        BeginUseCheck = QCheckBox("Use", self)
+        EndUseCheck = QCheckBox("Use", self)
+        grid.addWidget(BeginUseCheck, 4, 2)
+        grid.addWidget(EndUseCheck,   5, 2)
 
-        # grid.addWidget(ChoosenDateToLabel)
-        # Label To
-        ToDateLabel = QLabel("To:")
-        ToDateCal = QDateEdit(self)
-        ToDateCal.setCalendarPopup(True)
-        # self.ChoosenDateToLabel = QLabel("", self)
-        # ClearToLabel = QPushButton("Clear", self)
-        # ClearToLabel.connect(lambda:self.ChoosenDateToLabel.setText(""))
-        grid.addWidget(ToDateLabel, 2, 0)
-        grid.addWidget(ToDateCal,   2, 1)
+        self.setWindowTitle("Chat Date Options")
 
-        self.setWindowTitle("Chat Time Options")
+    def getdate(self):
+        return self.BigCalendar.selectedDate().toString("yyyy - MM - dd")
 
     def options(Name):
-            if self.contents["{}CheckBox".format(Name)].isChecked() == True:
-                pass
+        pass
+
