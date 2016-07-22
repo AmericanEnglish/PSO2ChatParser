@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QDateEdit
 # Sega ID Window
 class SegaID(QWidget):
     def __init__(self):
@@ -66,3 +66,41 @@ class ChatTypeWidget(QWidget):
         grid.addWidget(WHISPER, 3, 0)
         self.setWindowTitle("Chat Options")
 
+
+class ChatTime(QWidget):
+    def __init__(self):
+        super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        self.contents = {}
+        # Label From
+        self.contents["FromCheckBox"] = QCheckBox("Enable From Date", self)
+        self.contents["FromCheckBox"].clicked.connect(lambda:self.options("From"))
+        self.contents["FromDateLabel"] = QLabel("From:", self)
+        self.contents["FromDateCal"] = QDateEdit(self)
+        self.contents["FromDateCal"].setCalendarPopup(True)
+        # self.ChoosenDateFromLabel = QLabel("", self)
+        # ChooseDateTo = QPushButton("Date?", self)
+        # ChooseDateTo.connect(lambda:pick_date("To"))
+        # ClearFromLabel = QPushButton("Clear", self)
+        # ClearFromLabel.connect(lambda:self.ChoosenDateFromLabel.setText(""))
+        grid.addWidget(self.contents["FromCheckBox"],  0, 0)
+        grid.addWidget(self.contents["FromDateLabel"], 1, 0)
+        grid.addWidget(self.contents["FromDateCal"],   1, 1)
+
+        # grid.addWidget(ChoosenDateToLabel)
+        # Label To
+        ToDateLabel = QLabel("To:")
+        ToDateCal = QDateEdit(self)
+        ToDateCal.setCalendarPopup(True)
+        # self.ChoosenDateToLabel = QLabel("", self)
+        # ClearToLabel = QPushButton("Clear", self)
+        # ClearToLabel.connect(lambda:self.ChoosenDateToLabel.setText(""))
+        grid.addWidget(ToDateLabel, 2, 0)
+        grid.addWidget(ToDateCal,   2, 1)
+
+        self.setWindowTitle("Chat Time Options")
+
+    def options(Name):
+            if self.contents["{}CheckBox".format(Name)].isChecked() == True:
+                pass
