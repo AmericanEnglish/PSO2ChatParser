@@ -41,8 +41,8 @@ class PostgreSQLogin(QWidget):
         grid.addWidget(RejectButton,           4, 2)
 
     def success(self):
-        data = [self.DatabaseNameField.getText(), self.HostField.getText(), 
-                self.UserField.getText(), self.PassField.getText()]
+        data = [str(self.DatabaseNameField.getText()), str(self.HostField.getText()), 
+                str(self.UserField.getText()), str(self.PassField.getText())]
         return data
 
     def failure(self):
