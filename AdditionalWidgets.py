@@ -1,5 +1,54 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup
 # Sega ID Window
+class PostgreSQLogin(QWidget):
+    def __init__(self):
+        super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+
+        # Labels
+        HostLabel = QLabel("Hostname:", self)
+        # PortLabel = QLabel("Port:", self)
+        DatabaseNameLabel = QLabel("Database Name:", self)
+        UserLabel = QLabel("Username", self)
+        PassLabel = QLabel("Password", self)
+        # Fields
+        self.HostField = QLineEdit(self)
+        self.PortField = QLineEdit(self)
+        self.DatabaseNameField = QLineEdit(self)
+        self.UserField = QLineEdit(self)
+        self.PassField = QLineEdit(self)
+
+        AcceptButton = QPushButton("Accept", self)
+        AcceptButton.clicked.connect(lambda:self.success())
+        RejectButton = QPushButton("Cancel", self)
+        RejectButton.clicked.connect(lambda:self.failure())
+        # Set Defaults
+        self.HostField.setText("localhost")
+        # self.PortField.setText("default")
+        self.PassField.setEchoMode(2)
+        self.setModal(True)
+        # Setup Interface
+        grid.addWidget(HostLabel,              0, 0)
+        grid.addWidget(self.HostField,         0, 1, 0, 2)
+        grid.addWidget(DatabaseNameLabel,      1, 0)
+        grid.addWidget(self.DatabaseNameField, 1, 1, 1, 2)
+        grid.addWidget(UserLabel,              2, 0)
+        grid.addWidget(self.UserField,         2, 1, 2, 2)
+        grid.addWidget(PassLabel,              3, 0)
+        grid.addWidget(self.PassField,         3, 1, 3, 2)
+        grid.addWidget(AcceptButton,           4, 1)
+        grid.addWidget(RejectButton,           4, 2)
+
+    def success(self):
+        data = [self.DatabaseNameField.getText(), self.HostField.getText(), 
+                self.UserField.getText(), self.PassField.getText()]
+        return data
+
+    def failure(self):
+        return None
+
+
 class SegaID(QWidget):
     def __init__(self):
         super().__init__()
