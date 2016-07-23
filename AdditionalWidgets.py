@@ -137,3 +137,57 @@ class KeywordSearch(QWidget):
 class Settings(QWidget):
     def __init__(self):
         super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        # Database Options ---> Also autoset these options to the defaults
+        self.sqlgroup = QButtonGroup(self)
+        DBOptionLabel = QLabel("Database Selection\nRead Help If This Is Confusing", self)
+        DBOptionSQLite = QRadioButton("SQLite3", self)
+        DBOptionSQLite.clicked.connect(self.DBChange())
+        DBOptionPGSQL = QRadioButton("PostgreSQL", self)
+        DBOptionPGSQL.clicked.connect(self.DBChange())
+        self.sqlgroup.addButton(DBOptionSQLite, 0)
+        self.sqlgroup.addButton(DBOptionPGSQL,  1)
+        # 24 or 12 Hour Format
+        self.timegroup = QButtonGroup(self)
+        TimeOptionLabel = QLabel("Time Format")
+        TimeOptionTwenty4 = QRadioButton("24 Hour", self)
+        TimeOptionTwelve  = QRadioButton("12 Hour", self)
+        self.timegroup.addButton(TimeOptionTwenty4, 0)
+        self.timegroup.addButton(TimeOptionTwelve,  1)
+        # Add several options for how timestamps should be displayed in the logs
+        # yyyy/mm/dd:
+        # Jan, dd, yyyy:
+        
+        # Language
+        LanguageOptionLabel = QLabel("Language", self)
+        self.languagegroup = QButtonGroup(self)
+        LanguageOptionENG = QRadioButton("English")
+        LanguageOptionSPA = QRadioButton(u"Español")
+        LanguageOptionSPA.setEnabled(False)
+        self.languagegroup.addButton(LanguageOptionENG, 0)
+        self.languagegroup.addButton(LanguageOptionSPA, 1)
+        ################### Putting it together ####################
+        grid.addWidget(DBOptionLabel,       0, 1)
+        grid.addWidget(DBOptionSQLite,      1, 0)
+        grid.addWidget(DBOptionPGSQL,       1, 2)
+
+        grid.addWidget(TimeOptionLabel,     3, 1)
+        grid.addWidget(TimeOptionTwelve,    4, 0)
+        grid.addWidget(TimeOptionTwenty4,   4, 2)
+
+        grid.addWidget(LanguageOptionLabel, 6, 1)
+        grid.addWidget(LanguageOptionENG,   7, 0)
+        grid.addWidget(LanguageOptionSPA,   7, 2)
+
+        # Some scroll bar widget here someday
+        self.setWindowTitle("Settings")
+
+        def DBChange(self):
+            # Throwup Long Custom Warning Message
+            # If DB needs to be changed throw signal to main window
+
+
+class Reader(QWidget):
+    def __init__(self):
+        super().__init__()
