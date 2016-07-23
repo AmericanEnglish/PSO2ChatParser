@@ -78,9 +78,11 @@ class MainGUI(QWidget):
         Keyword.clicked.connect(lambda:self.show_latest_popup("Keyword"))
         grid.addWidget(Keyword, 0, 4)
 
+        # Settins
+        self.popups["Settings"] = SettingsWidget()
         SettingsButton = QPushButton("Settings", self)
         SettingsButton.setFixedSize(80, 80)
-        SettingsButton.clicked.connect(lambda:print("Settings Open"))
+        SettingsButton.clicked.connect(lambda:self.show_latest_popup("Settings"))
         grid.addWidget(SettingsButton, 0, 5)
 
         # Begin query button
@@ -89,10 +91,8 @@ class MainGUI(QWidget):
         GO.clicked.connect(lambda:print("Begin Search"))
         grid.addWidget(GO, 0, 6)
 
-        #     Calendar Widget
-        # Time      search / filter
-        #     Time slider 00:00:00 -> 23:59:59
-
+        # Get a Reader for displaying text
+        self.popups["Reader"] = Reader()
 
         #####################################
         self.setLayout(grid)
