@@ -54,13 +54,13 @@ Goals
 Packages Used
 =============
 1. psycopg2
-* For using PostgreSQL as an option 
+  * For using PostgreSQL as an option 
 2. sqlite3
-* For using SQLite3
+  * For using SQLite3
 3. PyCrypto
-* For SHA256 hashing
+  * For SHA256 hashing
 4. PyQt5
-* The GUI packages
+  * The GUI packages
 
 Current Progress
 ================
