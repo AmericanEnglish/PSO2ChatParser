@@ -28,11 +28,11 @@ class PlayerID(QWidget):
         grid = QGridLayout()
         self.setLayout(grid)
         PIDEdit = QLineEdit(self)
-        PIDLabel = QLabel("PlayerID: ", self)
+        PIDLabel = QLabel("Username: ", self)
         PIDLabel.setBuddy(PIDEdit)
-        SearchByCheckbox = QCheckBox("Search For PID", self)
-        FilterByCheckbox = QCheckBox("Filter By PID", self)
-        SearchForAnIDButton = QPushButton("Search For PID", self)
+        SearchByCheckbox = QCheckBox("Search For Username", self)
+        FilterByCheckbox = QCheckBox("Filter By Username", self)
+        SearchForAnIDButton = QPushButton("Browse Usernames", self)
         # Setup Grid
         grid.addWidget(PIDLabel,            0, 0)
         grid.addWidget(PIDEdit,             0, 1)
@@ -40,7 +40,7 @@ class PlayerID(QWidget):
         grid.addWidget(FilterByCheckbox,    2, 1)
         grid.addWidget(SearchForAnIDButton, 3, 1)
         # QCheckBox.isChecked() -> Bool
-        self.setWindowTitle("Player ID Options")
+        self.setWindowTitle("Username Options")
 
         # Add an option later so that you can comb through ALL usernames for searching
         # each with their own filter and search by settings
