@@ -31,16 +31,17 @@ Goals
 =====
 1. SID       search
     * Pull down checkboxes
-2. PID       search
-    * Pull down checkboxes
+2. ~~PID       search~~ -> Chat logs are not accurate enough for this. Usernames and PlayerIDs are not distinguishable at this point
+    * ~~Pull down checkboxes~~
 3. Name      search
     * Pull down checkboxes
 4. Keyword   search
     * Fill in blank
-5. Day       filter
+5. Day       ~~filter~~ search
     * Calendar Widget
-6. Time      filter
-    * Time slider 00:00:00 -> 23:59:59
+    * Refines the days the program will search. Range or singular days
+6. ~~Time      filter~~ -> This is actual purposeless
+    * ~~Time slider 00:00:00 -> 23:59:59~~
 7. Chat Type filter
     * Checkboxes
 8. Search by logname
@@ -78,4 +79,3 @@ Current Progress
   1. Changing databases
   2. Time formats
   3. Language
-  
