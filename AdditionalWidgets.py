@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup
 # Sega ID Window
 class SegaID(QWidget):
     def __init__(self):
@@ -104,3 +104,36 @@ class ChatTime(QWidget):
     def options(Name):
         pass
 
+
+class KeywordSearch(QWidget):
+    def __init__(self):
+        super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        # Label and Field
+        KeywordLabel = QLabel("Phrase:", self)
+        KeywordField = QLineEdit(self)
+        # Case Sensitive
+        KeywordCheckbox = QCheckBox("Case Sensitive?", self)
+        # Clear Button
+        ClearButton = QPushButton("Clear Field", self)
+        # Word Or Sentence Search
+        RadioLabel = QLabel("Search As A")
+        RadioGroup = QButtonGroup(self)
+        WordRadio = QRadioButton("Sentence", self)
+        RadioGroup.addButton(WordRadio, 0)
+        SentenceRadio = QRadioButton("Collection Of Words", self)
+        RadioGroup.addButton(SentenceRadio, 1)
+
+        grid.addWidget(KeywordLabel,    0, 0)
+        grid.addWidget(KeywordField,    0, 1)
+        grid.addWidget(ClearButton,     0, 2)
+        grid.addWidget(KeywordCheckbox, 1, 1)
+        grid.addWidget(WordRadio,       1, 0)
+        grid.addWidget(SentenceRadio,   1, 2)
+        self.setWindowTitle("Keyword Search Options")
+
+
+class Settings(QWidget):
+    def __init__(self):
+        super().__init__()

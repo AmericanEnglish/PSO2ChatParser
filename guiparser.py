@@ -72,9 +72,10 @@ class MainGUI(QWidget):
 
 
         # Keyword   search
+        self.popups["Keyword"] = KeywordSearch()
         Keyword = QPushButton("Keyword", self)
         Keyword.setFixedSize(80, 80)
-        Keyword.clicked.connect(lambda:print("Keyword Open"))
+        Keyword.clicked.connect(lambda:self.show_latest_popup("Keyword"))
         grid.addWidget(Keyword, 0, 4)
 
         SettingsButton = QPushButton("Settings", self)
@@ -340,6 +341,9 @@ class MainGUI(QWidget):
         if self.latest_popup == None:
             self.popups[popup].show()
             self.latest_popup = popup
+        elif self.latest_popup == popup:
+            self.popups[popup].hide()
+            self.latest_popup = None
         else:
             self.popups[self.latest_popup].hide()
             self.latest_popup = popup
