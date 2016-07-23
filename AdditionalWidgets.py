@@ -117,6 +117,7 @@ class KeywordSearch(QWidget):
         KeywordCheckbox = QCheckBox("Case Sensitive?", self)
         # Clear Button
         ClearButton = QPushButton("Clear Field", self)
+        ClearButton.clicked.connect(lambda:KeywordField.setText(""))
         # Word Or Sentence Search
         RadioLabel = QLabel("Search As A")
         RadioGroup = QButtonGroup(self)
