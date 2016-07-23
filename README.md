@@ -53,18 +53,29 @@ Goals
 
 Packages Used
 =============
- 1. psycopg2
-  * For using PostgreSQL as an option 
- 2. sqlite3
-  * For using SQLite3
- 3. PyCrypto
-  * For SHA256 hashing
- 4. PyQt5
-  * The GUI packages
+1. psycopg2
+* For using PostgreSQL as an option 
+2. sqlite3
+* For using SQLite3
+3. PyCrypto
+* For SHA256 hashing
+4. PyQt5
+* The GUI packages
 
 Current Progress
 ================
 1. ~~Getting the database entry stuff down. It would seem that after much work SQLite3 just isn't a fan of ON UPDATE CASCADE.~~
-    * Fixed by just dropping the older log file
-2. Adding a double progress bar for the "scanning" feature to show the progress of each file and the overall progress of the job
-    * Currently designing a custom QDialog
+  * Fixed by just dropping the older log file
+2. ~~Adding a double progress bar for the "scanning" feature to show the progress of each file and the overall progress of the job~~
+  * Just using a setText("text\nCOUNTER") method is quicker and just as good
+3. ~~Designing Windows~~
+  * All rough drafts have been finished
+4. Starting Linking all the buttons, fields, checkboxes, to the Query Generator
+5. Integrate PostgreSQL
+  * Add a login window and that's it, make it modal.
+6. Run queries and return the correct chat data
+7. Make the settings work
+  1. Changing databases
+  2. Time formats
+  3. Language
+  
