@@ -59,7 +59,7 @@ class SegaID(QWidget):
         SIDLabel.setBuddy(SIDEdit)
         SearchByCheckbox = QCheckBox("Search For SID", self)
         FilterByCheckbox = QCheckBox("Filter By SID", self)
-        SearchForAnIDButton = QPushButton("Search For SID#", self)
+        SearchForAnIDButton = QPushButton("Browse SID#'s", self)
         # Setup Grid
         grid.addWidget(SIDLabel,            0, 0)
         grid.addWidget(SIDEdit,             0, 1)
