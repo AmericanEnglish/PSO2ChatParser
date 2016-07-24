@@ -25,6 +25,9 @@ main.bat
 database.py
  - Used to abstract database jargin. Currently support the use of PostgreSQL and SQLite3. I doubt I'll look into MySQL or other variants until someone complains about it.
 
+AdditionalWidgets.py
+ - It contains custom PyQt5 widgets. Basically every button causes it's own custom window to appear. Those windows are found in this file
+
 Updates will start being pushed out in python now! As luck would have the pyinstaller people have managed to get a "passing" build for windows. So I will continue to push this through. Although my alterior reason is that C++ has very poor UTF16 support when it comes to cross compiling. Excluding the UTF8CPP package which would take more time than it is worth for me to learn it the in's and out's of.
 
 Goals
