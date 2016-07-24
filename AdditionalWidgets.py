@@ -119,6 +119,8 @@ class ChatTypeWidget(QWidget):
 class ChatTime(QWidget):
     def __init__(self):
         super().__init__()
+        self.begin_date = None
+        self.end_date = None
         grid = QGridLayout()
         self.setLayout(grid)
         # Calendar Widget
@@ -129,14 +131,14 @@ class ChatTime(QWidget):
         BeginLabel = QLabel("", self)
         BeginLabel.setBuddy(BeginButton)
         BeginButton.clicked.connect(lambda:BeginLabel.setText(
-                                        self.getdate()))
+                                        self.getbegindate()))
         grid.addWidget(BeginLabel,  4, 1)
         grid.addWidget(BeginButton, 4, 0)
         # End Date
         EndButton = QPushButton("End:", self)
         EndLabel = QLabel("", self)
         EndLabel.setBuddy(EndButton)
-        EndButton.clicked.connect(lambda:EndLabel.setText(self.getdate()))
+        EndButton.clicked.connect(lambda:EndLabel.setText(self.getenddate()))
         grid.addWidget(EndLabel,  5, 1)
         grid.addWidget(EndButton, 5, 0)
         # Use Checkboxes
@@ -147,8 +149,13 @@ class ChatTime(QWidget):
 
         self.setWindowTitle("Chat Date Options")
 
-    def getdate(self):
-        return self.BigCalendar.selectedDate().toString("yyyy - MM - dd")
+    def getbegindate(self):
+        self.end_date = self.BigCalendar.selectedDate()
+        return self.end_date.toString("yyyy - MM - dd")
+
+    def getenddate(self):
+        self.end_date = self.BigCalendar.selectedDate()
+        return self.end_date.toString("yyyy - MM - dd")
 
     def options(Name):
         pass
@@ -189,22 +196,23 @@ class SettingsWidget(QWidget):
         super().__init__()
         grid = QGridLayout()
         self.setLayout(grid)
+        self.buttons = {}
         # Database Options ---> Also autoset these options to the defaults
         self.sqlgroup = QButtonGroup(self)
         DBOptionLabel = QLabel("Database Selection", self)
-        DBOptionSQLite = QRadioButton("SQLite3", self)
-        DBOptionSQLite.clicked.connect(lambda:self.DBChange())
-        DBOptionPGSQL = QRadioButton("PostgreSQL", self)
-        DBOptionPGSQL.clicked.connect(lambda:self.DBChange())
-        self.sqlgroup.addButton(DBOptionSQLite, 0)
-        self.sqlgroup.addButton(DBOptionPGSQL,  1)
+        self.buttons["sqlite3"] = QRadioButton("SQLite3", self)
+        self.buttons["sqlite3"].clicked.connect(lambda:self.DBChange())
+        self.buttons["postgres"] = QRadioButton("PostgreSQL", self)
+        self.buttons["postgres"].clicked.connect(lambda:self.DBChange())
+        self.sqlgroup.addButton(self.buttons["sqlite3"], 0)
+        self.sqlgroup.addButton(self.buttons["postgres"],  1)
         # 24 or 12 Hour Format
         self.timegroup = QButtonGroup(self)
         TimeOptionLabel = QLabel("Time Format")
-        TimeOptionTwenty4 = QRadioButton("24 Hour", self)
-        TimeOptionTwelve  = QRadioButton("12 Hour", self)
-        self.timegroup.addButton(TimeOptionTwenty4, 0)
-        self.timegroup.addButton(TimeOptionTwelve,  1)
+        self.buttons["24hour"] = QRadioButton("24 Hour", self)
+        self.buttons["12hour"]  = QRadioButton("12 Hour", self)
+        self.timegroup.addButton(self.buttons["24hour"], 0)
+        self.timegroup.addButton(self.buttons["12hour"],  1)
         # Add several options for how timestamps should be displayed in the logs
         # yyyy/mm/dd:
         # Jan, dd, yyyy:
@@ -212,23 +220,23 @@ class SettingsWidget(QWidget):
         # Language, maybe do this in a combo box after it acquires more than three translations
         LanguageOptionLabel = QLabel("Language", self)
         self.languagegroup = QButtonGroup(self)
-        LanguageOptionENG = QRadioButton("English")
-        LanguageOptionSPA = QRadioButton(u"Español")
-        LanguageOptionSPA.setEnabled(False)
-        self.languagegroup.addButton(LanguageOptionENG, 0)
-        self.languagegroup.addButton(LanguageOptionSPA, 1)
+        self.buttons["english"] = QRadioButton("English")
+        self.buttons["spanish"] = QRadioButton(u"Español")
+        self.buttons["spanish"].setEnabled(False)
+        self.languagegroup.addButton(self.buttons["english"], 0)
+        self.languagegroup.addButton(self.buttons["spanish"], 1)
         ################### Putting it together ####################
-        grid.addWidget(DBOptionLabel,       0, 0)
-        grid.addWidget(DBOptionSQLite,      0, 1)
-        grid.addWidget(DBOptionPGSQL,       0, 2)
+        grid.addWidget(DBOptionLabel,                0, 0)
+        grid.addWidget(self.buttons["sqlite3"],      0, 1)
+        grid.addWidget(self.buttons["postgres"],     0, 2)
 
-        grid.addWidget(TimeOptionLabel,     1, 0)
-        grid.addWidget(TimeOptionTwelve,    1, 1)
-        grid.addWidget(TimeOptionTwenty4,   1, 2)
+        grid.addWidget(TimeOptionLabel,              1, 0)
+        grid.addWidget(self.buttons["12hour"],             1, 1)
+        grid.addWidget(self.buttons["24hour"],       1, 2)
 
-        grid.addWidget(LanguageOptionLabel, 2, 0)
-        grid.addWidget(LanguageOptionENG,   2, 1)
-        grid.addWidget(LanguageOptionSPA,   2, 2)
+        grid.addWidget(LanguageOptionLabel,          2, 0)
+        grid.addWidget(self.buttons["english"],            2, 1)
+        grid.addWidget(self.buttons["spanish"],            2, 2)
 
         # Some scroll bar widget here someday
         self.setWindowTitle("Settings")
@@ -238,6 +246,14 @@ class SettingsWidget(QWidget):
         # If DB needs to be changed throw signal to main window
         pass
 
+    def dbSet(self, default):
+        self.buttons[default].setChecked(True)
+
+    def setTimeFormat(self, default):
+        self.buttons[default].setChecked(True)
+
+    def setLanguage(self, default):
+        self.buttons[default].setChecked(True)
 
 class Reader(QWidget):
     def __init__(self):
