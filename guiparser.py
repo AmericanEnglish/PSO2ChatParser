@@ -88,7 +88,7 @@ class MainGUI(QWidget):
         # Begin query button
         GO = QPushButton("GO ->", self)
         GO.setFixedSize(80, 80)
-        GO.clicked.connect(lambda:print("Begin Search"))
+        GO.clicked.connect(lambda:self.full_query())
         grid.addWidget(GO, 0, 6)
 
         # Get a Reader for displaying text
@@ -139,6 +139,7 @@ class MainGUI(QWidget):
                 self.db.create_table("./create.sql")
                 self.prompt_for_chat()
                 self.scan_for_new()
+        self.popups["Settings"].dbSet(self.db.db_type)
 
 
     def prompt_for_posgres(self, create_new=False):
@@ -349,21 +350,31 @@ class MainGUI(QWidget):
             self.latest_popup = popup
             self.popups[self.latest_popup].show()
 
-    # Buttons that concatenate the string to make a query
-    # SID       search
-        # Pull down checkboxes
-    # PID       search
-        # Pull down checkboxes
-    # Name      search
-        # Pull down checkboxes
-    # Keyword   search
-        # Fill in blank
-    # Day       filter
-        # Calendar Widget
-    # Time      filter
-        # Time slider 00:00:00 -> 23:59:59
-    # Chat Type filter
-        # Checkboxes
+    def full_query(self):
+        self.generate_query()
+        # Then pipe data into Reader
+
+    def generate_query(self):
+        # Buttons that concatenate the string to make a query
+        # SID       search
+
+            # Pull down checkboxes
+        
+        # Name      search
+        
+            # Pull down checkboxes
+        
+        # Keyword   search
+        
+            # Fill in blank
+        
+        # Day       filter
+        
+            # Calendar Widget
+        
+        # Chat Type filter
+        
+            # Checkboxes
 
     def failed_to_select_database(self):
         # Throw error popup
