@@ -97,4 +97,13 @@ class DB():
         self.con.rollback()
 
     def fetchall(self):
-        return self.cur.fetchall()
+        try:
+            return self.cur.fetchall()
+        except psycopg2.ProgrammingError as err:
+            if "no results to fetch" in str(err):
+                empty = []
+                return empty
+            else:
+                print("Unexpected Error, {}".format(str(err)))
+                print("Exiting!")
+                exit()

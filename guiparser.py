@@ -103,9 +103,10 @@ class MainGUI(QWidget):
         if "PSO2ChatParser.db" in listdir("./"):
             # Scan for defaults table
             self.db = DB("sqlite3", "./PSO2ChatParser.db")
+            self.db.connect()
             self.defaults = self.db
             # If more defaults besides the database become available
-            self.db.execute("""SELECT value FROM defaults WHERE name = "default_path";""")
+            self.defaults.execute("""SELECT value FROM defaults WHERE name = "default_path";""")
             self.default_path = self.db.fetchall()
             if self.default_path == []:
                 self.prompt_for_chat()
@@ -116,7 +117,16 @@ class MainGUI(QWidget):
         elif "ParserDefaults.db" in listdir("./"):
             # Dispatch default values
             self.defaults = DB("sqlite3", "ParserDefaults.db")
+            self.defaults.connect()
             self.prompt_for_posgres()
+            # If more defaults besides the database become available
+            self.defaults.execute("""SELECT value FROM defaults WHERE name = "default_path";""")
+            self.default_path = self.db.fetchall()
+            if self.default_path == []:
+                self.prompt_for_chat()
+            else:
+                self.default_path = self.default_path[0][0]
+            self.scan_for_new()
         # Else prompt for default server settings
         else:
             # Will finish this bit later
@@ -129,13 +139,16 @@ class MainGUI(QWidget):
                 self.defaults = DB("sqlite3", "ParserDefaults.db")
                 self.defaults.connect()
                 self.prompt_for_posgres(create_new=True)
+                self.defaults.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
+                self.prompt_for_chat()
+                self.scan_for_new()
             # Else create "PSO2ChatParser.db"
             else:
                 self.db = DB("sqlite3", "PSO2ChatParser.db")
                 self.db.connect()
                 self.defaults = self.db
                 # Create the tables needed
-                self.db.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
+                self.defaults.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
                 self.db.create_table("./create.sql")
                 self.prompt_for_chat()
                 self.scan_for_new()
@@ -145,12 +158,19 @@ class MainGUI(QWidget):
     def prompt_for_posgres(self, create_new=False):
         # For logging into postgresql and handiling postgres startup stuff
         # Open dialog for entering username and password
+        # Prompt for saving info, if so encrypt login information and store it into 
+        # the default database
+        # Else prompt
         info, accepted = PostgreSQLogin.getInfo()
         if not accepted:
             self.failed_to_select_database()
         # Connect
         self.db = DB("postgres", info[0], host=info[1], user=info[2], password=info[3])
-        self.db.connect()
+        sucess, err = self.db.connect()
+        if not sucess:
+            QMessageBox.critical(self, 'PostgreSQL ERROR', str(err), QMessageBox.Ok, QMessageBox.Ok)
+            # Quit out
+            exit()
         del info
         # Create?
         if create_new == True:
@@ -163,7 +183,7 @@ class MainGUI(QWidget):
         # Check to see if default path was returned
         if self.default_path == None or self.default_path == '':
             # Check to see if defined in the database if so proceed
-            self.db.execute("""SELECT value FROM defaults WHERE name =  "default_path";""")
+            self.defaults.execute("""SELECT value FROM defaults WHERE name =  "default_path";""")
             self.default_path = self.db.fetchall()
             print(self.default_path)
             # If no results returned, failure. 
