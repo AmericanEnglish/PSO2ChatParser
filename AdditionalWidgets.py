@@ -127,6 +127,12 @@ class SegaID(QWidget):
         # QCheckBox.isChecked() -> Bool
         self.setWindowTitle("Sega ID Options")
 
+    def setDB(self, database):
+        self.db = database
+
+    def browseSID(self):
+        pass
+
 
 # Player ID Window
 class PlayerID(QWidget):
@@ -152,6 +158,11 @@ class PlayerID(QWidget):
         # Add an option later so that you can comb through ALL usernames for searching
         # each with their own filter and search by settings
 
+    def setDB(self, database):
+        self.db = database
+
+    def browsePID(self):
+        pass
 
 class ChatTypeWidget(QWidget):
     def __init__(self):
