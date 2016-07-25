@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout
-
+import re
 # Subclass QDialog
 class PostgreSQLogin(QDialog):
     def __init__(self):
@@ -170,20 +170,23 @@ class ChatTypeWidget(QWidget):
         self.setFixedWidth(200)
         grid = QGridLayout()
         self.setLayout(grid)
-        PUBLIC = QCheckBox("Public", self)
-        PUBLIC.setChecked(True)
-        PARTY = QCheckBox("Party", self)
-        PARTY.setChecked(True)
-        GUILD = QCheckBox("Team", self)
-        GUILD.setChecked(True)
-        WHISPER = QCheckBox("Whisper", self)
-        WHISPER.setChecked(True)
-        grid.addWidget(PUBLIC,  0, 0)
-        grid.addWidget(PARTY,   1, 0)
-        grid.addWidget(GUILD,   2, 0)
-        grid.addWidget(WHISPER, 3, 0)
+        self.PUBLIC = QCheckBox("Public", self)
+        self.PUBLIC.setChecked(True)
+        self.PARTY = QCheckBox("Party", self)
+        self.PARTY.setChecked(True)
+        self.GUILD = QCheckBox("Team", self)
+        self.GUILD.setChecked(True)
+        self.WHISPER = QCheckBox("Whisper", self)
+        self.WHISPER.setChecked(True)
+        grid.addWidget(self.PUBLIC,  0, 0)
+        grid.addWidget(self.PARTY,   1, 0)
+        grid.addWidget(self.GUILD,   2, 0)
+        grid.addWidget(self.WHISPER, 3, 0)
         self.setWindowTitle("Chat Options")
 
+    def liquidate(self):
+        return [self.PUBLIC.isChecked(), self.PARTY.isChecked(), 
+            self.GUILD.isChecked(), self.WHISPER()]
 
 class ChatTime(QWidget):
     def __init__(self):
@@ -211,23 +214,28 @@ class ChatTime(QWidget):
         grid.addWidget(EndLabel,  5, 1)
         grid.addWidget(EndButton, 5, 0)
         # Use Checkboxes
-        BeginUseCheck = QCheckBox("Use", self)
-        EndUseCheck = QCheckBox("Use", self)
-        grid.addWidget(BeginUseCheck, 4, 2)
-        grid.addWidget(EndUseCheck,   5, 2)
+        self.BeginUseCheck = QCheckBox("Use", self)
+        self.EndUseCheck = QCheckBox("Use", self)
+        grid.addWidget(self.BeginUseCheck, 4, 2)
+        grid.addWidget(self.EndUseCheck,   5, 2)
 
         self.setWindowTitle("Chat Date Options")
 
     def getbegindate(self):
-        self.end_date = self.BigCalendar.selectedDate()
-        return self.end_date.toString("yyyy - MM - dd")
+        self.begin_date = self.BigCalendar.selectedDate()
+        return self.begin_date.toString("yyyy - MM - dd")
 
     def getenddate(self):
         self.end_date = self.BigCalendar.selectedDate()
         return self.end_date.toString("yyyy - MM - dd")
 
-    def options(Name):
-        pass
+    def liquidate(self):
+        items = []
+        if self.BeginUseCheck.isChecked():
+            items.append(self.begin_date.toString("yyyy-MM-dd"))
+        if self.EndUseCheck.isChecked():
+            items.append(self.end_date.toString("yyyy-MM-dd"))
+        return items
 
 
 class KeywordSearch(QWidget):
@@ -237,27 +245,47 @@ class KeywordSearch(QWidget):
         self.setLayout(grid)
         # Label and Field
         KeywordLabel = QLabel("Phrase:", self)
-        KeywordField = QLineEdit(self)
+        self.KeywordField = QLineEdit(self)
         # Case Sensitive
-        KeywordCheckbox = QCheckBox("Case Sensitive?", self)
+        self.KeywordCheckbox = QCheckBox("Case Sensitive?", self)
+        self.KeywordCheckbox.setChecked(True)
         # Clear Button
         ClearButton = QPushButton("Clear Field", self)
-        ClearButton.clicked.connect(lambda:KeywordField.setText(""))
+        ClearButton.clicked.connect(lambda:self.KeywordField.setText(""))
         # Word Or Sentence Search
         RadioLabel = QLabel("Search As A")
         RadioGroup = QButtonGroup(self)
-        WordRadio = QRadioButton("Sentence", self)
-        RadioGroup.addButton(WordRadio, 0)
-        SentenceRadio = QRadioButton("Collection Of Words", self)
-        RadioGroup.addButton(SentenceRadio, 1)
+        self.SentenceRadio = QRadioButton("Sentence", self)
+        RadioGroup.addButton(self.WordRadio, 0)
+        self.WordRadio = QRadioButton("Collection Of Words", self)
+        RadioGroup.addButton(self.SentenceRadio, 1)
 
         grid.addWidget(KeywordLabel,    0, 0)
-        grid.addWidget(KeywordField,    0, 1)
+        grid.addWidget(self.KeywordField,    0, 1)
         grid.addWidget(ClearButton,     0, 2)
-        grid.addWidget(KeywordCheckbox, 1, 1)
-        grid.addWidget(WordRadio,       1, 0)
-        grid.addWidget(SentenceRadio,   1, 2)
+        grid.addWidget(self.KeywordCheckbox, 1, 1)
+        grid.addWidget(self.SentenceRadio,       1, 0)
+        grid.addWidget(self.WordRadio,   1, 2)
         self.setWindowTitle("Keyword Search Options")
+
+        def liquidate(self):
+            items = []
+            if self.KeywordField.text() == "":
+                return items
+            else:
+                if not self.KeywordCheckbox.isChecked():
+                    items.append("LOWER")
+                if self.WordRadio.isChecked():
+                    # fodder = []
+                    for item in re.split(" ", self.KeywordField.text()):
+                        for combo in re.split(",", item):
+                            if combo != "":
+                                items.append(combo)
+                else:
+                    items.append(self.KeywordField.text())
+                    return items
+
+
 
 
 class SettingsWidget(QWidget):
