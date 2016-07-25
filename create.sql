@@ -1,8 +1,8 @@
 CREATE TABLE logs
 (
-    name CHAR(22),
+    name CHAR(67),
     hashed_contents CHAR(64),
-    PRIMARY KEY (name)
+    PRIMARY KEY (hashed_contents)
 );
 --
 CREATE TABLE chat

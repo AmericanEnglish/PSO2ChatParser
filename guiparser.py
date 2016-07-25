@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QGridLayout, QFileDialog, QMessageBox, QProgressDialog, QPushButton, QLabel, QLineEdit, QCheckBox
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QFileDialog, QMessageBox, QProgressDialog, QPushButton
 from Crypto.Hash import SHA256 # for hashing
 from AdditionalWidgets import *
 from timestamp import timestamp
@@ -121,7 +121,7 @@ class MainGUI(QWidget):
             self.prompt_for_posgres()
             # If more defaults besides the database become available
             self.defaults.execute("""SELECT value FROM defaults WHERE name = "default_path";""")
-            self.default_path = self.db.fetchall()
+            self.default_path = self.defaults.fetchall()
             if self.default_path == []:
                 self.prompt_for_chat()
             else:
@@ -166,15 +166,18 @@ class MainGUI(QWidget):
             self.failed_to_select_database()
         # Connect
         self.db = DB("postgres", info[0], host=info[1], user=info[2], password=info[3])
-        sucess, err = self.db.connect()
-        if not sucess:
+        success, err = self.db.connect()
+        if not success:
             QMessageBox.critical(self, 'PostgreSQL ERROR', str(err), QMessageBox.Ok, QMessageBox.Ok)
             # Quit out
             exit()
         del info
         # Create?
         if create_new == True:
-            self.db.create_table("./create.sql")
+            success, err = self.db.create_table("./create.sql")
+            if not success:
+                print(str(err))
+                exit()
 
     def prompt_for_chat(self):
         # Ask for chat directory
@@ -291,8 +294,11 @@ class MainGUI(QWidget):
                         SET hashed_contents = %s
                         WHERE name = %s;""", [log_hash, path_to_file]) # Update the log hash value here
         else:
-            self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
+            # print(len(path_to_file))
+            success, err = self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
             [path_to_file, log_hash])
+            if not success:
+                print(str(err))
         contents = re.split("\n", contents)
         split_body = []
         for line in contents:
@@ -310,6 +316,11 @@ class MainGUI(QWidget):
             current += 1
             # Update the progress bar
             if ProgressBarTuple != None:
+                if ProgressBarTuple[0].wasCanceled():
+                    self.db.execute("DELETE FROM chat WHERE log_hash = %s;", [log_hash])
+                    self.db.execute("DELETE FROM logs WHERE hashed_contents = %s;", [log_hash])
+                    print("Dropping current file!")
+                    return
                 ProgressBarTuple[0].setLabelText(ProgressBarTuple[1] + "\n{}/{}".format(current, len(split_body)))
                 ProgressBarTuple[0].show()
                 QApplication.processEvents()
@@ -331,9 +342,11 @@ class MainGUI(QWidget):
             if results != [] and len(results) == 1:
                 # Only insert if it's detected in the original file
                 if results[0][0] == log_hash:
-                    self.db.execute("""UPDATE chat
+                    success, err = self.db.execute("""UPDATE chat
                         SET occur = occur + 1
                         WHERE line_hash = %s;""", [results[0][1]])
+                if not success:
+                    print(str(err))
                 # print("Line hash exists!")
                     # print("Area 1")
             elif len(results) > 1:
@@ -345,8 +358,10 @@ class MainGUI(QWidget):
                 line.insert(0, line_hash)
                 line.insert(0, log_hash)
                 line.append(1)
-                self.db.execute("""INSERT INTO chat VALUES
+                success, err = self.db.execute("""INSERT INTO chat VALUES
                     (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", line)
+                if not success:
+                    print(str(err))
                 # print("Area 2")
                 # print(line)
 
