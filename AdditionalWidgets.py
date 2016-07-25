@@ -1,11 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup
-# Sega ID Window
-class PostgreSQLogin(QWidget):
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout, QVBoxLayout
+from PyQt5.QtCore import Qt
+# Subclass QDialog
+class PostgreSQLogin(QDialog):
     def __init__(self):
         super().__init__()
         grid = QGridLayout()
         self.setLayout(grid)
-
         # Labels
         HostLabel = QLabel("Hostname:", self)
         # PortLabel = QLabel("Port:", self)
@@ -14,15 +14,19 @@ class PostgreSQLogin(QWidget):
         PassLabel = QLabel("Password", self)
         # Fields
         self.HostField = QLineEdit(self)
-        self.PortField = QLineEdit(self)
+        # self.PortField = QLineEdit(self)
         self.DatabaseNameField = QLineEdit(self)
         self.UserField = QLineEdit(self)
         self.PassField = QLineEdit(self)
-
-        AcceptButton = QPushButton("Accept", self)
-        AcceptButton.clicked.connect(lambda:self.success())
-        RejectButton = QPushButton("Cancel", self)
-        RejectButton.clicked.connect(lambda:self.failure())
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+        ######################
+        ButtonWidget = QWidget()
+        ButtonBox = QHBoxLayout()
+        ButtonBox.addWidget(self.buttons)
+        ButtonWidget.setLayout(ButtonBox)
+        #####################
         # Set Defaults
         self.HostField.setText("localhost")
         # self.PortField.setText("default")
@@ -30,23 +34,90 @@ class PostgreSQLogin(QWidget):
         self.setModal(True)
         # Setup Interface
         grid.addWidget(HostLabel,              0, 0)
-        grid.addWidget(self.HostField,         0, 1, 0, 2)
+        grid.addWidget(self.HostField,         0, 1)#, 0, 2)
         grid.addWidget(DatabaseNameLabel,      1, 0)
-        grid.addWidget(self.DatabaseNameField, 1, 1, 1, 2)
+        grid.addWidget(self.DatabaseNameField, 1, 1)#, 1, 2)
         grid.addWidget(UserLabel,              2, 0)
-        grid.addWidget(self.UserField,         2, 1, 2, 2)
+        grid.addWidget(self.UserField,         2, 1)#, 2, 2)
         grid.addWidget(PassLabel,              3, 0)
-        grid.addWidget(self.PassField,         3, 1, 3, 2)
-        grid.addWidget(AcceptButton,           4, 1)
-        grid.addWidget(RejectButton,           4, 2)
-
+        grid.addWidget(self.PassField,         3, 1)#, 3, 2)
+        grid.addWidget(ButtonWidget,           4, 1)#, 4, 2)
+        
     def success(self):
-        data = [str(self.DatabaseNameField.getText()), str(self.HostField.getText()), 
-                str(self.UserField.getText()), str(self.PassField.getText())]
+        data = [str(self.DatabaseNameField.text()), str(self.HostField.text()), 
+                str(self.UserField.text()), str(self.PassField.text())]
         return data
 
     def failure(self):
         return None
+
+    def getInfo():
+        dialog = PostgreSQLogin()
+        results = dialog.exec_()
+        return (dialog.success(), results == QDialog.Accepted)
+
+
+# Subclass QDialog
+class ChooseDB(QDialog):
+    def __init__(self):
+        super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        # VBox = QVBoxLayout()
+        # self.setLayout(VBox)
+
+        # DatabaseLabel = QLabel("Pick A Database To Use", self)
+        self.setWindowTitle("Pick A Database To Use")
+        self.SQLite3Button = QRadioButton("SQLite3", self)
+        self.SQLite3Button.setChecked(True)
+        self.PostgreSQLButton = QRadioButton("PostgreSQL", self)
+        DBGroup = QButtonGroup(self)
+        DBGroup.addButton(self.SQLite3Button)
+        DBGroup.addButton(self.PostgreSQLButton)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+
+
+        # Layout
+        SQLWidget = QWidget()
+        SQLButtons = QHBoxLayout()
+        SQLButtons.addWidget(self.SQLite3Button)
+        SQLButtons.addWidget(self.PostgreSQLButton)
+        SQLWidget.setLayout(SQLButtons)
+        ButtonWidget = QWidget()
+        ButtonBox = QHBoxLayout()
+        ButtonBox.addWidget(self.buttons)
+        ButtonWidget.setLayout(ButtonBox)
+        # DataWidge = QWidget()
+        # DatabaseLabelBox = QHBoxLayout()
+        # DatabaseLabelBox.addWidget(DatabaseLabel)
+        # DataWidge.setLayout(DatabaseLabelBox)
+        ########
+
+        # grid.addWidget(DataWidge,     0, 0)
+        grid.addWidget(SQLWidget,     1, 0, 1, 2)
+        grid.addWidget(ButtonWidget,  4, 1, 4, 2)
+
+
+    def checkDB(self):
+        if self.SQLite3Button.isChecked():
+            return "sqlite3"
+        else:
+            return "postgres"
+
+
+    # def failure(self):
+    #     self.reject
+
+    # Workaround found on stack overflow
+    # http://stackoverflow.com/questions/18196799/how-can-i-show-a-pyqt-modal-dialog-and-get-data-out-of-its-controls-once-its-clo
+
+    def getDB():
+        dialog = ChooseDB()
+        dialog.exec_()
+        results = dialog.result()
+        return (dialog.checkDB(), results == QDialog.Accepted)
 
 
 class SegaID(QWidget):

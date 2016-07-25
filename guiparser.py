@@ -120,14 +120,14 @@ class MainGUI(QWidget):
         # Else prompt for default server settings
         else:
             # Will finish this bit later
-            # server_type = self.prompt_for_server_type()
-            server_type = "sqlite3"
-            if server_type == None or server_type == "":
+            server_type, accepted = ChooseDB.getDB()
+            # server_type = "sqlite3"
+            if not accepted:
                 self.failed_to_select_database()
             # Create "ParserDefaults.db"
             elif server_type == "postgres":
                 self.defaults = DB("sqlite3", "ParserDefaults.db")
-                self.default.connect()
+                self.defaults.connect()
                 self.prompt_for_posgres(create_new=True)
             # Else create "PSO2ChatParser.db"
             else:
@@ -145,9 +145,13 @@ class MainGUI(QWidget):
     def prompt_for_posgres(self, create_new=False):
         # For logging into postgresql and handiling postgres startup stuff
         # Open dialog for entering username and password
-
+        info, accepted = PostgreSQLogin.getInfo()
+        if not accepted:
+            self.failed_to_select_database()
         # Connect
-        self.db = DB("postgres", hostname=hostname, username=username, password=password)
+        self.db = DB("postgres", info[0], host=info[1], user=info[2], password=info[3])
+        self.db.connect()
+        del info
         # Create?
         if create_new == True:
             self.db.create_table("./create.sql")
@@ -375,6 +379,7 @@ class MainGUI(QWidget):
         # Chat Type filter
         
             # Checkboxes
+        pass
 
     def failed_to_select_database(self):
         # Throw error popup
