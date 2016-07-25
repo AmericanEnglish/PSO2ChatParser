@@ -289,11 +289,15 @@ class MainGUI(QWidget):
                 self.db.execute("""DELETE FROM chat WHERE log_hash = %s;""", [results])
                 self.db.execute("""DELETE FROM logs WHERE hashed_contents = %s""", [results])
                 print("-> REDOING FILE CONTENTS")
+                # Technically it is reprocessing but programmatically inserting all new data now
+                reprocessing = False
             else:
                 self.db.execute("""UPDATE logs
                         SET hashed_contents = %s
                         WHERE name = %s;""", [log_hash, path_to_file]) # Update the log hash value here
+                reprocessing = True
         else:
+            reprocessing = False
             # print(len(path_to_file))
             success, err = self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
             [path_to_file, log_hash])
@@ -345,7 +349,7 @@ class MainGUI(QWidget):
             # print(results)
             if results != [] and len(results) == 1:
                 # Only insert if it's detected in the original file
-                if results[0][0] == log_hash:
+                if results[0][0] == log_hash and not reprocessing:
                     success, err = self.db.execute("""UPDATE chat
                         SET occur = occur + 1
                         WHERE line_hash = %s;""", [results[0][1]])
