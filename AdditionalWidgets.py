@@ -256,8 +256,8 @@ class KeywordSearch(QWidget):
         RadioLabel = QLabel("Search As A")
         RadioGroup = QButtonGroup(self)
         self.SentenceRadio = QRadioButton("Sentence", self)
-        RadioGroup.addButton(self.WordRadio, 0)
         self.WordRadio = QRadioButton("Collection Of Words", self)
+        RadioGroup.addButton(self.WordRadio, 0)
         RadioGroup.addButton(self.SentenceRadio, 1)
 
         grid.addWidget(KeywordLabel,    0, 0)
