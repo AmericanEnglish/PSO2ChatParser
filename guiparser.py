@@ -317,9 +317,13 @@ class MainGUI(QWidget):
             # Update the progress bar
             if ProgressBarTuple != None:
                 if ProgressBarTuple[0].wasCanceled():
-                    self.db.execute("DELETE FROM chat WHERE log_hash = %s;", [log_hash])
-                    self.db.execute("DELETE FROM logs WHERE hashed_contents = %s;", [log_hash])
                     print("Dropping current file!")
+                    success, err = self.db.execute("DELETE FROM chat WHERE log_hash = %s;", [log_hash])
+                    if not success:
+                        print(str(err))
+                    success, err = self.db.execute("DELETE FROM logs WHERE hashed_contents = %s;", [log_hash])
+                    if not success:
+                        print(str(err))
                     return
                 ProgressBarTuple[0].setLabelText(ProgressBarTuple[1] + "\n{}/{}".format(current, len(split_body)))
                 ProgressBarTuple[0].show()
