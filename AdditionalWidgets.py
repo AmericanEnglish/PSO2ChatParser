@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout, QVBoxLayout
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout
+
 # Subclass QDialog
 class PostgreSQLogin(QDialog):
     def __init__(self):
@@ -63,8 +63,6 @@ class ChooseDB(QDialog):
         super().__init__()
         grid = QGridLayout()
         self.setLayout(grid)
-        # VBox = QVBoxLayout()
-        # self.setLayout(VBox)
 
         # DatabaseLabel = QLabel("Pick A Database To Use", self)
         self.setWindowTitle("Pick A Database To Use")
@@ -74,7 +72,7 @@ class ChooseDB(QDialog):
         DBGroup = QButtonGroup(self)
         DBGroup.addButton(self.SQLite3Button)
         DBGroup.addButton(self.PostgreSQLButton)
-        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
 
@@ -89,13 +87,7 @@ class ChooseDB(QDialog):
         ButtonBox = QHBoxLayout()
         ButtonBox.addWidget(self.buttons)
         ButtonWidget.setLayout(ButtonBox)
-        # DataWidge = QWidget()
-        # DatabaseLabelBox = QHBoxLayout()
-        # DatabaseLabelBox.addWidget(DatabaseLabel)
-        # DataWidge.setLayout(DatabaseLabelBox)
-        ########
 
-        # grid.addWidget(DataWidge,     0, 0)
         grid.addWidget(SQLWidget,     1, 0, 1, 2)
         grid.addWidget(ButtonWidget,  4, 1, 4, 2)
 
@@ -106,13 +98,8 @@ class ChooseDB(QDialog):
         else:
             return "postgres"
 
-
-    # def failure(self):
-    #     self.reject
-
     # Workaround found on stack overflow
     # http://stackoverflow.com/questions/18196799/how-can-i-show-a-pyqt-modal-dialog-and-get-data-out-of-its-controls-once-its-clo
-
     def getDB():
         dialog = ChooseDB()
         dialog.exec_()
