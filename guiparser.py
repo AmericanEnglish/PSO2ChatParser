@@ -112,6 +112,7 @@ class MainGUI(QWidget):
                 self.prompt_for_chat()
             else:
                 self.default_path = self.default_path[0][0]
+            self.popups["Settings"].setDB("sqlite3")
             self.scan_for_new()
         # Else scan for "ParserDefaults.db"
         elif "ParserDefaults.db" in listdir("./"):
@@ -126,6 +127,7 @@ class MainGUI(QWidget):
                 self.prompt_for_chat()
             else:
                 self.default_path = self.default_path[0][0]
+            self.popups["Settings"].setDB("postgres")
             self.scan_for_new()
         # Else prompt for default server settings
         else:
@@ -140,6 +142,7 @@ class MainGUI(QWidget):
                 self.defaults.connect()
                 self.prompt_for_posgres(create_new=True)
                 self.defaults.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
+                self.popups["Settings"].setDB("postgres")
                 self.prompt_for_chat()
                 self.scan_for_new()
             # Else create "PSO2ChatParser.db"
@@ -151,6 +154,7 @@ class MainGUI(QWidget):
                 self.defaults.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
                 self.db.create_table("./create.sql")
                 self.prompt_for_chat()
+                self.popups["Settings"].setDB("sqlite3")
                 self.scan_for_new()
         self.popups["Settings"].dbSet(self.db.db_type)
 
@@ -377,14 +381,6 @@ class MainGUI(QWidget):
         filename = QFileDialog.getOpenFileName(self, 'Open file', self.default_path)
         self.add_new_file(filename)
 
-    def prompt_for_server_type(self):
-        pass
-
-    def display_query_results(self):
-        # Query database
-            # Display results in meaningful way
-        pass
-
     def show_latest_popup(self, popup):
         if self.latest_popup == None:
             self.popups[popup].show()
@@ -403,26 +399,27 @@ class MainGUI(QWidget):
 
     def generate_query(self):
         # Buttons that concatenate the string to make a query
+        sid = self.popups["SID"].liquidate()
         # SID       search
 
             # Pull down checkboxes
-        
+        pid = self.popups["PID"].liquidate()
         # Name      search
         
             # Pull down checkboxes
-        
+        keyword = self.popups["Keyword"].liquidate()
         # Keyword   search
         
             # Fill in blank
-        
+        chatdays = self.popups["DateDat"].liquidate()
         # Day       filter
         
             # Calendar Widget
-        
+        ChatType = self.popups["ChatType"].liquidate()
         # Chat Type filter
         
             # Checkboxes
-        pass
+        
 
     def failed_to_select_database(self):
         # Throw error popup
