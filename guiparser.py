@@ -502,7 +502,11 @@ class MainGUI(QWidget):
         QMessageBox.critical(self, 'ERROR', "No default folder selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
         # Quit out
         exit()        
-# This will allow a popup with two progress bars
+
+    def closeEvent(self, event):
+        for key in self.popups.keys():
+            self.popups[key].deleteLater()
+        event.accept()
 
 
 
