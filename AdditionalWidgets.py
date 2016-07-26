@@ -132,7 +132,20 @@ class SegaID(QWidget):
         self.db = database
 
     def browseSID(self):
-        pass
+        # Call Window
+        newText = BrowseWindow.dumptext(self.fetched)
+        if newText != '':
+            self.SIDEdit.setText(newText)
+
+    def update():
+        self.db.execute("""SELECT DISTINCT uid, username FROM chat;""")
+        temp = self.db.fetchall()
+        self.fetched = {}
+        for item in temp:
+            if item[0] in self.fetched:
+                self.fetched[item[0]].append(item[1])
+            else:
+                self.fetched[item[0]] = [item[1]]   
 
     def liquidate(self):
         fodder = []
@@ -178,7 +191,6 @@ class PlayerID(QWidget):
         newText = BrowseWindow.dumptext(self.fetched)
         if newText != '':
             self.PIDEdit.setText(newText)
-
 
     def update():
         self.db.execute("""SELECT DISTINCT username, uid FROM chat;""")
