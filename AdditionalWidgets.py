@@ -42,6 +42,7 @@ class PostgreSQLogin(QDialog):
         grid.addWidget(PassLabel,              3, 0)
         grid.addWidget(self.PassField,         3, 1)#, 3, 2)
         grid.addWidget(ButtonWidget,           4, 1)#, 4, 2)
+        self.setWindowTitle("PostgreSQL Login Information")
         
     def success(self):
         data = [str(self.DatabaseNameField.text()), str(self.HostField.text()), 
@@ -283,23 +284,24 @@ class KeywordSearch(QWidget):
         grid.addWidget(self.WordRadio,   1, 2)
         self.setWindowTitle("Keyword Search Options")
 
-        def liquidate(self):
-            items = []
-            if self.KeywordField.text() == "":
+    def liquidate(self):
+        items = []
+        if self.KeywordField.text() == "":
+            return items
+        else:
+            if not self.KeywordCheckbox.isChecked():
+                items.append("LOWER")
+            if self.WordRadio.isChecked():
+                fodder = []
+                for item in re.split(" ", self.KeywordField.text()):
+                    for combo in re.split(",", item):
+                        if combo != "":
+                            fodder.append(combo)
+                items.append(fodder)
                 return items
             else:
-                if not self.KeywordCheckbox.isChecked():
-                    items.append("LOWER")
-                if self.WordRadio.isChecked():
-                    fodder = []
-                    for item in re.split(" ", self.KeywordField.text()):
-                        for combo in re.split(",", item):
-                            if combo != "":
-                                fodder.append(combo)
-                    items.append(fodder)
-                else:
-                    items.append([self.KeywordField.text()])
-                    return items
+                items.append([self.KeywordField.text()])
+                return items
 
 
 
@@ -361,7 +363,7 @@ class SettingsWidget(QWidget):
         # If DB needs to be changed throw signal to main window
         pass
 
-    def dbSet(self, default):
+    def setDB(self, default):
         self.buttons[default].setChecked(True)
 
     def setTimeFormat(self, default):
