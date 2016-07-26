@@ -272,6 +272,7 @@ class KeywordSearch(QWidget):
         RadioLabel = QLabel("Search As A")
         RadioGroup = QButtonGroup(self)
         self.SentenceRadio = QRadioButton("Sentence", self)
+        self.SentenceRadio.setChecked(True)
         self.WordRadio = QRadioButton("Collection Of Words", self)
         RadioGroup.addButton(self.WordRadio, 0)
         RadioGroup.addButton(self.SentenceRadio, 1)
@@ -291,6 +292,8 @@ class KeywordSearch(QWidget):
         else:
             if not self.KeywordCheckbox.isChecked():
                 items.append("LOWER")
+            else:
+                items.append(None)
             if self.WordRadio.isChecked():
                 fodder = []
                 for item in re.split(" ", self.KeywordField.text()):
@@ -302,8 +305,6 @@ class KeywordSearch(QWidget):
             else:
                 items.append([self.KeywordField.text()])
                 return items
-
-
 
 
 class SettingsWidget(QWidget):
