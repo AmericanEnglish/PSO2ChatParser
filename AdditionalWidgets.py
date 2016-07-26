@@ -275,8 +275,8 @@ class KeywordSearch(QWidget):
         self.KeywordCheckbox = QCheckBox("Case Sensitive?", self)
         self.KeywordCheckbox.setChecked(True)
         # Clear Button
-        ClearButton = QPushButton("Clear Field", self)
-        ClearButton.clicked.connect(lambda:self.KeywordField.setText(""))
+        # ClearButton = QPushButton("Clear Field", self)
+        # ClearButton.clicked.connect(lambda:self.KeywordField.setText(""))
         # Word Or Sentence Search
         RadioLabel = QLabel("Search As A")
         RadioGroup = QButtonGroup(self)
@@ -285,13 +285,18 @@ class KeywordSearch(QWidget):
         self.WordRadio = QRadioButton("Collection Of Words", self)
         RadioGroup.addButton(self.WordRadio, 0)
         RadioGroup.addButton(self.SentenceRadio, 1)
-
+        RadioHolder = QWidget()
+        RadioHBox = QHBoxLayout()
+        RadioHolder.setLayout(RadioHBox)
+        RadioHBox.addWidget(self.SentenceRadio)
+        RadioHBox.addWidget(self.WordRadio)
         grid.addWidget(KeywordLabel,    0, 0)
         grid.addWidget(self.KeywordField,    0, 1)
-        grid.addWidget(ClearButton,     0, 2)
-        grid.addWidget(self.KeywordCheckbox, 1, 1)
-        grid.addWidget(self.SentenceRadio,       1, 0)
-        grid.addWidget(self.WordRadio,   1, 2)
+        # grid.addWidget(ClearButton,     0, 2)
+        grid.addWidget(self.KeywordCheckbox, 0, 2)
+        # grid.addWidget(self.SentenceRadio,       1, 1)
+        # grid.addWidget(self.WordRadio,   1, 2)
+        grid.addWidget(RadioHolder, 1, 1)
         self.setWindowTitle("Keyword Search Options")
 
     def liquidate(self):
