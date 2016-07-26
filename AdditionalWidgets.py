@@ -249,8 +249,12 @@ class ChatTime(QWidget):
         items = []
         if self.BeginUseCheck.isChecked():
             items.append(self.begin_date.toString("yyyy-MM-dd"))
+        else:
+            items.append(None)
         if self.EndUseCheck.isChecked():
             items.append(self.end_date.toString("yyyy-MM-dd"))
+        else:
+            items.append(None)
         return items
 
 
