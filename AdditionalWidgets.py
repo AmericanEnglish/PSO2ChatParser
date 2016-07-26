@@ -247,12 +247,17 @@ class ChatTime(QWidget):
 
     def liquidate(self):
         items = []
+        # yyyy-MM-ddThh:mm:ss
         if self.BeginUseCheck.isChecked():
-            items.append(self.begin_date.toString("yyyy-MM-dd"))
+            begin1 = self.begin_date.toString("yyyy-MM-dd") + "T00:00:00"
+            begin2 = self.begin_date.toString("yyyy-MM-dd") + "T23:59:59"
+            items.append([begin1, begin2])
         else:
             items.append(None)
         if self.EndUseCheck.isChecked():
-            items.append(self.end_date.toString("yyyy-MM-dd"))
+            end1 = self.end_date.toString("yyyy-MM-dd") + "T00:00:00"
+            end2 = self.end_date.toString("yyyy-MM-dd") + "T23:59:59"
+            items.append([end1, end2])
         else:
             items.append(None)
         return items

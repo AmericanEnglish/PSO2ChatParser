@@ -454,7 +454,26 @@ class MainGUI(QWidget):
 
             # Fill in blank
         chatdays = self.popups["DateDat"].liquidate()
-        # Day       filter -> DATE MATH
+        # Day       search -> DATE MATH
+        if chatdays != [None, None]:
+            # yyyy-MM-ddThh:mm:ss
+            if chatdays[0] == None:
+                find_strings[-1].append("%s <= stamp")
+                find_strings[-1].append("stamp <= %s")
+                find_params.append(chatdays[1][0])
+                find_params.append(chatdays[1][1])
+            elif chatdays [1] == None:
+                find_strings[-1].append("%s <= stamp")
+                find_strings[-1].append("stamp <= %s")
+                find_params.append(chatdays[0][0])
+                find_params.append(chatdays[0][1])
+            else:
+                find_strings[-1].append("%s <= stamp")
+                find_strings[-1].append("stamp <= %s")
+                find_params.append(chatdays[0][0])
+                find_params.append(chatdays[1][1])
+            find_strings.append([])
+
 
 
         ChatType = self.popups["ChatType"].liquidate()
