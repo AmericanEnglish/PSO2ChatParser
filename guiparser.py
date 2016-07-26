@@ -428,23 +428,29 @@ class MainGUI(QWidget):
         # Name      search -> OR TERMS
         if pid[0] == True and pid[2]  != []:
             # Search for
-            for item in pid[2]:
+            for term in pid[2]:
                 find_strings[-1].append("username = %s")
                 find_params.append(term)
         find_strings.append([])
         
         if pid[1] == True and pid[2] != []:
             # Filter By
-            for item in pid[2]: 
-                pull_strings[-1].append("username = %s")
+            for term in pid[2]: 
+                pull_strings[-1].append("username = %%s%")
                 pull_params.append(term)
         pull_strings.append([])
 
         keyword = self.popups["Keyword"].liquidate()
         # Keyword   search
-        # if len(keyword) > 0:
-        #     case_sensitive = item[0]  
-        #     if len(keyword[1] == 1):
+        if keyword != []:
+            if keyword[0] == "LOWER":
+                keyword_phrase = "LOWER(info) LIKE %%s%"
+            else:
+                keyword_phrase = "info LIKE %%s%"
+            for term in keyword[1]:
+                find_strings[-1].append(keyword_phrase)
+                find_params.append(term)
+        find_strings.append([])
 
             # Fill in blank
         chatdays = self.popups["DateDat"].liquidate()
@@ -461,7 +467,7 @@ class MainGUI(QWidget):
 
         print("Find Strings: {}".format(find_strings))
         # Concatenate it all
-        if find_strings != [[]]:
+        if find_strings != [[], [], [], []]:
             temp = []
             for item in find_strings:
                 if item != []:
@@ -471,7 +477,7 @@ class MainGUI(QWidget):
         else:
             find_log += ";"
         print("Pull Strings: {}".format(pull_strings))
-        if pull_strings != [[]]:
+        if pull_strings != [[], [], [], []]:
             temp = []
             for item in pull_strings:
                 if item != []:
