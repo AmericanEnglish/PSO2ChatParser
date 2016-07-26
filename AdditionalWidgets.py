@@ -200,8 +200,8 @@ class ChatTypeWidget(QWidget):
         self.setWindowTitle("Chat Options")
 
     def liquidate(self):
-        return [self.PUBLIC.isChecked(), self.PARTY.isChecked(), 
-            self.GUILD.isChecked(), self.WHISPER()]
+        return [("PUBLIC",self.PUBLIC.isChecked()), ("PARTY", self.PARTY.isChecked()), 
+            ("GUILD", self.GUILD.isChecked()), ("REPLY", self.WHISPER.isChecked())]
 
 class ChatTime(QWidget):
     def __init__(self):
@@ -291,13 +291,14 @@ class KeywordSearch(QWidget):
                 if not self.KeywordCheckbox.isChecked():
                     items.append("LOWER")
                 if self.WordRadio.isChecked():
-                    # fodder = []
+                    fodder = []
                     for item in re.split(" ", self.KeywordField.text()):
                         for combo in re.split(",", item):
                             if combo != "":
-                                items.append(combo)
+                                fodder.append(combo)
+                    items.append(fodder)
                 else:
-                    items.append(self.KeywordField.text())
+                    items.append([self.KeywordField.text()])
                     return items
 
 
