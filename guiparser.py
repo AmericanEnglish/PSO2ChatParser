@@ -112,7 +112,7 @@ class MainGUI(QWidget):
                 self.prompt_for_chat()
             else:
                 self.default_path = self.default_path[0][0]
-            self.popups["Settings"].setDB("sqlite3")
+           
             self.scan_for_new()
         # Else scan for "ParserDefaults.db"
         elif "ParserDefaults.db" in listdir("./"):
@@ -127,7 +127,7 @@ class MainGUI(QWidget):
                 self.prompt_for_chat()
             else:
                 self.default_path = self.default_path[0][0]
-            self.popups["Settings"].setDB("postgres")
+            
             self.scan_for_new()
         # Else prompt for default server settings
         else:
@@ -142,7 +142,6 @@ class MainGUI(QWidget):
                 self.defaults.connect()
                 self.prompt_for_posgres(create_new=True)
                 self.defaults.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
-                self.popups["Settings"].setDB("postgres")
                 self.prompt_for_chat()
                 self.scan_for_new()
             # Else create "PSO2ChatParser.db"
@@ -154,9 +153,8 @@ class MainGUI(QWidget):
                 self.defaults.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
                 self.db.create_table("./create.sql")
                 self.prompt_for_chat()
-                self.popups["Settings"].setDB("sqlite3")
                 self.scan_for_new()
-        self.popups["Settings"].dbSet(self.db.db_type)
+        self.popups["Settings"].setDB(self.db.db_type)
 
 
     def prompt_for_posgres(self, create_new=False):
@@ -402,13 +400,13 @@ class MainGUI(QWidget):
         # Search for query
         find_log = """SELECT name, hashed_contents FROM logs 
                             INNER JOIN chat ON logs.hashed_contents = chat.log_hash
-                            """
+                             """
         find_strings = [[]]
-        find_params = [[]]
+        find_params = []
         # Filter by queries
-        pull_log = "SELECT stamp, username, info, chat_type FROM chat" 
+        pull_log = "SELECT stamp, username, info, chat_type FROM chat " 
         pull_strings = [[]]
-        pull_params = [[]]
+        pull_params = []
         sid = self.popups["SID"].liquidate()
         # SID       search -> OR TERMS
         if sid[0] == True and sid[2] != []:
@@ -416,16 +414,15 @@ class MainGUI(QWidget):
             # WHERE 
             for term in sid[2]:
                 find_strings[-1].append("uid = %s")
-                find_params[-1].append(term)
-                find_strings.append([])
-                find_params.append([])
+                find_params.append(term)
+        find_strings.append([])
+        
         if sid[1] == True and sid[2] != []:
             # Filter By
             for term in sid[2]:
                 pull_strings[-1].append("uid = %s")
-                pull_params[-1].append(term)
-                pull_strings.append([])
-                pull_params.append([])
+                pull_params.append(term)
+        pull_strings.append([])
 
         pid = self.popups["PID"].liquidate()
         # Name      search -> OR TERMS
@@ -433,21 +430,22 @@ class MainGUI(QWidget):
             # Search for
             for item in pid[2]:
                 find_strings[-1].append("username = %s")
-                find_params[-1].append(term)
-                find_strings.append([])
-                find_params.append([])
+                find_params.append(term)
+        find_strings.append([])
+        
         if pid[1] == True and pid[2] != []:
             # Filter By
             for item in pid[2]: 
                 pull_strings[-1].append("username = %s")
-                pull_params[-1].append(term)
-                pull_strings.append([])
-                pull_params.append([])
+                pull_params.append(term)
+        pull_strings.append([])
 
         keyword = self.popups["Keyword"].liquidate()
         # Keyword   search
-        if len(keyword) > 0:
-            case_sensitive = item[0]        
+        # if len(keyword) > 0:
+        #     case_sensitive = item[0]  
+        #     if len(keyword[1] == 1):
+
             # Fill in blank
         chatdays = self.popups["DateDat"].liquidate()
         # Day       filter -> DATE MATH
@@ -458,10 +456,39 @@ class MainGUI(QWidget):
         for item in ChatType:
             if item[1] == True:
                 pull_strings[-1].append("chat_type = %s")
-                pull_params[-1].append(item[0])
-                pull_strings.append([])
-                pull_params.append([])
+                pull_params.append(item[0])
+        # pull_strings.append([])
 
+        print("Find Strings: {}".format(find_strings))
+        # Concatenate it all
+        if find_strings != [[]]:
+            temp = []
+            for item in find_strings:
+                if item != []:
+                    temp.append("(" + ' OR '.join(item) + ")")
+            full_find = ' AND '.join(temp)
+            find_log += "WHERE " + full_find + ";"
+        else:
+            find_log += ";"
+        print("Pull Strings: {}".format(pull_strings))
+        if pull_strings != [[]]:
+            temp = []
+            for item in pull_strings:
+                if item != []:
+                    temp.append("(" + ' OR '.join(item) + ")")
+            full_pull = ' AND '.join(temp)
+            pull_log += "WHERE " + full_pull + ";"
+        else:
+            pull_log += ";"
+        print("----------------------LOG QUERY------------------")
+        print(pull_log)
+        print("----------------------LOG PARAMS-----------------")
+        print(pull_params)
+        print("----------------------FIND QUERY-----------------")
+        print(find_log)
+        print("----------------------FIND PARAM-----------------")
+        print(find_params)
+        print("##################################################")
         
 
     def failed_to_select_database(self):
