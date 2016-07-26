@@ -399,26 +399,69 @@ class MainGUI(QWidget):
 
     def generate_query(self):
         # Buttons that concatenate the string to make a query
+        # Search for query
+        find_log = """SELECT name, hashed_contents FROM logs 
+                            INNER JOIN chat ON logs.hashed_contents = chat.log_hash
+                            """
+        find_strings = [[]]
+        find_params = [[]]
+        # Filter by queries
+        pull_log = "SELECT stamp, username, info, chat_type FROM chat" 
+        pull_strings = [[]]
+        pull_params = [[]]
         sid = self.popups["SID"].liquidate()
-        # SID       search
+        # SID       search -> OR TERMS
+        if sid[0] == True and sid[2] != []:
+            # Search for
+            # WHERE 
+            for term in sid[2]:
+                find_strings[-1].append("uid = %s")
+                find_params[-1].append(term)
+                find_strings.append([])
+                find_params.append([])
+        if sid[1] == True and sid[2] != []:
+            # Filter By
+            for term in sid[2]:
+                pull_strings[-1].append("uid = %s")
+                pull_params[-1].append(term)
+                pull_strings.append([])
+                pull_params.append([])
 
-            # Pull down checkboxes
         pid = self.popups["PID"].liquidate()
-        # Name      search
-        
-            # Pull down checkboxes
+        # Name      search -> OR TERMS
+        if pid[0] == True and pid[2]  != []:
+            # Search for
+            for item in pid[2]:
+                find_strings[-1].append("username = %s")
+                find_params[-1].append(term)
+                find_strings.append([])
+                find_params.append([])
+        if pid[1] == True and pid[2] != []:
+            # Filter By
+            for item in pid[2]: 
+                pull_strings[-1].append("username = %s")
+                pull_params[-1].append(term)
+                pull_strings.append([])
+                pull_params.append([])
+
         keyword = self.popups["Keyword"].liquidate()
         # Keyword   search
-        
+        if len(keyword) > 0:
+            case_sensitive = item[0]        
             # Fill in blank
         chatdays = self.popups["DateDat"].liquidate()
-        # Day       filter
-        
-            # Calendar Widget
+        # Day       filter -> DATE MATH
+
+
         ChatType = self.popups["ChatType"].liquidate()
-        # Chat Type filter
-        
-            # Checkboxes
+        # Chat Type filter -> OR TERMS
+        for item in ChatType:
+            if item[1] == True:
+                pull_strings[-1].append("chat_type = %s")
+                pull_params[-1].append(item[0])
+                pull_strings.append([])
+                pull_params.append([])
+
         
 
     def failed_to_select_database(self):
