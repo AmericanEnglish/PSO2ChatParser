@@ -434,7 +434,7 @@ class MainGUI(QWidget):
         keyword = self.popups["Keyword"].liquidate()
         if keyword != []:
             if keyword[0] == "LOWER":
-                keyword_phrase = "LOWER(info) LIKE %%s%"
+                keyword_phrase = "LOWER(info) LIKE LOWER(%%s%)"
             else:
                 keyword_phrase = "info LIKE %%s%"
             for term in keyword[1]:
