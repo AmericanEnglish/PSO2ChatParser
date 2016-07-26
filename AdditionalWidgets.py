@@ -146,6 +146,7 @@ class SegaID(QWidget):
 class PlayerID(QWidget):
     def __init__(self):
         super().__init__()
+        self.browsewindow =
         grid = QGridLayout()
         self.setLayout(grid)
         self.PIDEdit = QLineEdit(self)
@@ -154,6 +155,7 @@ class PlayerID(QWidget):
         self.SearchByCheckbox = QCheckBox("Search For Username", self)
         self.FilterByCheckbox = QCheckBox("Filter By Username", self)
         SearchForAnIDButton = QPushButton("Browse Usernames", self)
+        SearchForAnIDButton.clicked.connect(lambda:self.browsePID())
         # Setup Grid
         grid.addWidget(PIDLabel,            0, 0)
         grid.addWidget(self.PIDEdit,             0, 1)
@@ -165,12 +167,28 @@ class PlayerID(QWidget):
 
         # Add an option later so that you can comb through ALL usernames for searching
         # each with their own filter and search by settings
+        self.fetched = None
 
     def setDB(self, database):
         self.db = database
+        self.update()
 
     def browsePID(self):
-        pass
+        # Call Window
+        newText = BrowseWindow.dumptext(self.fetched)
+        if newText != '':
+            self.PIDEdit.setText(newText)
+
+
+    def update():
+        self.db.execute("""SELECT DISTINCT username, uid FROM chat;""")
+        temp = self.db.fetchall()
+        self.fetched = {}
+        for item in temp:
+            if item[0] in self.fetched:
+                self.fetched[item[0]].append(item[1])
+            else:
+                self.fetched[item[0]] = [item[1]]       
 
     def liquidate(self):
         fodder = []
@@ -179,6 +197,34 @@ class PlayerID(QWidget):
                 if second != '':
                     fodder.append(second)
         return [self.SearchByCheckbox.isChecked(), self.FilterByCheckbox.isChecked(), fodder]
+
+
+class BrowseWindow(QDialog):
+    def __init__(self, dict_of_things):
+        super().__init__()
+        # Scrolls Bar
+        # Population Loop
+        self.items = []
+        collection = dict_of_things.keys()
+        collection.sort()
+        for item in collection:
+            # Check box, Primary Item, Secondary Items
+            self.items.append([QCheckBox(), item, dict_of_things[item]])
+            # Pack items into scrolls bar
+        # Accepted / Cancel Button
+        self.setWindowTitle("Browse Possibilities . . .")
+
+    def dumptext(displayable):
+        Browsing = BrowseWindow(displayable)
+        Browsing.exec_()
+        results = Browsing.results()
+        if results == QDialog.Accepted:
+            # Get all values
+
+            return ', '.join(things)[:-2]
+        else:
+            return ''
+
 
 class ChatTypeWidget(QWidget):
     def __init__(self):
