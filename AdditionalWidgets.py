@@ -112,17 +112,17 @@ class SegaID(QWidget):
         super().__init__()
         grid = QGridLayout()
         self.setLayout(grid)
-        SIDEdit = QLineEdit(self)
+        self.SIDEdit = QLineEdit(self)
         SIDLabel = QLabel("SID#: ", self)
-        SIDLabel.setBuddy(SIDEdit)
-        SearchByCheckbox = QCheckBox("Search For SID", self)
-        FilterByCheckbox = QCheckBox("Filter By SID", self)
+        SIDLabel.setBuddy(self.SIDEdit)
+        self.SearchByCheckbox = QCheckBox("Search For SID", self)
+        self.FilterByCheckbox = QCheckBox("Filter By SID", self)
         SearchForAnIDButton = QPushButton("Browse SID#'s", self)
         # Setup Grid
         grid.addWidget(SIDLabel,            0, 0)
-        grid.addWidget(SIDEdit,             0, 1)
-        grid.addWidget(SearchByCheckbox,    1, 1)
-        grid.addWidget(FilterByCheckbox,    2, 1)
+        grid.addWidget(self.SIDEdit,             0, 1)
+        grid.addWidget(self.SearchByCheckbox,    1, 1)
+        grid.addWidget(self.FilterByCheckbox,    2, 1)
         grid.addWidget(SearchForAnIDButton, 3, 1)
         # QCheckBox.isChecked() -> Bool
         self.setWindowTitle("Sega ID Options")
@@ -133,6 +133,13 @@ class SegaID(QWidget):
     def browseSID(self):
         pass
 
+    def liquidate(self):
+        fodder = []
+        for first in re.split(",", self.SIDEdit.text()):
+            for second in re.split(" ", first):
+                if second != '':
+                    fodder.append(second)
+        return [self.SearchByCheckbox.isChecked(), self.FilterByCheckbox.isChecked(), fodder]
 
 # Player ID Window
 class PlayerID(QWidget):
@@ -140,17 +147,17 @@ class PlayerID(QWidget):
         super().__init__()
         grid = QGridLayout()
         self.setLayout(grid)
-        PIDEdit = QLineEdit(self)
+        self.PIDEdit = QLineEdit(self)
         PIDLabel = QLabel("Username: ", self)
-        PIDLabel.setBuddy(PIDEdit)
-        SearchByCheckbox = QCheckBox("Search For Username", self)
-        FilterByCheckbox = QCheckBox("Filter By Username", self)
+        PIDLabel.setBuddy(self.PIDEdit)
+        self.SearchByCheckbox = QCheckBox("Search For Username", self)
+        self.FilterByCheckbox = QCheckBox("Filter By Username", self)
         SearchForAnIDButton = QPushButton("Browse Usernames", self)
         # Setup Grid
         grid.addWidget(PIDLabel,            0, 0)
-        grid.addWidget(PIDEdit,             0, 1)
-        grid.addWidget(SearchByCheckbox,    1, 1)
-        grid.addWidget(FilterByCheckbox,    2, 1)
+        grid.addWidget(self.PIDEdit,             0, 1)
+        grid.addWidget(self.SearchByCheckbox,    1, 1)
+        grid.addWidget(self.FilterByCheckbox,    2, 1)
         grid.addWidget(SearchForAnIDButton, 3, 1)
         # QCheckBox.isChecked() -> Bool
         self.setWindowTitle("Username Options")
@@ -163,6 +170,14 @@ class PlayerID(QWidget):
 
     def browsePID(self):
         pass
+
+    def liquidate(self):
+        fodder = []
+        for first in re.split(",", self.PIDEdit.text()):
+            for second in re.split(" ", first):
+                if second != '':
+                    fodder.append(second)
+        return [self.SearchByCheckbox.isChecked(), self.FilterByCheckbox.isChecked(), fodder]
 
 class ChatTypeWidget(QWidget):
     def __init__(self):
@@ -307,6 +322,7 @@ class SettingsWidget(QWidget):
         self.timegroup = QButtonGroup(self)
         TimeOptionLabel = QLabel("Time Format")
         self.buttons["24hour"] = QRadioButton("24 Hour", self)
+        self.buttons["24hour"].setChecked(True)
         self.buttons["12hour"]  = QRadioButton("12 Hour", self)
         self.timegroup.addButton(self.buttons["24hour"], 0)
         self.timegroup.addButton(self.buttons["12hour"],  1)
@@ -318,6 +334,7 @@ class SettingsWidget(QWidget):
         LanguageOptionLabel = QLabel("Language", self)
         self.languagegroup = QButtonGroup(self)
         self.buttons["english"] = QRadioButton("English")
+        self.buttons["english"].setChecked(True)
         self.buttons["spanish"] = QRadioButton(u"Español")
         self.buttons["spanish"].setEnabled(False)
         self.languagegroup.addButton(self.buttons["english"], 0)
