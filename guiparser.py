@@ -407,8 +407,8 @@ class MainGUI(QWidget):
         pull_log = "SELECT stamp, username, info, chat_type FROM chat " 
         pull_strings = [[]]
         pull_params = []
-        sid = self.popups["SID"].liquidate()
         # SID       search -> OR TERMS
+        sid = self.popups["SID"].liquidate()
         if sid[0] == True and sid[2] != []:
             # Search for
             # WHERE 
@@ -424,8 +424,8 @@ class MainGUI(QWidget):
                 pull_params.append(term)
         pull_strings.append([])
 
-        pid = self.popups["PID"].liquidate()
         # Name      search -> OR TERMS
+        pid = self.popups["PID"].liquidate()
         if pid[0] == True and pid[2]  != []:
             # Search for
             for term in pid[2]:
@@ -439,9 +439,9 @@ class MainGUI(QWidget):
                 pull_strings[-1].append("username = %%s%")
                 pull_params.append(term)
         pull_strings.append([])
-
-        keyword = self.popups["Keyword"].liquidate()
+        
         # Keyword   search
+        keyword = self.popups["Keyword"].liquidate()
         if keyword != []:
             if keyword[0] == "LOWER":
                 keyword_phrase = "LOWER(info) LIKE %%s%"
@@ -451,10 +451,9 @@ class MainGUI(QWidget):
                 find_strings[-1].append(keyword_phrase)
                 find_params.append(term)
         find_strings.append([])
-
-            # Fill in blank
-        chatdays = self.popups["DateDat"].liquidate()
+        
         # Day       search -> DATE MATH
+        chatdays = self.popups["DateDat"].liquidate()
         if chatdays != [None, None]:
             # yyyy-MM-ddThh:mm:ss
             if chatdays[0] == None:
