@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout, QGroupBox, QScrollArea
+from PyQt5.QtCore import Qt
 import re
 # Subclass QDialog
 class PostgreSQLogin(QDialog):
@@ -114,11 +115,13 @@ class SegaID(QWidget):
         grid = QGridLayout()
         self.setLayout(grid)
         self.SIDEdit = QLineEdit(self)
-        SIDLabel = QLabel("SID#: ", self)
+        SIDLabel = QLabel("SID#(s): ", self)
         SIDLabel.setBuddy(self.SIDEdit)
         self.SearchByCheckbox = QCheckBox("Search For SID", self)
         self.FilterByCheckbox = QCheckBox("Filter By SID", self)
         SearchForAnIDButton = QPushButton("Browse SID#'s", self)
+        SearchForAnIDButton.clicked.connect(lambda:self.browseSID())
+        SearchForAnIDButton.setEnabled(False)
         # Setup Grid
         grid.addWidget(SIDLabel,            0, 0)
         grid.addWidget(self.SIDEdit,             0, 1)
@@ -159,16 +162,16 @@ class SegaID(QWidget):
 class PlayerID(QWidget):
     def __init__(self):
         super().__init__()
-        self.browsewindow =
         grid = QGridLayout()
         self.setLayout(grid)
         self.PIDEdit = QLineEdit(self)
-        PIDLabel = QLabel("Username: ", self)
+        PIDLabel = QLabel("Username(s):", self)
         PIDLabel.setBuddy(self.PIDEdit)
         self.SearchByCheckbox = QCheckBox("Search For Username", self)
         self.FilterByCheckbox = QCheckBox("Filter By Username", self)
         SearchForAnIDButton = QPushButton("Browse Usernames", self)
         SearchForAnIDButton.clicked.connect(lambda:self.browsePID())
+        SearchForAnIDButton.setEnabled(False)
         # Setup Grid
         grid.addWidget(PIDLabel,            0, 0)
         grid.addWidget(self.PIDEdit,             0, 1)
@@ -192,15 +195,15 @@ class PlayerID(QWidget):
         if newText != '':
             self.PIDEdit.setText(newText)
 
-    def update():
-        self.db.execute("""SELECT DISTINCT username, uid FROM chat;""")
+    def update(self):
+        self.db.execute("""SELECT DISTINCT username, uid FROM chat WHERE uid > 5000;""")
         temp = self.db.fetchall()
         self.fetched = {}
         for item in temp:
             if item[0] in self.fetched:
-                self.fetched[item[0]].append(item[1])
+                self.fetched[item[0]].append(str(item[1]))
             else:
-                self.fetched[item[0]] = [item[1]]       
+                self.fetched[item[0]] = [str(item[1])]
 
     def liquidate(self):
         fodder = []
@@ -212,17 +215,32 @@ class PlayerID(QWidget):
 
 
 class BrowseWindow(QDialog):
-    def __init__(self, dict_of_things):
+    def __init__(self, terms):
         super().__init__()
         # Scrolls Bar
         # Population Loop
+        # print(terms)
         self.items = []
-        collection = dict_of_things.keys()
+        collection = list(terms.keys())
         collection.sort()
+        grid = QGridLayout()
+        n = 0
+        Filler = QWidget()
+
         for item in collection:
             # Check box, Primary Item, Secondary Items
-            self.items.append([QCheckBox(), item, dict_of_things[item]])
-            # Pack items into scrolls bar
+            self.items.append([QCheckBox(self), item, terms[item]])
+            grid.addWidget(self.items[-1][0], n, 0)
+            grid.addWidget(QLabel(self.items[-1][1], self), n, 1)
+            grid.addWidget(QLabel(', '.join(self.items[-1][2])[:-2], self), n, 2)
+            n += 1
+        # Pack items into scrolls bar
+        scroll = QScrollArea(self)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        Filler.setLayout(grid)
+        scroll.setWidget(Filler)
+        scroll.setWidgetResizable(False)
         # Accepted / Cancel Button
         self.setWindowTitle("Browse Possibilities . . .")
 
@@ -232,8 +250,11 @@ class BrowseWindow(QDialog):
         results = Browsing.results()
         if results == QDialog.Accepted:
             # Get all values
-
-            return ', '.join(things)[:-2]
+            things = ""
+            for thing in items:
+                if thing[0].isChecked:
+                    things += things[1] + ", "
+            return things[:-2]
         else:
             return ''
 

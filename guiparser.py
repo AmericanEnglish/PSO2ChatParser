@@ -145,6 +145,8 @@ class MainGUI(QWidget):
                 self.prompt_for_chat()
                 self.scan_for_new()
         self.popups["Settings"].setDB(self.db.db_type)
+        self.popups["SID"].setDB(self.db)
+        self.popups["PID"].setDB(self.db)
 
 
     def prompt_for_posgres(self, create_new=False):
