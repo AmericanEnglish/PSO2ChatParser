@@ -4,6 +4,7 @@ from AdditionalWidgets import *
 from timestamp import timestamp
 from time import sleep
 import sys
+import sys
 import re
 
 # Mulit DB Support
@@ -171,7 +172,7 @@ class MainGUI(QWidget):
             success, err = self.db.create_table("./create.sql")
             if not success:
                 print(str(err))
-                exit()
+                sys.exit(1)
 
     def prompt_for_chat(self):
         # Ask for chat directory
@@ -511,13 +512,13 @@ class MainGUI(QWidget):
         # Throw error popup
         QMessageBox.critical(self, 'ERROR', "No database selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
         # Quit out
-        exit()
+        sys.exit(1)
 
     def failed_to_select_folder(self):
         # Throw error popup
         QMessageBox.critical(self, 'ERROR', "No default folder selected! This is REQUIRED", QMessageBox.Ok, QMessageBox.Ok)
         # Quit out
-        exit()        
+        sys.exit(1)        
 
     def closeEvent(self, event):
         for key in self.popups.keys():
