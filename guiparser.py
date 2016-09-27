@@ -3,6 +3,7 @@ from Crypto.Hash import SHA256 # for hashing
 from AdditionalWidgets import *
 from timestamp import timestamp
 from time import sleep
+from sql import *
 import sys
 import sys
 import re
@@ -142,7 +143,7 @@ class MainGUI(QWidget):
                 self.defaults = self.db
                 # Create the tables needed
                 self.defaults.execute("""CREATE TABLE defaults (name VARCHAR(15), value VARCHAR(30) NOT NULL, PRIMARY KEY (name));""")
-                self.db.create_table("./create.sql")
+                self.db.create_from_string(create_sql)
                 self.prompt_for_chat()
                 self.scan_for_new()
         self.popups["Settings"].setDB(self.db.db_type)
@@ -169,7 +170,7 @@ class MainGUI(QWidget):
         del info
         # Create?
         if create_new == True:
-            success, err = self.db.create_table("./create.sql")
+            success, err = self.db.create_from_string(create_sql)
             if not success:
                 print(str(err))
                 sys.exit(1)
@@ -385,7 +386,8 @@ class MainGUI(QWidget):
             self.popups[self.latest_popup].show()
 
     def full_query(self):
-        self.generate_query()
+        query_strings = self.generate_query()
+        print(query_strings) 
         # Then pipe data into Reader
 
     def generate_query(self):
@@ -429,7 +431,7 @@ class MainGUI(QWidget):
         if pid[1] == True and pid[2] != []:
             # Filter By
             for term in pid[2]: 
-                pull_strings[-1].append("username = %%s%")
+                pull_strings[-1].append("username = %s")
                 pull_params.append(term)
         pull_strings.append([])
         
@@ -497,15 +499,16 @@ class MainGUI(QWidget):
             pull_log += "WHERE " + full_pull + ";"
         else:
             pull_log += ";"
-        print("----------------------LOG QUERY------------------")
-        print(pull_log)
-        print("----------------------LOG PARAMS-----------------")
-        print(pull_params)
-        print("----------------------FIND QUERY-----------------")
-        print(find_log)
-        print("----------------------FIND PARAM-----------------")
-        print(find_params)
-        print("##################################################")
+#        print("----------------------LOG QUERY------------------")
+#        print(pull_log)
+#        print("----------------------LOG PARAMS-----------------")
+#        print(pull_params)
+#        print("----------------------FIND QUERY-----------------")
+#        print(find_log)
+#        print("----------------------FIND PARAM-----------------")
+#        print(find_params)
+#        print("##################################################")
+        return [(find_log, find_params), (pull_log[:-1], pull_params)]
         
 
     def failed_to_select_database(self):
