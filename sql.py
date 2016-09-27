@@ -1,3 +1,4 @@
+create_sql = """
 CREATE TABLE logs
 (
     name VARCHAR,
@@ -25,3 +26,9 @@ CREATE TABLE chat
         REFERENCES logs (hashed_contents)
         ON UPDATE CASCADE
 );
+"""
+
+destroy_sql = """
+DROP TABLE chat;
+DROP TABLE logs;
+"""

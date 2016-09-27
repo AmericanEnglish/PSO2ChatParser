@@ -1,2 +1,0 @@
-DROP TABLE chat;
-DROP TABLE logs;
