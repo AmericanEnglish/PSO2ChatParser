@@ -467,5 +467,19 @@ class SettingsWidget(QWidget):
         self.buttons[default].setChecked(True)
 
 class Reader(QWidget):
+    """This QWidget displays chat logs in a meaningful way. This 
+    includes text coloring for different chat types, removing 
+    other chat types with some check boxes, and the saving of 
+    these filtered logs as their own text documents."""
     def __init__(self):
         super().__init__()
+
+
+class Selector(QDialog):
+    """This QWindow should take a list of tuples and allow the user to 
+    select which things they would like to proceed with. When the Dialog 
+    is closed it returns a list of indices that have checked and should 
+    proceeded with."""
+    def __init__(self, items):
+        super().__init__()
+
