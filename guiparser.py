@@ -387,13 +387,29 @@ class MainGUI(QWidget):
 
     def full_query(self):
         query_strings = self.generate_query()
-        print(query_strings) 
+        print(query_strings)
+        self.db.execute(query_strings[0][0], query_strings[0][1])
+        results = self.db.fetchall()
+        print("Total Log Hits: {}".format(len(results)))
+#        with open('sample.txt', 'w') as newfile:
+#            for item in results:
+#                newfile.write(str(item) + "\n")
+        # Hits per log
+        print("Hits per log:")
+        for item in results:
+            print("{} -> {}".format(item[0].split("/")[-1], item[2]))
+
+        # Pipe these days to a selection window which will spawn the according windows
+        # This should return indices of things to be displayed
+
         # Then pipe data into Reader
+        
+
 
     def generate_query(self):
         # Buttons that concatenate the string to make a query
         # Search for query
-        find_log = """SELECT name, hashed_contents FROM logs 
+        find_log = """SELECT name, hashed_contents, COUNT(hashed_contents) FROM logs 
                             INNER JOIN chat ON logs.hashed_contents = chat.log_hash
                              """
         find_strings = [[]]
@@ -486,9 +502,9 @@ class MainGUI(QWidget):
                 if item != []:
                     temp.append("(" + ' OR '.join(item) + ")")
             full_find = ' AND '.join(temp)
-            find_log += "WHERE " + full_find + ";"
+            find_log += "WHERE " + full_find + " GROUP BY hashed_contents;"
         else:
-            find_log += ";"
+            find_log += " GOUP BY hashed_contents;"
         print("Pull Strings: {}".format(pull_strings))
         if pull_strings != [[], [], [], []]:
             temp = []
@@ -496,9 +512,9 @@ class MainGUI(QWidget):
                 if item != []:
                     temp.append("(" + ' OR '.join(item) + ")")
             full_pull = ' AND '.join(temp)
-            pull_log += "WHERE " + full_pull + ";"
+            pull_log += "WHERE " + full_pull + " "
         else:
-            pull_log += ";"
+            pull_log += " "
 #        print("----------------------LOG QUERY------------------")
 #        print(pull_log)
 #        print("----------------------LOG PARAMS-----------------")
