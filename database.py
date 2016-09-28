@@ -93,6 +93,28 @@ class DB():
                 self.rollback()
                 return False, err
 
+    def create_from_string(self, sqlstring):
+        """(DB object, str) -> bool, str
+        
+        create_from_string is a variation of create_table. Instead this method 
+        will create tables from a string. All other return values and behavior 
+        are the same as create_table."""
+        try:
+            if self.db_type == 'sqlite3':
+                creation = sqlstring.strip()
+                start = 0
+                while start < len(creation) - 1:
+                    self.execute(creation[start:creation.index(';', start + 1) + 1])
+                    start = creation.index(';', start + 1)
+                    self.commit()
+            else:
+                self.execute(sqlstring)
+                self.commit()
+            return True, None
+        except psycopg2.Error as err:
+            self.rollback()
+            return False, err
+
     def rollback(self):
         self.con.rollback()
 
