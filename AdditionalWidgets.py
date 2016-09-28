@@ -123,11 +123,11 @@ class SegaID(QWidget):
         SearchForAnIDButton.clicked.connect(lambda:self.browseSID())
         SearchForAnIDButton.setEnabled(False)
         # Setup Grid
-        grid.addWidget(SIDLabel,            0, 0)
+        grid.addWidget(SIDLabel,                 0, 0)
         grid.addWidget(self.SIDEdit,             0, 1)
         grid.addWidget(self.SearchByCheckbox,    1, 1)
         grid.addWidget(self.FilterByCheckbox,    2, 1)
-        grid.addWidget(SearchForAnIDButton, 3, 1)
+        grid.addWidget(SearchForAnIDButton,      3, 1)
         # QCheckBox.isChecked() -> Bool
         self.setWindowTitle("Sega ID Options")
 
@@ -442,12 +442,12 @@ class SettingsWidget(QWidget):
         grid.addWidget(self.buttons["postgres"],     0, 2)
 
         grid.addWidget(TimeOptionLabel,              1, 0)
-        grid.addWidget(self.buttons["12hour"],             1, 1)
+        grid.addWidget(self.buttons["12hour"],       1, 1)
         grid.addWidget(self.buttons["24hour"],       1, 2)
 
         grid.addWidget(LanguageOptionLabel,          2, 0)
-        grid.addWidget(self.buttons["english"],            2, 1)
-        grid.addWidget(self.buttons["spanish"],            2, 2)
+        grid.addWidget(self.buttons["english"],      2, 1)
+        grid.addWidget(self.buttons["spanish"],      2, 2)
 
         # Some scroll bar widget here someday
         self.setWindowTitle("Settings")
