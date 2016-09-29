@@ -62,7 +62,7 @@ Current Progress
   * Just using a setText("text\nCOUNTER") method is quicker and just as good
 3. ~~Designing Windows~~
   * All rough drafts have been finished
-4. Starting Linking all the buttons, fields, checkboxes, to the Query Generator
+4. ~~Starting Linking all the buttons, fields, checkboxes, to the Query Generator~~
 5. ~~Integrate PostgreSQL~~
   * Add a login window and that's it, make it modal.
   * Thanks to [this](http://stackoverflow.com/questions/18196799/how-can-i-show-a-pyqt-modal-dialog-and-get-data-out-of-its-controls-once-its-clo
