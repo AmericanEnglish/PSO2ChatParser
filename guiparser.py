@@ -455,12 +455,12 @@ class MainGUI(QWidget):
         keyword = self.popups["Keyword"].liquidate()
         if keyword != []:
             if keyword[0] == "LOWER":
-                keyword_phrase = "LOWER(info) LIKE LOWER(%%s%)"
+                keyword_phrase = "LOWER(info) LIKE LOWER(%s)"
             else:
-                keyword_phrase = "info LIKE %%s%"
+                keyword_phrase = "info LIKE %s"
             for term in keyword[1]:
                 find_strings[-1].append(keyword_phrase)
-                find_params.append(term)
+                find_params.append("%" + term + "%")
         find_strings.append([])
         
         # Day       search -> DATE MATH
