@@ -58,7 +58,6 @@ class PostgreSQLogin(QDialog):
         results = dialog.exec_()
         return (dialog.success(), results == QDialog.Accepted)
 
-
 # Subclass QDialog
 class ChooseDB(QDialog):
     def __init__(self):
@@ -283,6 +282,7 @@ class ChatTypeWidget(QWidget):
         return [("PUBLIC",self.PUBLIC.isChecked()), ("PARTY", self.PARTY.isChecked()), 
             ("GUILD", self.GUILD.isChecked()), ("REPLY", self.WHISPER.isChecked())]
 
+
 class ChatTime(QWidget):
     def __init__(self):
         super().__init__()
@@ -362,20 +362,20 @@ class KeywordSearch(QWidget):
         self.SentenceRadio = QRadioButton("Sentence", self)
         self.SentenceRadio.setChecked(True)
         self.WordRadio = QRadioButton("Collection Of Words", self)
-        RadioGroup.addButton(self.WordRadio, 0)
+        RadioGroup.addButton(self.WordRadio,     0)
         RadioGroup.addButton(self.SentenceRadio, 1)
         RadioHolder = QWidget()
         RadioHBox = QHBoxLayout()
         RadioHolder.setLayout(RadioHBox)
         RadioHBox.addWidget(self.SentenceRadio)
         RadioHBox.addWidget(self.WordRadio)
-        grid.addWidget(KeywordLabel,    0, 0)
+        grid.addWidget(KeywordLabel,         0, 0)
         grid.addWidget(self.KeywordField,    0, 1)
-        # grid.addWidget(ClearButton,     0, 2)
+        # grid.addWidget(ClearButton,        0, 2)
         grid.addWidget(self.KeywordCheckbox, 0, 2)
-        # grid.addWidget(self.SentenceRadio,       1, 1)
-        # grid.addWidget(self.WordRadio,   1, 2)
-        grid.addWidget(RadioHolder, 1, 1)
+        # grid.addWidget(self.SentenceRadio, 1, 1)
+        # grid.addWidget(self.WordRadio,     1, 2)
+        grid.addWidget(RadioHolder,          1, 1)
         self.setWindowTitle("Keyword Search Options")
 
     def liquidate(self):
@@ -413,7 +413,7 @@ class SettingsWidget(QWidget):
         self.buttons["sqlite3"].clicked.connect(lambda:self.DBChange())
         self.buttons["postgres"] = QRadioButton("PostgreSQL", self)
         self.buttons["postgres"].clicked.connect(lambda:self.DBChange())
-        self.sqlgroup.addButton(self.buttons["sqlite3"], 0)
+        self.sqlgroup.addButton(self.buttons["sqlite3"],   0)
         self.sqlgroup.addButton(self.buttons["postgres"],  1)
         # 24 or 12 Hour Format
         self.timegroup = QButtonGroup(self)
@@ -421,7 +421,7 @@ class SettingsWidget(QWidget):
         self.buttons["24hour"] = QRadioButton("24 Hour", self)
         self.buttons["24hour"].setChecked(True)
         self.buttons["12hour"]  = QRadioButton("12 Hour", self)
-        self.timegroup.addButton(self.buttons["24hour"], 0)
+        self.timegroup.addButton(self.buttons["24hour"],  0)
         self.timegroup.addButton(self.buttons["12hour"],  1)
         # Add several options for how timestamps should be displayed in the logs
         # yyyy/mm/dd:
@@ -466,6 +466,7 @@ class SettingsWidget(QWidget):
     def setLanguage(self, default):
         self.buttons[default].setChecked(True)
 
+
 class Reader(QWidget):
     """This QWidget displays chat logs in a meaningful way. This 
     includes text coloring for different chat types, removing 
@@ -476,10 +477,15 @@ class Reader(QWidget):
 
 
 class Selector(QDialog):
-    """This QWindow should take a list of tuples and allow the user to 
+    """This QDialog should take a list of tuples and allow the user to 
     select which things they would like to proceed with. When the Dialog 
     is closed it returns a list of indices that have checked and should 
     proceeded with."""
     def __init__(self, items):
         super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        
+    def getInfo():
+        pass
 
