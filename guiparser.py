@@ -290,13 +290,13 @@ class MainGUI(QWidget):
             else:
                 self.db.execute("""UPDATE logs
                         SET hashed_contents = %s
-                        WHERE name = %s;""", [log_hash, path_to_file]) # Update the log hash value here
+                        WHERE name = %s;""", [log_hash, path_to_file], False) # Update the log hash value here
                 reprocessing = True
         else:
             reprocessing = False
             # print(len(path_to_file))
             success, err = self.db.execute("""INSERT INTO logs VALUES (%s, %s);""", 
-            [path_to_file, log_hash])
+            [path_to_file, log_hash], False)
             if not success:
                 print(str(err))
         contents = re.split("\n", contents)
@@ -348,7 +348,7 @@ class MainGUI(QWidget):
                 if results[0][0] == log_hash and not reprocessing:
                     success, err = self.db.execute("""UPDATE chat
                         SET occur = occur + 1
-                        WHERE line_hash = %s;""", [results[0][1]])
+                        WHERE line_hash = %s;""", [results[0][1]], False)
                 if not success:
                     print(str(err))
                 # print("Line hash exists!")
@@ -363,11 +363,12 @@ class MainGUI(QWidget):
                 line.insert(0, log_hash)
                 line.append(1)
                 success, err = self.db.execute("""INSERT INTO chat VALUES
-                    (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", line)
+                    (%s, %s, %s, %s, %s, %s, %s, %s, %s);""", line, False)
                 if not success:
                     print(str(err))
                 # print("Area 2")
                 # print(line)
+        self.db.execute.commit()
 
     def prompt_for_file(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file', self.default_path)
