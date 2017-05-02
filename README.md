@@ -73,7 +73,7 @@ Current Progress
 Languages Attempted
 ===================
 1. Clojure
- * Clojure, like Java, enjoy reading in utf16 files as BE even if there exists a BOM indicating LE. The work around for this in Clojure is absolutely ghastly and the GUI support for Clojure using JavaFX is just mind blowingly perplexing at first glance.
+ * Clojure, like Java, enjoys reading in utf16 files as BE even if there exists a BOM indicating LE. The work around for this in Clojure is absolutely ghastly and the GUI support for Clojure using JavaFX is just mind blowingly perplexing at first glance.
 2. C/C++
  * C++11 added some basics for unicode support but I have major problems trying to figure out how anyone is supposed use any of it. I'll install the Visual C++ compiler tools at a later date and maybe I'll find solace in WChar support.
  * C -> WChar support is just poorly document. Many examples are using english text with always works quite well but there is little documentation on using Asian text like Hiragana. This might be solved if I were to switch to MS VS C++ and compile my C code with CL.exe as opposed to MinGW. I had this vain hope that I MinGW would "just work" and was sorely let down. If I get around to installing VS C++ stuff I'll try to rewrite this whole program using the Win32API for gui's and text processing.

@@ -1,33 +1,17 @@
-import psycopg2
 import sqlite3
 
 class DB():
     """Used for interacting with a database by cutting down on some database
     specific interactions."""
     # Database Skeleton
-    def __init__(self, db_type, db_name, host='localhost', user=None, password=None):
-        if db_type != 'sqlite3' and db_type != 'postgres':
-            return None
-        self.db_type = db_type
+    def __init__(self, db_name):
         self.db_name = db_name
-        self.host = host
-        self.user = user
-        self.password = password
         self.con = None
         self.cur = None
 
     def connect(self):
-        if self.db_type == 'sqlite3':
-            self.con = sqlite3.connect(database=self.db_name)
-            return True, None
-
-        elif self.db_type == 'postgres':
-            try:
-                self.con = psycopg2.connect(host=self.host, database=self.db_name, user=self.user, password=self.password)
-                self.password = None
-                return True, None
-            except psycopg2.OperationalError as err:
-                return False, err
+        self.con = sqlite3.connect(database=self.db_name)
+        return True, None
 
     def cur_gen(self):
         if self.con == None:
@@ -45,26 +29,22 @@ class DB():
             self.cur_gen()
         if arguments == None:
             try:
-                if (self.db_type == "sqlite3") and ('%s' in string):
-                    string = string.replace('%s', '?')
+                string = string.replace('%s', '?')
                 self.cur.execute(string)
-                if autocommit == True:
+                if autocommit is True:
                     self.commit()
                 return True, None
-            except psycopg2.Error as err:
+            except sqlite3.Error as err:
                 self.con.rollback()
                 return False, err
         else:
             try:
-                if (self.db_type == "sqlite3") and ('%s' in string):
+                if '%s' in string:
                     string = string.replace('%s', '?')
                 self.cur.execute(string, arguments)
                 if autocommit == True:
                     self.commit()
                 return True, None
-            except psycopg2.Error as err:
-                self.rollback()
-                return False, err 
             except sqlite3.IntegrityError as err:
                 return False, err
 
@@ -80,20 +60,15 @@ class DB():
         with open(sqlfile, 'r') as exe:
             try:
                 # Add if statement for sqlite because it does one table at a time.
-                if self.db_type == 'sqlite3':
-                    creation = exe.read().strip()
-                    start = 0
-                    while start < len(creation) - 1:
-                        self.execute(creation[start:creation.index(';', start + 1) + 1])
-                        start = creation.index(';', start + 1)
-                        self.commit()
-                else:
-                    self.execute(exe.read())
+                creation = exe.read().strip()
+                start = 0
+                while start < len(creation) - 1:
+                    self.execute(creation[start:creation.index(';', start + 1) + 1])
+                    start = creation.index(';', start + 1)
                     self.commit()
                 return True,  None
-            except psycopg2.Error as err:
-                self.rollback()
-                return False, err
+            except:
+                pass
 
     def create_from_string(self, sqlstring):
         """(DB object, str) -> bool, str
@@ -102,20 +77,15 @@ class DB():
         will create tables from a string. All other return values and behavior 
         are the same as create_table."""
         try:
-            if self.db_type == 'sqlite3':
-                creation = sqlstring.strip()
-                start = 0
-                while start < len(creation) - 1:
-                    self.execute(creation[start:creation.index(';', start + 1) + 1])
-                    start = creation.index(';', start + 1)
-                    self.commit()
-            else:
-                self.execute(sqlstring)
+            creation = sqlstring.strip()
+            start = 0
+            while start < len(creation) - 1:
+                self.execute(creation[start:creation.index(';', start + 1) + 1])
+                start = creation.index(';', start + 1)
                 self.commit()
             return True, None
-        except psycopg2.Error as err:
-            self.rollback()
-            return False, err
+        except:
+            pass
 
     def rollback(self):
         self.con.rollback()
@@ -123,11 +93,5 @@ class DB():
     def fetchall(self):
         try:
             return self.cur.fetchall()
-        except psycopg2.ProgrammingError as err:
-            if "no results to fetch" in str(err):
-                empty = []
-                return empty
-            else:
-                print("Unexpected Error, {}".format(str(err)))
-                print("Exiting!")
-                exit()
+        except:
+            pass
