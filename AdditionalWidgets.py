@@ -187,7 +187,7 @@ class ChatTime(QWidget):
         # Calendar Widget
         self.BigCalendar = QCalendarWidget(self)
         grid.addWidget(self.BigCalendar, 0, 0, 3, 4)
-        # Begin button and date
+        # Begin button and dat:
         BeginButton = QPushButton("Begin:", self)
         BeginLabel = QLabel("", self)
         BeginLabel.setBuddy(BeginButton)
@@ -275,12 +275,15 @@ class KeywordSearch(QWidget):
     def liquidate(self):
         items = []
         if self.KeywordField.text() == "":
+            item.append(False)
+            item.append([])
             return items
         else:
-            if not self.KeywordCheckbox.isChecked():
-                items.append("LOWER")
-            else:
-                items.append(None)
+            #  if not self.KeywordCheckbox.isChecked():
+                #  items.append("LOWER")
+            #  else:
+                #  items.append(None)
+            items.append(self.KeywordCheckbox.isChecked())
             if self.WordRadio.isChecked():
                 fodder = []
                 for item in re.split(" ", self.KeywordField.text()):
@@ -338,8 +341,8 @@ class SettingsWidget(QWidget):
         # If DB needs to be changed throw signal to main window
         pass
 
-    def setDB(self, default):
-        self.buttons[default].setChecked(True)
+    #  def setDB(self, default):
+        #  self.buttons[default].setChecked(True)
 
     def setTimeFormat(self, default):
         self.buttons[default].setChecked(True)
