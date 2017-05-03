@@ -205,15 +205,17 @@ class MainGUI(QWidget):
         allFiles = list(map(partial(lambda x, base: base + x, base=self.default_path), allFiles))
         if len(allFiles) > 100:
             searchpool = Pool(8)
-            print("Beginning...")
+            print("==========Beginning==========")
             results = list(searchpool.map(partial(search_file, parameters=data), allFiles))
         else:
             results = list(map(partial(search_file, parameters=data), allFiles))
         # Do more stuff
+        count = 0
         for index, item in enumerate(results):
             if item != []:
                 print(allFiles[index], item)
-        print("Finished...")
+                count += 1
+        print("==========Total Logs of Interest: {}==========".format(count))
 
 
 

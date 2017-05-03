@@ -168,14 +168,15 @@ def keyword_check(conditions, to_check):
     Searches for keywords in the string to_check."""
     # Console.WriteLine("\tKey Search Terms [{0}] -> {1}", String.Join(", ", conditions), to_check);
     # Should add a check for if ALL terms are found as well
-    if len(conditions) > 1:
+    if conditions[0] and len(conditions[1]) > 1:
         terms = conditions[1]
         # Returns true if any terms or found
         for item in terms:
             return (item in to_check and conditions[0]) or (item.lower() in to_check.lower() and not conditions[0])
+        return False
     else:
         # No keywords provided
-        return True;
+        return True
     
 
 def full_check(parameters, split_line):
