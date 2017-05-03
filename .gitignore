@@ -7,3 +7,6 @@ Make*
 sip*
 *swp
 *.un~
+*.spec
+build/
+dist/
