@@ -275,8 +275,8 @@ class KeywordSearch(QWidget):
     def liquidate(self):
         items = []
         if self.KeywordField.text() == "":
-            item.append(False)
-            item.append([])
+            items.append(False)
+            items.append([])
             return items
         else:
             #  if not self.KeywordCheckbox.isChecked():

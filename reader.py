@@ -132,7 +132,7 @@ def pid_check(conditions, to_check):
     if conditions[0]:
         terms = conditions[2]
         for item in terms:
-            if item in to_check:
+            if item.lower() in to_check.lower():
                 # Console.WriteLine("\t\tPass 1");
                 return True;
         else:
@@ -172,7 +172,7 @@ def keyword_check(conditions, to_check):
         terms = conditions[1]
         # Returns true if any terms or found
         for item in terms:
-            return (item in to_check and conditions[0] == "sensitive") or (item.lower() in to_check.lower() and conditions[0] != "sensitive")
+            return (item in to_check and conditions[0]) or (item.lower() in to_check.lower() and not conditions[0])
     else:
         # No keywords provided
         return True;
