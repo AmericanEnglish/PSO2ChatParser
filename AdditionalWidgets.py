@@ -369,13 +369,16 @@ class Reader(QWidget):
         self.resize(900, 500)
         # Initial Table
         self.table = QTableView(self)
-        headers = ["Time", "Line", "Chat Type", "SID", "PID", "Message"]
+        headers = ["Time", "PID/SID", "Message"]
+        # Data (list of  chatTypes, chatlines)
         data = self.digest(filename)
         tablemodel = ChatTable(data, headers, self)
         self.table.setModel(tablemodel)
 
         # Table Details
+        self.table.setWordWrap(True)
         self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
 
         vv = self.table.verticalHeader()
         vv.setVisible(False)
@@ -395,6 +398,7 @@ class Reader(QWidget):
     def digest(self, current_file):
         """Takes a chat file and dumps out a list of lists"""
         data = []
+        chat_type_data= []
         with open(current_file, "r", encoding="utf16") as cur:
             allText = cur.read()
         # Split file
@@ -417,7 +421,8 @@ class Reader(QWidget):
                 # Console.WriteLine("\tLength > 6!");
                 # Console.WriteLine(split_line);
                 split_line = too_many_tabs(split_line)
-            
+
+            keep = split_line
             # Victim of a bad newline
             if len(split_line) < 6:
                 # Need to find the line that fits!
@@ -436,18 +441,26 @@ class Reader(QWidget):
                     keep[5] += "\n" + split_file[i]
                     i += 1
                 # Console.WriteLine("\tFinalized: {0}", String.Join(", ", keep));
-                split_line = keep
+            # Time, ChatType, PID\nSID, Message
+            split_line = []
+            split_line.append(keep[0][keep[0].index("T") + 1:])
+            # Chat Type
+            #  split_line.append(keep[2])
+            chat_type_data.append(keep[2])
+            split_line.append("{}\n{}".format(keep[4], keep[3]))
+            split_line.append(keep[-1])
             data.append(split_line)
 
         print("File ({}) read succesfully! {} Lines!".format(current_file, len(data)))
-        return data
+        return chat_type_data, data
 
 class ChatTable(QAbstractTableModel):
     """"""
     def __init__(self, data, headers, parent=None):
         QAbstractTableModel.__init__(self, parent)
         self.headerdata = headers
-        self.arraydata = data
+        self.arraydata = data[1]
+        self.chat_type_data = data[0]
 
     def rowCount(self, parent):
         if self.data is not None:
@@ -464,13 +477,13 @@ class ChatTable(QAbstractTableModel):
             return QVariant()
         elif role == Qt.BackgroundRole:
             # Begin Coloring?
-            if self.arraydata[index.row()][2] == "PUBLIC":
+            if self.chat_type_data[index.row()] == "PUBLIC":
                 return QBrush(Qt.lightGray)
-            elif self.arraydata[index.row()][2] == "PARTY":
+            elif self.chat_type_data[index.row()] == "PARTY":
                 return QBrush(Qt.cyan)
-            elif self.arraydata[index.row()][2] == "GUILD":
+            elif self.chat_type_data[index.row()] == "GUILD":
                 return QBrush(Qt.darkYellow)
-            elif self.arraydata[index.row()][2] == "REPLY":
+            elif self.chat_type_data[index.row()] == "REPLY":
                 return QBrush(Qt.magenta)
         elif role != Qt.DisplayRole:
             return QVariant()
@@ -480,20 +493,6 @@ class ChatTable(QAbstractTableModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.headerdata[section])
         return QVariant()
-
-
-class Selector(QDialog):
-    """This QDialog should take a list of tuples and allow the user to 
-    select which things they would like to proceed with. When the Dialog 
-    is closed it returns a list of indices that have checked and should 
-    proceeded with."""
-    def __init__(self, items):
-        super().__init__()
-        grid = QGridLayout()
-        self.setLayout(grid)
-        
-    def getInfo():
-        pass
 
 
 
