@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QFileDialog, QMessageBox, QProgressDialog, QPushButton
 from AdditionalWidgets import *
-from timestamp import timestamp
 import sys
 import re
 from multiprocessing import freeze_support, Pool
