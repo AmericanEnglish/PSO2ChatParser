@@ -210,11 +210,26 @@ class MainGUI(QWidget):
             results = list(map(partial(search_file, parameters=data), allFiles))
         # Do more stuff
         count = 0
+        #  for index, item in enumerate(results):
+            #  if item != []:
+                #  print(allFiles[index], item)
+                #  count += 1
+        # Build list of non-empty logs
+        new_results = []
         for index, item in enumerate(results):
             if item != []:
-                print(allFiles[index], item)
+                new_results.append([allFiles[index], item])
                 count += 1
+
         print("==========Total Logs of Interest: {}==========".format(count))
+        print(new_results[-1][0])
+        #  print(new_results[-1][1])
+        if new_results != []:
+            # READER READER SONNY
+            if "Reader" in self.popups.keys():
+                self.popups["Reader"].refresh(new_results)
+            else:
+                self.popups["Reader"] = Reader(new_results)
 
 
 

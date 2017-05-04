@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout, QGroupBox, QScrollArea, QTableView
-from PyQt5.QtCore import Qt, QVariant, QAbstractTableModel
-from PyQt5.QtGui import QBrush
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout, QGroupBox, QScrollArea, QTableView, QTreeView, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import Qt, QVariant, QAbstractTableModel, QModelIndex
+from PyQt5.QtGui import QBrush, QStandardItemModel, QStandardItem, QColor
 from reader import too_many_tabs
 import re
 
@@ -359,21 +359,28 @@ class Reader(QWidget):
     """This QWidget displays chat logs in a meaningful way. This 
     includes text coloring for different chat types, removing 
     other chat types with some check boxes, and the saving of 
-    these filtered logs as their own text documents."""
-    def __init__(self, filename):
+    these filtered logs as their own text documents.
+    
+    filenames is a complex structure that looks like
+    [
+        [filename1, [line numbers]],
+        [filename2, [line numbers]]
+    ]"""
+    def __init__(self, filenames):
         super().__init__()
-        grid = QGridLayout()
-        self.setLayout(grid)
+        hbox = QHBoxLayout(self)
+        # All the files
+        self.setLayout(hbox)
         # Set Other Window Params
-        self.setWindowTitle(filename)
+        self.setWindowTitle("PSO2 Chat Reader")
         self.resize(900, 500)
         # Initial Table
         self.table = QTableView(self)
-        headers = ["Time", "PID/SID", "Message"]
+        self.headers = ["Time", "PID/SID", "Message"]
         # Data (list of  chatTypes, chatlines)
-        data = self.digest(filename)
-        tablemodel = ChatTable(data, headers, self)
-        self.table.setModel(tablemodel)
+        #  data = self.digest(filenames[0][0])
+        #  tablemodel = ChatTable(data, headers, self)
+        #  self.table.setModel(tablemodel)
 
         # Table Details
         self.table.setWordWrap(True)
@@ -386,14 +393,99 @@ class Reader(QWidget):
         hh.setStretchLastSection(True)
 
         self.table.setSortingEnabled(False)
-
-        # Add Stuff
-        grid.addWidget(self.table, 0, 0)
         
 
+        # The tree structure
+        self.tree = QTreeView(self)
+        self.tree.doubleClicked.connect(self.update_content)
+        self.tree.setFixedWidth(300)
+
+        # A text box containing the log title
+        self.logTitle = QLabel("")
+
+        #  self.new_tree(filenames)
+        self.refresh(filenames)
+
+        # Add Stuff
+        hbox.addWidget(self.tree)
+        fluff= QWidget(self)
+        vbox = QVBoxLayout(self)
+        vbox.addWidget(self.logTitle)
+        vbox.addWidget(self.table)
+        fluff.setLayout(vbox)
+        hbox.addWidget(fluff)
+        
+        
         # Delete this
-        self.table.show()
+        #  self.tree.show()
+        #  self.table.show()
         self.show()
+
+    def generate_tree(self, allitems, parent):
+        for oneFile in allitems:
+            top_item = QStandardItem(oneFile[0])
+            top_item.setEditable(False)
+            parent.appendRow(top_item)
+            for index, item in enumerate(oneFile[1]):
+                if index < 10:
+                    nested_item = QStandardItem(item)
+                    nested_item.setEditable(False)
+                    top_item.appendRow(nested_item)
+
+    def new_tree(self, filenames):
+        tree_model = QStandardItemModel()
+        self.tree.setModel(tree_model)
+        self.generate_tree(filenames, tree_model.invisibleRootItem())
+
+    def update_content(self, index):
+        # Get another
+        item = self.tree.selectedIndexes()[0]
+        result = item.model().itemFromIndex(index) # .text()
+        while result.parent() is not None:
+            result = result.parent()
+        top = result.text()
+        if "contents" not in self.alldata[top].keys():
+            # Generate content
+            self.alldata[top]["contents"] = self.digest(self.alldata[top]["long"])
+            self.alldata[top]["table"] = ChatTable(self.alldata[top]["contents"], self.headers, self)
+            self.table.setModel(self.alldata[top]["table"])
+            self.logTitle.setText(top)
+        else:
+            self.table.setModel(self.alldata[top]["table"])
+            self.logTitle.setText(top)
+        #  if "chatlog" in result and ".txt"
+
+    def refresh(self, filenames):
+        """
+        
+        alldata = {
+
+            chatlog: { 
+                long: C://chatlot
+                lines = [lines of chat]
+                contents = [list of strings]
+                table = ChatTable()
+            }
+        
+        }"""
+        self.alldata = {}
+        for item in filenames:
+            self.alldata[item[0][-item[0][::-1].index("/"):]] = {"long": item[0], "lines": item[1]}
+        # Pick first item for the view
+        firstkey = list(self.alldata.keys())[0]
+        self.alldata[firstkey]["contents"] = self.digest(self.alldata[firstkey]["long"])
+        self.alldata[firstkey]["table"] = ChatTable(self.alldata[firstkey]["contents"], self.headers, self)
+        self.table.setModel(self.alldata[firstkey]["table"])
+        
+        # Edit Text Box
+        self.logTitle.setText(firstkey)
+        # Generate a Tree
+        # Gather the lines
+        lines = list(map(lambda x: self.alldata[x]["lines"],self.alldata.keys()))
+        # Format
+        self.new_tree(list(zip(self.alldata.keys(), lines)))
+
+        
 
     def digest(self, current_file):
         """Takes a chat file and dumps out a list of lists"""
@@ -454,6 +546,7 @@ class Reader(QWidget):
         print("File ({}) read succesfully! {} Lines!".format(current_file, len(data)))
         return chat_type_data, data
 
+
 class ChatTable(QAbstractTableModel):
     """"""
     def __init__(self, data, headers, parent=None):
@@ -482,7 +575,8 @@ class ChatTable(QAbstractTableModel):
             elif self.chat_type_data[index.row()] == "PARTY":
                 return QBrush(Qt.cyan)
             elif self.chat_type_data[index.row()] == "GUILD":
-                return QBrush(Qt.darkYellow)
+                #  return QBrush(Qt.darkYellow)
+                return QBrush(QColor(230,157,36))
             elif self.chat_type_data[index.row()] == "REPLY":
                 return QBrush(Qt.magenta)
         elif role != Qt.DisplayRole:
@@ -494,6 +588,10 @@ class ChatTable(QAbstractTableModel):
             return QVariant(self.headerdata[section])
         return QVariant()
 
+
+def rip_filename(filename):
+    #  return [filename[0][-filename[0][::-1].index("/"):], filename[1]]
+    return filename[0][-filename[0][::-1].index("/"):]
 
 
 if __name__ == "__main__":

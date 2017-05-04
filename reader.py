@@ -13,7 +13,8 @@ def search_file(current_file, parameters):
     # Split file
     split_file = allText.split("\n")
     count = 0
-    line_numbers = []
+    #  line_numbers = []
+    messages = []
     # Console.WriteLine(current_file);
     for line in split_file:
         # Increment line number
@@ -56,12 +57,14 @@ def search_file(current_file, parameters):
             # Next use datetime
             #Console.WriteLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
             if (full_check(parameters, split_line)):
-                num = int(split_line[1])
-                if num not in line_numbers:
-                #  if (!line_numbers.Contains(num)) {
-                    #  line_numbers.Add(num);
-                    line_numbers.append(num)
-                # Console.WriteLine("Line {0} -> Success", split_line[1]);
+                # Use line numbers
+                #  num = split_line[1]
+                #  if num not in line_numbers:
+                    #  line_numbers.append(num)
+                # Use a Hybrid. Username: Message
+                message = "{}: {}".format(split_line[4], split_line[5])
+                if message not in messages:
+                    messages.append(message)
             else:
                 # Console.WriteLine("Line {0} -> Failed", split_line[1]);
                 pass
@@ -71,7 +74,8 @@ def search_file(current_file, parameters):
             # Console.WriteLine("File: {0} | Line: {1}", current_file, count);
             # print_array(split_line);
             print("ERROR: LINE 72")
-    return line_numbers
+    #  return line_numbers
+    return messages
 
 ###############################
 #  Helper Functions           #
