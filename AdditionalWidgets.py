@@ -384,8 +384,6 @@ class Reader(QWidget):
 
         # Table Details
         self.table.setWordWrap(True)
-        self.table.resizeColumnsToContents()
-        self.table.resizeRowsToContents()
 
         vv = self.table.verticalHeader()
         vv.setVisible(False)
@@ -453,6 +451,8 @@ class Reader(QWidget):
         else:
             self.table.setModel(self.alldata[top]["table"])
             self.logTitle.setText(top)
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
         #  if "chatlog" in result and ".txt"
 
     def refresh(self, filenames):
@@ -476,6 +476,8 @@ class Reader(QWidget):
         self.alldata[firstkey]["contents"] = self.digest(self.alldata[firstkey]["long"])
         self.alldata[firstkey]["table"] = ChatTable(self.alldata[firstkey]["contents"], self.headers, self)
         self.table.setModel(self.alldata[firstkey]["table"])
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
         
         # Edit Text Box
         self.logTitle.setText(firstkey)
