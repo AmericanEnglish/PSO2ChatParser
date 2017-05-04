@@ -65,24 +65,24 @@ Packages Used
 Current Progress
 ================
 1. ~~Designing Windows~~
- * All rough drafts have been finished
+    * All rough drafts have been finished
 2. ~~Remove all database integration for PostgreSQL~~
- * Finally. Everything is gone.
+    * Finally. Everything is gone.
 3. ~~Update windows to use new functional approach~~
- * Parallel Mapping has not been implemented. Either the program combs the files in parallel or sequentially. If you have more than a 100 parallel combing kicks in by starting up 8 processes. After some minor testing I determined that 8 processes is the cap for time scanning files and max cpu usage. Maybe this can be converted to a setting with a little slider.
+    * Parallel Mapping has not been implemented. Either the program combs the files in parallel or sequentially. If you have more than a 100 parallel combing kicks in by starting up 8 processes. After some minor testing I determined that 8 processes is the cap for time scanning files and max cpu usage. Maybe this can be converted to a setting with a little slider.
 4. ~~Design the ChatLogReader~~
- * The reader is still being improved but it in a minimal and fully working state.
+    * The reader is still being improved but it in a minimal and fully working state.
 5. Finish the "Log Selection" window where queried logs can be opened by the reader.
 6. Mark a v0.80 that has little exception handiling but technically works.
 
 Languages Attempted
 ===================
 1. Clojure
- * Clojure, like Java, enjoys reading in utf16 files as BE even if there exists a BOM indicating LE. The work around for this in Clojure is absolutely ghastly and the GUI support for Clojure using JavaFX is just mind blowingly perplexing at first glance.
+    * Clojure, like Java, enjoys reading in utf16 files as BE even if there exists a BOM indicating LE. The work around for this in Clojure is absolutely ghastly and the GUI support for Clojure using JavaFX is just mind blowingly perplexing at first glance.
 2. C/C++
- * C++11 added some basics for unicode support but I have major problems trying to figure out how anyone is supposed use any of it. I'll install the Visual C++ compiler tools at a later date and maybe I'll find solace in WChar support.
- * C -> WChar support is just poorly document. Many examples are using english text with always works quite well but there is little documentation on using Asian text like Hiragana. This might be solved if I were to switch to MS VS C++ and compile my C code with CL.exe as opposed to MinGW. I had this vain hope that I MinGW would "just work" and was sorely let down. If I get around to installing VS C++ stuff I'll try to rewrite this whole program using the Win32API for gui's and text processing.
+    * C++11 added some basics for unicode support but I have major problems trying to figure out how anyone is supposed use any of it. I'll install the Visual C++ compiler tools at a later date and maybe I'll find solace in WChar support.
+    * C -> WChar support is just poorly document. Many examples are using english text with always works quite well but there is little documentation on using Asian text like Hiragana. This might be solved if I were to switch to MS VS C++ and compile my C code with CL.exe as opposed to MinGW. I had this vain hope that I MinGW would "just work" and was sorely let down. If I get around to installing VS C++ stuff I'll try to rewrite this whole program using the Win32API for gui's and text processing.
 3. GOlang
- * There is just so much wrong with Golang and this project. The fact that golang is a systems language and therefore doesn't have any standard gui. I could use one of the packages though if needed. Then there is the lack of unicode support unless I want to use Runes and Glyphs firsthand. Perhaps I'll fine a package that abstracts this away but until then. No go. Also there is the problem of finding a gui that also lets you USE these Unicode characters.
+    * There is just so much wrong with Golang and this project. The fact that golang is a systems language and therefore doesn't have any standard gui. I could use one of the packages though if needed. Then there is the lack of unicode support unless I want to use Runes and Glyphs firsthand. Perhaps I'll fine a package that abstracts this away but until then. No go. Also there is the problem of finding a gui that also lets you USE these Unicode characters.
 4. C#
- * C# actually worked beautifully. I, however, abhore using WPF and Visual Studio. Maybe if I care or have the time I'll look more into it. Maybe.
+    * C# actually worked beautifully. I, however, abhore using WPF and Visual Studio. Maybe if I care or have the time I'll look more into it. Maybe.
