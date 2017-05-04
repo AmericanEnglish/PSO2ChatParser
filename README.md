@@ -65,10 +65,15 @@ Packages Used
 Current Progress
 ================
 1. ~~Designing Windows~~
-  * All rough drafts have been finished
-2. Remove all database integration for PostgreSQL
-3. Update windows to use new functional approach
-
+ * All rough drafts have been finished
+2. ~~Remove all database integration for PostgreSQL~~
+ * Finally. Everything is gone.
+3. ~~Update windows to use new functional approach~~
+ * Parallel Mapping has not been implemented. Either the program combs the files in parallel or sequentially. If you have more than a 100 parallel combing kicks in by starting up 8 processes. After some minor testing I determined that 8 processes is the cap for time scanning files and max cpu usage. Maybe this can be converted to a setting with a little slider.
+4. ~~Design the ChatLogReader~~
+ * The reader is still being improved but it in a minimal and fully working state.
+5. Finish the "Log Selection" window where queried logs can be opened by the reader.
+6. Mark a v0.80 that has little exception handiling but technically works.
 
 Languages Attempted
 ===================
