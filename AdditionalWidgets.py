@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout, QGroupBox, QScrollArea
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QLineEdit, QCheckBox, QCalendarWidget, QRadioButton, QButtonGroup, QDialog, QDialogButtonBox, QHBoxLayout, QGroupBox, QScrollArea, QTableView
+from PyQt5.QtCore import Qt, QVariant, QAbstractTableModel
+from PyQt5.QtGui import QBrush
+from reader import too_many_tabs
 import re
 
 class SegaID(QWidget):
@@ -15,6 +17,7 @@ class SegaID(QWidget):
         SearchForAnIDButton = QPushButton("Browse SID#'s", self)
         SearchForAnIDButton.clicked.connect(lambda:self.browseSID())
         SearchForAnIDButton.setEnabled(False)
+        self.FilterByCheckbox.setEnabled(False)
         # Setup Grid
         grid.addWidget(SIDLabel,                 0, 0)
         grid.addWidget(self.SIDEdit,             0, 1)
@@ -33,7 +36,7 @@ class SegaID(QWidget):
         if newText != '':
             self.SIDEdit.setText(newText)
 
-    def update():
+    def update(self):
         self.db.execute("""SELECT DISTINCT uid, username FROM chat;""")
         temp = self.db.fetchall()
         self.fetched = {}
@@ -65,6 +68,7 @@ class PlayerID(QWidget):
         SearchForAnIDButton = QPushButton("Browse Usernames", self)
         SearchForAnIDButton.clicked.connect(lambda:self.browsePID())
         SearchForAnIDButton.setEnabled(False)
+        self.FilterByCheckbox.setEnabled(False)
         # Setup Grid
         grid.addWidget(PIDLabel,            0, 0)
         grid.addWidget(self.PIDEdit,             0, 1)
@@ -356,8 +360,126 @@ class Reader(QWidget):
     includes text coloring for different chat types, removing 
     other chat types with some check boxes, and the saving of 
     these filtered logs as their own text documents."""
-    def __init__(self):
+    def __init__(self, filename):
         super().__init__()
+        grid = QGridLayout()
+        self.setLayout(grid)
+        # Set Other Window Params
+        self.setWindowTitle(filename)
+        self.resize(900, 500)
+        # Initial Table
+        self.table = QTableView(self)
+        headers = ["Time", "Line", "Chat Type", "SID", "PID", "Message"]
+        data = self.digest(filename)
+        tablemodel = ChatTable(data, headers, self)
+        self.table.setModel(tablemodel)
+
+        # Table Details
+        self.table.resizeColumnsToContents()
+
+        vv = self.table.verticalHeader()
+        vv.setVisible(False)
+        hh = self.table.horizontalHeader()
+        hh.setStretchLastSection(True)
+
+        self.table.setSortingEnabled(False)
+
+        # Add Stuff
+        grid.addWidget(self.table, 0, 0)
+        
+
+        # Delete this
+        self.table.show()
+        self.show()
+
+    def digest(self, current_file):
+        """Takes a chat file and dumps out a list of lists"""
+        data = []
+        with open(current_file, "r", encoding="utf16") as cur:
+            allText = cur.read()
+        # Split file
+        split_file = allText.split("\n")
+        count = 0
+        line_numbers = []
+        # Console.WriteLine(current_file);
+        for line in split_file:
+            # Increment line number
+            count += 1
+            # Split the line
+            split_line = line.split("\t")
+
+            # Possibly empty?
+            if len(split_line) == 0: 
+                # Console.WriteLine("Line {0}: Split line is empty? Skipping!", count);
+                continue;
+            # Too many tabs
+            if len(split_line) > 6:
+                # Console.WriteLine("\tLength > 6!");
+                # Console.WriteLine(split_line);
+                split_line = too_many_tabs(split_line)
+            
+            # Victim of a bad newline
+            if len(split_line) < 6:
+                # Need to find the line that fits!
+                tracking_index = count - 1
+                keep = [];
+                while True:
+                    tracking_index -= 1
+                    keep = split_file[tracking_index].split("\t")
+                    if len(keep) == 6:
+                        break
+                #  } while (keep.Length < 6) ;
+                # Console.WriteLine("\tKeeping:   {0}", String.Join(", ", keep));
+                #  for (int i = tracking_index + 1; i <= count - 1; i++) {
+                i = tracking_index + 1
+                while i <= count - 1:
+                    keep[5] += "\n" + split_file[i]
+                    i += 1
+                # Console.WriteLine("\tFinalized: {0}", String.Join(", ", keep));
+                split_line = keep
+            data.append(split_line)
+
+        print("File ({}) read succesfully! {} Lines!".format(current_file, len(data)))
+        return data
+
+class ChatTable(QAbstractTableModel):
+    """"""
+    def __init__(self, data, headers, parent=None):
+        QAbstractTableModel.__init__(self, parent)
+        self.headerdata = headers
+        self.arraydata = data
+
+    def rowCount(self, parent):
+        if self.data is not None:
+            return len(self.arraydata)
+        return 0
+
+    def columnCount(self, parent):
+        if self.rowCount(parent) > 0:
+            return len(self.arraydata[0])
+        return 0
+
+    def data(self, index, role):
+        if not index.isValid():
+            return QVariant()
+        elif role == Qt.BackgroundRole:
+            # Begin Coloring?
+            if self.arraydata[index.row()][2] == "PUBLIC":
+                return QBrush(Qt.lightGray)
+            elif self.arraydata[index.row()][2] == "PARTY":
+                return QBrush(Qt.cyan)
+            elif self.arraydata[index.row()][2] == "GUILD":
+                return QBrush(Qt.darkYellow)
+            elif self.arraydata[index.row()][2] == "REPLY":
+                return QBrush(Qt.magenta)
+        elif role != Qt.DisplayRole:
+            return QVariant()
+        return QVariant(self.arraydata[index.row()][index.column()])
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return QVariant(self.headerdata[section])
+        return QVariant()
 
 
 class Selector(QDialog):
@@ -373,3 +495,12 @@ class Selector(QDialog):
     def getInfo():
         pass
 
+
+
+if __name__ == "__main__":
+    import sys
+    from PyQt5.QtWidgets import QApplication
+    # This is for testing the reader Widget
+    app = QApplication(sys.argv)
+    obj = Reader(sys.argv[1])
+    sys.exit(app.exec_())
