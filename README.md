@@ -56,11 +56,11 @@ Goals
 Packages Used
 =============
 1. MultiProcessing
-  * For using parallel mapping
+    * For using parallel mapping
 2. sqlite3
-  * For using SQLite3 to handle user settings
+    * For using SQLite3 to handle user settings
 3. PyQt5
-  * The GUI packages
+    * The GUI packages
 
 Current Progress
 ================
