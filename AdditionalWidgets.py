@@ -387,8 +387,6 @@ class Reader(QWidget):
 
         vv = self.table.verticalHeader()
         vv.setVisible(False)
-        hh = self.table.horizontalHeader()
-        hh.setStretchLastSection(True)
 
         self.table.setSortingEnabled(False)
         
@@ -453,6 +451,8 @@ class Reader(QWidget):
             self.logTitle.setText(top)
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
+        hh = self.table.horizontalHeader()
+        hh.setStretchLastSection(True)
         #  if "chatlog" in result and ".txt"
 
     def refresh(self, filenames):
@@ -478,14 +478,17 @@ class Reader(QWidget):
         self.table.setModel(self.alldata[firstkey]["table"])
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
+        hh = self.table.horizontalHeader()
+        hh.setStretchLastSection(True)
         
         # Edit Text Box
         self.logTitle.setText(firstkey)
         # Generate a Tree
         # Gather the lines
-        lines = list(map(lambda x: self.alldata[x]["lines"],self.alldata.keys()))
+        keyz = sorted(self.alldata.keys())
+        lines = list(map(lambda x: self.alldata[x]["lines"], keyz))
         # Format
-        self.new_tree(list(zip(self.alldata.keys(), lines)))
+        self.new_tree(list(zip(keyz, lines)))
 
         
 
