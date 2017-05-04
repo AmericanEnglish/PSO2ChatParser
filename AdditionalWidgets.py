@@ -415,7 +415,6 @@ class Reader(QWidget):
         # Delete this
         #  self.tree.show()
         #  self.table.show()
-        self.show()
 
     def generate_tree(self, allitems, parent):
         for oneFile in allitems:
@@ -469,8 +468,38 @@ class Reader(QWidget):
         
         }"""
         self.alldata = {}
+        months = {
+                1: "Jan",
+                2: "Feb",
+                3: "Mar",
+                4: "Apr",
+                5: "May",
+                6: "Jun",
+                7: "Jul",
+                8: "Aug",
+                9: "Sep",
+                10: "Oct",
+                11: "Nov",
+                12: "Dec"
+                }
         for item in filenames:
-            self.alldata[item[0][-item[0][::-1].index("/"):]] = {"long": item[0], "lines": item[1]}
+            #  self.alldata[item[0][-item[0][::-1].index("/"):]] = {"long": item[0], "lines": item[1]}
+            filename = item[0][-item[0][::-1].index("/"):]
+            # Month Portion of the date
+            start = filename.index("20")
+            short = months[int(filename[start + 4:start + 6])]
+            # Day Portion of the date
+            day = filename[start + 6: start + 8]
+            if day[-1] == "1":
+                day = " {}st, ".format(int(day))
+            elif day[-1] == "2":
+                day = " {}nd, ".format(int(day))
+            elif day[-1] == "3":
+                day = " {}rd, ".format(int(day))
+            else:
+                day = " {}th, ".format(int(day))
+            short += day + filename[start:start + 4]
+            self.alldata[short] = {"long": item[0], "lines": item[1]}
         # Pick first item for the view
         keyz = sorted(self.alldata.keys())
         firstkey = keyz[0]
@@ -489,6 +518,7 @@ class Reader(QWidget):
         lines = list(map(lambda x: self.alldata[x]["lines"], keyz))
         # Format
         self.new_tree(list(zip(keyz, lines)))
+        self.show()
 
         
 
