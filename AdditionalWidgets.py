@@ -472,7 +472,8 @@ class Reader(QWidget):
         for item in filenames:
             self.alldata[item[0][-item[0][::-1].index("/"):]] = {"long": item[0], "lines": item[1]}
         # Pick first item for the view
-        firstkey = list(self.alldata.keys())[0]
+        keyz = sorted(self.alldata.keys())
+        firstkey = keyz[0]
         self.alldata[firstkey]["contents"] = self.digest(self.alldata[firstkey]["long"])
         self.alldata[firstkey]["table"] = ChatTable(self.alldata[firstkey]["contents"], self.headers, self)
         self.table.setModel(self.alldata[firstkey]["table"])
@@ -485,7 +486,6 @@ class Reader(QWidget):
         self.logTitle.setText(firstkey)
         # Generate a Tree
         # Gather the lines
-        keyz = sorted(self.alldata.keys())
         lines = list(map(lambda x: self.alldata[x]["lines"], keyz))
         # Format
         self.new_tree(list(zip(keyz, lines)))
