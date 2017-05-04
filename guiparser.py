@@ -85,7 +85,7 @@ class MainGUI(QWidget):
         grid.addWidget(GO, 0, 6)
 
         # Get a Reader for displaying text
-        self.popups["Reader"] = Reader()
+        #  self.popups["Select"] = Selector()
 
         #####################################
         self.setLayout(grid)
