@@ -5,12 +5,65 @@
 #include <QtCore>
 
 /*************************************************************************
- * Foglight is the heart and soul of the program. The main prupose of    *
- * foglight is to take in the user's queries and to return the filenames *
- * that match the users wants. Foglight is built with several helper     *
+ * Search is the heart and soul of the program. The main prupose of      *
+ * search is to take in the user's queries and to return the filenames   *
+ * that match the users wants. search is built with several helper       *
  * functions and is designed such that it can be run in parallel maps.   *
  *************************************************************************/
+// Helper Functions
 
+bool date_check() {
+
+}
+
+bool sid_check() {
+
+}
+
+bool pid_check() {
+
+}
+
+bool chat_check() {
+
+}
+
+bool keyword_check() {
+
+}
+
+bool full_check() {
+
+}
+
+// Corrects a tabbing issue that may occur
+QStringList too_many_tabs(QStringList line){
+    QStringList fodder;
+    int i = 0;
+    while (fodder.length() < 5) {
+        fodder.append(list.at(i));
+        list.removeFirst();
+        i++;
+    }
+    fodder.append(list.join("\t"));
+    return fodder;
+}
+
+// Rebuilds the line recursively
+QString buildLine(QStringList file, QString str, int start) {
+    QStringList line = file.at(start).split("\t");
+    if (line.length() == 6) {
+        QString temp = line.at(5) + "\n" + str;
+        line.removeLast();
+        line.append(temp);
+        return line;
+    }
+    else {
+        return buildLine(file, file.at(i) + "\n" + str, start - 1);
+    }
+}
+
+// Main Functions
 
 QStringList searchfile(QString filename) {
     QFile file(filename);
@@ -23,13 +76,37 @@ QStringList searchfile(QString filename) {
     // Not closing the file causes a crash
     file.close();
     // ^ this most likely has to do with a bad FP on the stack?
-    // count the lines
-    // qDebug() << filename;
-    // std::cout << " contains: " << contents.length() << " lines!" << std::endl;
-    // loop for speed purposes
-    // for (int i = 0; i < contents.length(); i++) {
-    // }
-    return contents;
+    // Begin the rest of the work VVVV
+    int count = 0;
+    QStringList line, results;
+    QString message;
+    int len;
+    while (count < contents.length()) {
+        count++;
+        line = QStringList.at(count).split("\t");
+        len = line.length();
+        // Possibly empty
+        if (line.isEmpty()) {
+            continue;
+        }
+        // Too many tabs
+        if (len > 6) {
+            line = too_many_tabs(line);
+        }
+
+        // Victim of a bad newline
+        if (len < 6) {
+            line = buildLine(contents, line.join("\t"), count - 1);
+        }
+
+        if (full_check(parameters, line)) {
+            message = line.at(4) + ": " + line.at(5);
+            results.append(message);
+        }
+
+    }
+    
+    return messages;
 }
 
 QStringList *loopSearch(QString base, QStringList allFiles) {
