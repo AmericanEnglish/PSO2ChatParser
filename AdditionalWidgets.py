@@ -439,6 +439,8 @@ class Reader(QWidget):
         while result.parent() is not None:
             result = result.parent()
         top = result.text()
+        # Top is actually the proper name -> convert to short name
+        top = self.ShortsNPropers[0][self.ShortsNPropers[1].index(top)]
         if "contents" not in self.alldata[top].keys():
             # Generate content
             self.alldata[top]["contents"] = self.digest(self.alldata[top]["long"])
@@ -468,38 +470,12 @@ class Reader(QWidget):
         
         }"""
         self.alldata = {}
-        months = {
-                1: "Jan",
-                2: "Feb",
-                3: "Mar",
-                4: "Apr",
-                5: "May",
-                6: "Jun",
-                7: "Jul",
-                8: "Aug",
-                9: "Sep",
-                10: "Oct",
-                11: "Nov",
-                12: "Dec"
-                }
         for item in filenames:
             #  self.alldata[item[0][-item[0][::-1].index("/"):]] = {"long": item[0], "lines": item[1]}
+            # The real filename
             filename = item[0][-item[0][::-1].index("/"):]
-            # Month Portion of the date
-            start = filename.index("20")
-            short = months[int(filename[start + 4:start + 6])]
-            # Day Portion of the date
-            day = filename[start + 6: start + 8]
-            if day[-1] == "1":
-                day = " {}st, ".format(int(day))
-            elif day[-1] == "2":
-                day = " {}nd, ".format(int(day))
-            elif day[-1] == "3":
-                day = " {}rd, ".format(int(day))
-            else:
-                day = " {}th, ".format(int(day))
-            short += day + filename[start:start + 4]
-            self.alldata[short] = {"long": item[0], "lines": item[1]}
+            
+            self.alldata[filename] = {"long": item[0], "lines": item[1], "proper": pretty_date(filename)}
         # Pick first item for the view
         keyz = sorted(self.alldata.keys())
         firstkey = keyz[0]
@@ -517,7 +493,11 @@ class Reader(QWidget):
         # Gather the lines
         lines = list(map(lambda x: self.alldata[x]["lines"], keyz))
         # Format
-        self.new_tree(list(zip(keyz, lines)))
+        propers = list(map(lambda short: self.alldata[short]["proper"], keyz))
+        self.ShortsNPropers = []
+        self.ShortsNPropers.append(keyz)
+        self.ShortsNPropers.append(propers)
+        self.new_tree(list(zip(propers, lines)))
         self.show()
 
         
@@ -628,6 +608,35 @@ def rip_filename(filename):
     #  return [filename[0][-filename[0][::-1].index("/"):], filename[1]]
     return filename[0][-filename[0][::-1].index("/"):]
 
+def pretty_date(filename):
+    months = {
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec"
+            }
+    start = filename.index("20")
+    short = months[int(filename[start + 4:start + 6])]
+    # Day Portion of the date
+    day = filename[start + 6: start + 8]
+    if day[-1] == "1":
+        day = " {}st, ".format(int(day))
+    elif day[-1] == "2":
+        day = " {}nd, ".format(int(day))
+    elif day[-1] == "3":
+        day = " {}rd, ".format(int(day))
+    else:
+        day = " {}th, ".format(int(day))
+    short += day + filename[start:start + 4]
+    return short
 
 if __name__ == "__main__":
     import sys
