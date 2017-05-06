@@ -283,7 +283,7 @@ QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QSt
 
 // int main() {
 //     // Open an input text stream
-//     QString dirname = "C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs\\";
+//     QString dirname = ;
 //     QDir directory =  QDir(dirname);
 //     QStringList allFiles = directory.entryList();
 //     allFiles.removeOne(".");
