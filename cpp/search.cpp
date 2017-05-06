@@ -281,66 +281,66 @@ QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QSt
 }
 
 
-int main() {
-    // Open an input text stream
-    QString dirname = "C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs\\";
-    QDir directory =  QDir(dirname);
-    QStringList allFiles = directory.entryList();
-    allFiles.removeOne(".");
-    allFiles.removeOne("..");
-    // Parameters will be an array of strings
-    QStringList dates;
-    dates.append(QString()); // Begin
-    dates.append(QString()); // End
-    QStringList sid;
-    sid << "relative";
-    // sid["use"] = "False"
-    // sid["relative"] = "False";
-    // sid["sensitive"] = "False";
-    // sid["terms"] = QString(); // Needs to be split
-    QStringList pid;
-    pid << "relative"; // Relative
-    pid << "sensitive"; // Sensitive
-    pid << "AmericanEnglish"; // 2 -> End are terms
-    QStringList chatType;
-    // chatType << "Public"; // Only append the terms to be checked
-    // chatType << "PARTY";
-    // chatType << "GUILD";
-    chatType << "REPLY";
-    QStringList keywords;
-    keywords << "relative";
-    keywords << "sensitive" ; // Casing
-    // keywords << "terms"; // Append terms to be searched
-
-    QMap<QString, QStringList> parameters;
-    parameters["dates"] = dates;
-    parameters["sid"] = sid;
-    parameters["pid"] = pid;
-    parameters["chat"] = chatType;
-    parameters["keywords"] = keywords;
-
-    std::cout << "Begin (SEQ) - Using " << allFiles.length() << " files" << std::endl;
-    QString name;
-    int lenFiles = allFiles.length();
-    clock_t start = clock();
-    for (int i = 0; i < lenFiles; i++) {
-        name = allFiles.at(i);
-        searchfile(parameters, dirname + name);
-    }
-    clock_t stop = clock();
-    std::cout << "Execution Time: " << double(stop - start) / CLOCKS_PER_SEC  << "s" << std::endl;
-    // scanfile(filename);
-    std::cout << "Begin (PAR) - Using " << allFiles.length() << " files" << std::endl;
-    start = clock();
-    QStringList *results = loopSearch(parameters, dirname, allFiles);
-    stop = clock();
-    // for (int i = 0; i < lenFiles; i++) {
-        // qDebug() << results[i];
-    // }
-    // for (int i = 0; i < lenFiles; i++) {
-        // if (success[i] == 0) {
-            // qDebug() << allFiles.at(i);
-        // }
-    // }
-    std::cout << "Execution Time: " << double(stop - start) / CLOCKS_PER_SEC << "s" << std::endl;
-}
+// int main() {
+//     // Open an input text stream
+//     QString dirname = "C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs\\";
+//     QDir directory =  QDir(dirname);
+//     QStringList allFiles = directory.entryList();
+//     allFiles.removeOne(".");
+//     allFiles.removeOne("..");
+//     // Parameters will be an array of strings
+//     QStringList dates;
+//     dates.append(QString()); // Begin
+//     dates.append(QString()); // End
+//     QStringList sid;
+//     sid << "relative";
+//     // sid["use"] = "False"
+//     // sid["relative"] = "False";
+//     // sid["sensitive"] = "False";
+//     // sid["terms"] = QString(); // Needs to be split
+//     QStringList pid;
+//     pid << "relative"; // Relative
+//     pid << "sensitive"; // Sensitive
+//     pid << "AmericanEnglish"; // 2 -> End are terms
+//     QStringList chatType;
+//     // chatType << "Public"; // Only append the terms to be checked
+//     // chatType << "PARTY";
+//     // chatType << "GUILD";
+//     chatType << "REPLY";
+//     QStringList keywords;
+//     keywords << "relative";
+//     keywords << "sensitive" ; // Casing
+//     // keywords << "terms"; // Append terms to be searched
+// 
+//     QMap<QString, QStringList> parameters;
+//     parameters["dates"] = dates;
+//     parameters["sid"] = sid;
+//     parameters["pid"] = pid;
+//     parameters["chat"] = chatType;
+//     parameters["keywords"] = keywords;
+// 
+//     std::cout << "Begin (SEQ) - Using " << allFiles.length() << " files" << std::endl;
+//     QString name;
+//     int lenFiles = allFiles.length();
+//     clock_t start = clock();
+//     for (int i = 0; i < lenFiles; i++) {
+//         name = allFiles.at(i);
+//         searchfile(parameters, dirname + name);
+//     }
+//     clock_t stop = clock();
+//     std::cout << "Execution Time: " << double(stop - start) / CLOCKS_PER_SEC  << "s" << std::endl;
+//     // scanfile(filename);
+//     std::cout << "Begin (PAR) - Using " << allFiles.length() << " files" << std::endl;
+//     start = clock();
+//     QStringList *results = loopSearch(parameters, dirname, allFiles);
+//     stop = clock();
+//     // for (int i = 0; i < lenFiles; i++) {
+//         // qDebug() << results[i];
+//     // }
+//     // for (int i = 0; i < lenFiles; i++) {
+//         // if (success[i] == 0) {
+//             // qDebug() << allFiles.at(i);
+//         // }
+//     // }
+//     std::cout << "Execution Time: " << double(stop - start) / CLOCKS_PER_SEC << "s" << std::endl;
+// }
