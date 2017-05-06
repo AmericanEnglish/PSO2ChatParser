@@ -10,3 +10,6 @@ sip*
 *.spec
 build/
 dist/
+debug/
+release/
+*.dll
