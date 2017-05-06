@@ -13,3 +13,4 @@ dist/
 debug/
 release/
 *.dll
+.qmake.stash
