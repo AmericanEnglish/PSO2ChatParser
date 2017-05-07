@@ -56,20 +56,32 @@ void MainWindow::initGUI() {
     grid->addWidget(button5, 0, 4);
     connect(button5, SIGNAL(clicked()), this, SLOT(showLatest()));
 
+    QPushButton *button6 = new QPushButton("Settings", this);
+    button6->setFixedSize(80, 80);
+    grid->addWidget(button6, 0, 5);
+    connect(button6, SIGNAL(clicked()), this, SLOT(showLatest()));
+    button6->setEnabled(false);
+
+    QPushButton *button7 = new QPushButton("FIND IT!", this);
+    button7->setFixedsize(80, 80);
+    grid->addWidget(button7, 0, 6);
+    button7->setEnabled(false);
+
     // Additional Windows
     // popups
-    // SID::SID *segaid = new SID::SID(this);
     segaid = new SID();
     playerid = new PID();
     chat = new ChatType();
     datez = new ChatDate();
     keywords = new Keywords();
+    // settings = new Settings();
 
     popups["SegaID"] = segaid;
     popups["Player ID"] = playerid;
     popups["Chat Type"] = chat;
     popups["Chat Date"] = datez;
     popups["Keywords"] = keywords;
+    // popups["Settings"] = settings;
 
     latest_window = nullptr;
 
