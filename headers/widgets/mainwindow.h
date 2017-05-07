@@ -1,8 +1,9 @@
 #pragma once
 
 // Needed includes
-#include <sid.h>
-#include <pid.h>
+// #include <sid.h>
+// #include <pid.h>
+// #include <chattype.h>
 #include <QWidget>
 #include <QApplication>
 #include <QGridLayout>
@@ -46,6 +47,7 @@ class MainWindow : public QWidget {
         QWidget *segaid;
         QWidget *playerid;
         QWidget *chat;
+        QWidget *datez;
         QMap<QString, QWidget*> popups;
         
         

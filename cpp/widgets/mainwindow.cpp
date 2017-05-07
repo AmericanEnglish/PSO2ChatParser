@@ -2,6 +2,7 @@
 #include <sid.h>
 #include <pid.h>
 #include <chattype.h>
+#include <chatdate.h>
 #include <QWidget>
 #include <QApplication>
 #include <QGridLayout>
@@ -44,16 +45,23 @@ void MainWindow::initGUI() {
     grid->addWidget(button3, 0, 2);
     connect(button3, SIGNAL(clicked()), this, SLOT(showLatest()));
 
+    QPushButton *button4 = new QPushButton("Chat Date", this);
+    button4->setFixedSize(80, 80);
+    grid->addWidget(button4, 0, 3);
+    connect(button4, SIGNAL(clicked()), this, SLOT(showLatest()));
+
     // Additional Windows
     // popups
     // SID::SID *segaid = new SID::SID(this);
     segaid = new SID();
     playerid = new PID();
     chat = new ChatType();
+    datez = new ChatDate();
 
     popups["SegaID"] = segaid;
     popups["Player ID"] = playerid;
     popups["Chat Type"] = chat;
+    popups["Chat Date"] = datez;
 
     latest_window = nullptr;
 
