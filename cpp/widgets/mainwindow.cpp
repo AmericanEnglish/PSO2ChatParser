@@ -63,8 +63,9 @@ void MainWindow::initGUI() {
     button6->setEnabled(false);
 
     QPushButton *button7 = new QPushButton("FIND IT!", this);
-    button7->setFixedsize(80, 80);
+    button7->setFixedSize(80, 80);
     grid->addWidget(button7, 0, 6);
+    connect(button7, SIGNAL(clicked()), this, SLOT(run()));
     button7->setEnabled(false);
 
     // Additional Windows
