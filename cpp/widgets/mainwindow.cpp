@@ -101,22 +101,6 @@ void MainWindow::run() {
 
 }
 
-void MainWindow::showSID() {
-    // segaid->show();
-    if (latest_window == nullptr) {
-        latest_window = segaid;
-        latest_window->show();
-    }
-    else if (latest_window == segaid) {
-        latest_window->hide();
-        latest_window = nullptr;
-    }
-    else {
-        latest_window->hide();
-        latest_window = segaid;
-        latest_window->show();
-    }
-}
 void MainWindow::showLatest() {
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString name = button->text();

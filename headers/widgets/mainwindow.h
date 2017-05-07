@@ -30,8 +30,8 @@ class MainWindow : public QWidget {
         QString default_path;
 
     private slots:
-        void showSID();
         void showLatest();
+        void run();
     
     protected:
 
