@@ -3,6 +3,7 @@
 #include <pid.h>
 #include <chattype.h>
 #include <chatdate.h>
+#include <keywords.h>
 #include <QWidget>
 #include <QApplication>
 #include <QGridLayout>
@@ -50,6 +51,11 @@ void MainWindow::initGUI() {
     grid->addWidget(button4, 0, 3);
     connect(button4, SIGNAL(clicked()), this, SLOT(showLatest()));
 
+    QPushButton *button5 = new QPushButton("Keywords", this);
+    button5->setFixedSize(80, 80);
+    grid->addWidget(button5, 0, 4);
+    connect(button5, SIGNAL(clicked()), this, SLOT(showLatest()));
+
     // Additional Windows
     // popups
     // SID::SID *segaid = new SID::SID(this);
@@ -57,11 +63,13 @@ void MainWindow::initGUI() {
     playerid = new PID();
     chat = new ChatType();
     datez = new ChatDate();
+    keywords = new Keywords();
 
     popups["SegaID"] = segaid;
     popups["Player ID"] = playerid;
     popups["Chat Type"] = chat;
     popups["Chat Date"] = datez;
+    popups["Keywords"] = keywords;
 
     latest_window = nullptr;
 

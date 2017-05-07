@@ -48,6 +48,7 @@ class MainWindow : public QWidget {
         QWidget *playerid;
         QWidget *chat;
         QWidget *datez;
+        QWidget *keywords;
         QMap<QString, QWidget*> popups;
         
         
