@@ -1,3 +1,4 @@
+#pragma once
 // Includes
 #include <QWidget>
 #include <QPlainTextEdit>

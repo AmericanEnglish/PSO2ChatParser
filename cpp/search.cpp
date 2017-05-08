@@ -1,9 +1,13 @@
 #include <iostream>
-#include <ctime>
-#include <omp.h>
+// #include <ctime>
+// #include <omp.h>
+#include <search.h>
 // #include <string>
 #include <QString>
 #include <QStringList>
+#include <QTextStream>
+#include <QFile>
+#include <QList>
 
 /*************************************************************************
  * Search is the heart and soul of the program. The main prupose of      *
@@ -171,7 +175,7 @@ bool full_check(QMap<QString, QStringList> parameters, QStringList line) {
     // std::cout << "Place 14" << std::endl;
     bool res4 = chat_check(parameters["chat"], line.at(2));// &&
     // std::cout << "Place 15" << std::endl;
-    bool res5 = keyword_check(parameters["keyword"], line.at(5));
+    bool res5 = keyword_check(parameters["keywords"], line.at(5));
     // std::cout << "Place 16" << std::endl;
     return res1 && res2 && res3 && res4 && res5;
 }
@@ -226,7 +230,7 @@ QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString fil
      */
     QList<QStringList> allData;
     int count = 0;
-    QStringList line, results;
+    QStringList keepLine, line, results;
     QString message;
     int len;
     // std::cout << "Place 1, len=" << contents.length() << std::endl;
@@ -257,7 +261,15 @@ QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString fil
             results.append(message);
             // Append the line to data
         }
-        allData << line;
+        // Build the keepable line
+        keepLine = QStringList();
+        // Chat Type
+        keepLine << line.at(2);
+        // Time
+        keepLine << line.at(0).split("T").at(0);
+        // PID / SID
+        keepLine << (line.at(4) + "\n" + line.at(3));
+        allData << keepLine;
         count++;
 
     }
@@ -269,15 +281,15 @@ QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString fil
 }
 // Builds a map for later use
 // QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
-QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
 // QList<QStringList> loopSearch(QString base, QStringList allFiles) {
-    QMap<QString, QList> results;
+    QMap<QString, QList<QStringList>> results;
     int len = allFiles.length();
     // For returning a QList
     // QStringList temp[len];
     // For returning an array of QStringLists
-    QList<QStringList> temp = QList<QStringList>[len];
-    std::cout << "Using " << omp_get_max_threads() << " threads" << std::endl;
+    QList<QStringList> *temp = new QList<QStringList>[len];
+    // std::cout << "Using " << omp_get_max_threads() << " threads" << std::endl;
     #pragma omp parallel for
     for (int i = 0; i < len; i++) {
         QString name = allFiles.at(i);
@@ -288,7 +300,7 @@ QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QSt
     // Build a perfect map
     for (int i = 0; i < len; i++) {
         if (!temp[i].isEmpty()) {
-            results[allFiles[i]] = temp[i];
+            results[allFiles.at(i)] = temp[i];
         }
     }
     // Convert array to QList

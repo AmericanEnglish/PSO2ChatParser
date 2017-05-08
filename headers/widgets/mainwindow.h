@@ -12,6 +12,13 @@
 #include <QPushButton>
 #include <QCloseEvent>
 #include <QMap>
+#include <sid.h>
+#include <pid.h>
+#include <chattype.h>
+#include <chatdate.h>
+#include <keywords.h>
+#include <reader.h>
+#include <search.h>
 
 // Class declaration
 class MainWindow : public QWidget {
@@ -39,17 +46,17 @@ class MainWindow : public QWidget {
         void initGUI();
         void add_new_file();
         void closeEvent(QCloseEvent *event) override;
-        QMap<QString, QList<QStringList>> MainWindow::fullLiquidate() {
+        QMap<QString, QStringList> fullLiquidate();
         // Private Variables
         QWidget *latest_window;
-        QWidget *segaid;
-        QWidget *playerid;
-        QWidget *chat;
-        QWidget *datez;
-        QWidget *keywords;
+        SID *segaid;
+        PID *playerid;
+        ChatType *chat;
+        ChatDate *datez;
+        Keywords *keywords;
         QMap<QString, QWidget*> popups;
-        QWidget *reader;
-        QString defaultPath;
+        Reader *reader;
+        QDir defaultPath;
         
         
         // SQLITE STUFF HERE

@@ -4,6 +4,8 @@
 #include <chattype.h>
 #include <chatdate.h>
 #include <keywords.h>
+#include <reader.h>
+#include <search.h>
 #include <QWidget>
 #include <QApplication>
 #include <QGridLayout>
@@ -12,6 +14,7 @@
 #include <QPushButton>
 #include <QCloseEvent>
 #include <QMap>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     initGUI();
@@ -66,7 +69,7 @@ void MainWindow::initGUI() {
     button7->setFixedSize(80, 80);
     grid->addWidget(button7, 0, 6);
     connect(button7, SIGNAL(clicked()), this, SLOT(run()));
-    button7->setEnabled(false);
+    // button7->setEnabled(false);
 
     // Additional Windows
     // popups
@@ -76,6 +79,7 @@ void MainWindow::initGUI() {
     datez = new ChatDate();
     keywords = new Keywords();
     // settings = new Settings();
+    reader = nullptr;
 
     popups["SegaID"] = segaid;
     popups["Player ID"] = playerid;
@@ -83,6 +87,10 @@ void MainWindow::initGUI() {
     popups["Chat Date"] = datez;
     popups["Keywords"] = keywords;
     // popups["Settings"] = settings;
+
+    // Hardset defaultpath
+    defaultPath = QDir("C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs");
+    defaultPath.setFilter(QDir::NoDotAndDotDot);
 
     latest_window = nullptr;
 
@@ -98,6 +106,15 @@ void MainWindow::add_new_file() {
 }
 
 void MainWindow::run() {
+    QMap<QString, QStringList> parameters = fullLiquidate();
+    QStringList allFiles  = defaultPath.entryList();
+    QMap<QString, QList<QStringList>> results = loopSearch(parameters, defaultPath.absolutePath(), allFiles);
+    if (reader == nullptr) {
+        reader = new Reader(results);
+    }
+    else {
+        reader->refresh(results);
+    }
 
 }
 
@@ -130,13 +147,30 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     for (int i = 0; i < len; i++) {
         popups[toClose.at(i)]->deleteLater();
     }
+    if (reader != nullptr) {
+        reader->deleteLater();
+    }
     // segaid->deleteLater();
     event->accept();
 }
 
 
-QMap<QString, QList<QStringList>> MainWindow::fullLiquidate() {
+QMap<QString, QStringList> MainWindow::fullLiquidate() {
+    QMap<QString, QStringList> results;
+    // QStringList keys = popups.keys();
+    // int len = keys.length();
+    // QString key;
+    // for (int i = 0; i < len; i++) {
+        // key = keys.at(i);
+        // results[key] = popups[key]->liquidate();
+    // }
+    results["sid"] = segaid->liquidate();
+    results["pid"] = playerid->liquidate();
+    results["chat"] = chat->liquidate();
+    results["dates"] = datez->liquidate();
+    results["keywords"] = keywords->liquidate();
 
+    return results;
 }
 
 
