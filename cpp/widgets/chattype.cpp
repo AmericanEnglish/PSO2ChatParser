@@ -19,6 +19,7 @@ ChatType::ChatType(QWidget *parent) : QWidget(parent) {
     guild = new QCheckBox("Team", this);
     guild->setChecked(true);
     reply = new QCheckBox("Whisper", this);
+    reply->setChecked(true);
 
     // Add to grid
     grid->addWidget(publix, 0, 0);
