@@ -2,7 +2,8 @@
 #include <ctime>
 #include <omp.h>
 // #include <string>
-#include <QtCore>
+#include <QString>
+#include <QStringList>
 
 /*************************************************************************
  * Search is the heart and soul of the program. The main prupose of      *
@@ -205,7 +206,8 @@ QStringList buildLine(QStringList file, QString str, int start) {
 
 // Main Functions
 
-QStringList searchfile(QMap<QString, QStringList> parameters, QString filename) {
+// QStringList searchfile(QMap<QString, QStringList> parameters, QString filename) {
+QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString filename) {
     QFile file(filename);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream input(&file);
@@ -217,6 +219,12 @@ QStringList searchfile(QMap<QString, QStringList> parameters, QString filename) 
     file.close();
     // ^ this most likely has to do with a bad FP on the stack?
     // Begin the rest of the work VVVV
+    /*
+     * The leading entry in all data will be the suspect lines and the 
+     * remaining will be the file contents. This allows for faster quicker and 
+     * smoother Reader interactions.
+     */
+    QList<QStringList> allData;
     int count = 0;
     QStringList line, results;
     QString message;
@@ -247,36 +255,48 @@ QStringList searchfile(QMap<QString, QStringList> parameters, QString filename) 
             // std::cout << "Place 4" << std::endl;
             message = line.at(4) + ": " + line.at(5);
             results.append(message);
+            // Append the line to data
         }
+        allData << line;
         count++;
 
     }
-    
-    return results;
+    if (results.isEmpty()) {
+        return QList<QStringList>();
+    }
+    allData.push_front(results);
+    return allData;
 }
-
-QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+// Builds a map for later use
+// QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
 // QList<QStringList> loopSearch(QString base, QStringList allFiles) {
+    QMap<QString, QList> results;
     int len = allFiles.length();
     // For returning a QList
     // QStringList temp[len];
     // For returning an array of QStringLists
-    QStringList *temp = new QStringList[len];
+    QList<QStringList> temp = QList<QStringList>[len];
     std::cout << "Using " << omp_get_max_threads() << " threads" << std::endl;
     #pragma omp parallel for
-    for (int i = 0; i < allFiles.length(); i++) {
+    for (int i = 0; i < len; i++) {
         QString name = allFiles.at(i);
         // qDebug() << name;
         temp[i] = searchfile(parameters, base + name);
     }
     #pragma omp barrier
-
+    // Build a perfect map
+    for (int i = 0; i < len; i++) {
+        if (!temp[i].isEmpty()) {
+            results[allFiles[i]] = temp[i];
+        }
+    }
     // Convert array to QList
     // QList results = QList();
     // for (int i = 0; i < len; i++) {
         // results.push_back(temp[i])
     // }
-    return temp;
+    return results;
     
 }
 

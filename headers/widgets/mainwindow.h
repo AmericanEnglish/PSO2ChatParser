@@ -33,15 +33,13 @@ class MainWindow : public QWidget {
         void showLatest();
         void run();
     
-    protected:
-
     private:
         // Methods
         void initDB();
         void initGUI();
         void add_new_file();
         void closeEvent(QCloseEvent *event) override;
-        void run();
+        QMap<QString, QList<QStringList>> MainWindow::fullLiquidate() {
         // Private Variables
         QWidget *latest_window;
         QWidget *segaid;
@@ -50,6 +48,8 @@ class MainWindow : public QWidget {
         QWidget *datez;
         QWidget *keywords;
         QMap<QString, QWidget*> popups;
+        QWidget *reader;
+        QString defaultPath;
         
         
         // SQLITE STUFF HERE
