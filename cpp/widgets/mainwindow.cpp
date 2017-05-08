@@ -119,6 +119,7 @@ void MainWindow::run() {
     std::cout << "Files Gathered!" << std::endl;
     QMap<QString, QList<QStringList>> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
     std::cout << "Search complete, Empty?: " << results.isEmpty() << std::endl;
+    // qDebug() << results;
     if (results.isEmpty()) {
         // Show some dialog box
     }

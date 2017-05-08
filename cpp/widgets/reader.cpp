@@ -36,17 +36,22 @@ Reader::Reader(QMap<QString, QList<QStringList>> allData, QWidget *parent) : QWi
     
     headers = QStringList({"Time", "PID/SID", "Message"});
     
+    refresh(allData);
 
     // Setup
     QVBoxLayout *vbox = new QVBoxLayout(this);
     logTitle = new QLabel("", this);
     vbox->addWidget(logTitle);
     vbox->addWidget(table);
-    QWidget *vboxWidget = new QWidget();
+    QWidget *vboxWidget = new QWidget(this);
     vboxWidget->setLayout(vbox);
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->addWidget(tree);
     hbox->addWidget(vboxWidget);
+
+    setLayout(hbox);
+
+    // Build Data
 
 }
 
@@ -106,11 +111,12 @@ void Reader::refresh(QMap<QString, QList<QStringList>> allData) {
 
     // Refresh Tree
     newTree(allData);
-
+    QList<QStringList> sheet = allData[keys.at(0)];
     // Refresh Table
     logTitle->setText(keys.at(0));
-    ChatTable *temp = new ChatTable(headers, allData[keys.at(0)], this);
+    ChatTable *temp = new ChatTable(headers, sheet, this);
     table->setModel(temp);
+    table->update();
 
 }
 
@@ -132,7 +138,7 @@ int ChatTable::rowCount(const QModelIndex &parent) const {
 }
 int ChatTable::columnCount(const QModelIndex &parent) const {
     if (!logdata.isEmpty() && !logdata.at(0).isEmpty()) {
-        return logdata.at(0).length() - 1;
+        return logdata.at(1).length() - 1;
     }
     return 0;
 
