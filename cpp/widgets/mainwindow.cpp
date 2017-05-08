@@ -15,6 +15,8 @@
 #include <QCloseEvent>
 #include <QMap>
 #include <QDir>
+#include <iostream>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     initGUI();
@@ -89,8 +91,9 @@ void MainWindow::initGUI() {
     // popups["Settings"] = settings;
 
     // Hardset defaultpath
-    defaultPath = QDir("C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs");
-    defaultPath.setFilter(QDir::NoDotAndDotDot);
+    defaultPath = QDir("C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs\\");
+    // Figure out filters laters
+    // defaultPath.setFilter(QDir::NoDotAndDotDot);
 
     latest_window = nullptr;
 
@@ -106,13 +109,26 @@ void MainWindow::add_new_file() {
 }
 
 void MainWindow::run() {
+    std::cout << "Run begin" << std::endl;
     QMap<QString, QStringList> parameters = fullLiquidate();
+    std::cout << "Liquidation of assests complete" << std::endl;
     QStringList allFiles  = defaultPath.entryList();
-    QMap<QString, QList<QStringList>> results = loopSearch(parameters, defaultPath.absolutePath(), allFiles);
-    if (reader == nullptr) {
+    allFiles.removeOne(".");
+    allFiles.removeOne("..");
+    // qDebug() << allFiles;
+    std::cout << "Files Gathered!" << std::endl;
+    QMap<QString, QList<QStringList>> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
+    std::cout << "Search complete, Empty?: " << results.isEmpty() << std::endl;
+    if (results.isEmpty()) {
+        // Show some dialog box
+    }
+    else if (reader == nullptr) {
+        std::cout << "Opening New Reader..." << std::endl;
         reader = new Reader(results);
+        reader->show();
     }
     else {
+        std::cout << "Refreshing Old Reader" << std::endl;
         reader->refresh(results);
     }
 
@@ -164,11 +180,17 @@ QMap<QString, QStringList> MainWindow::fullLiquidate() {
         // key = keys.at(i);
         // results[key] = popups[key]->liquidate();
     // }
+    std::cout << "Checking Assests.." << std::endl;
     results["sid"] = segaid->liquidate();
+    std::cout << "SID finished" << std::endl;
     results["pid"] = playerid->liquidate();
+    std::cout << "PID finished" << std::endl;
     results["chat"] = chat->liquidate();
+    std::cout << "Chat Type finished" << std::endl;
     results["dates"] = datez->liquidate();
+    std::cout << "Date Range finished" << std::endl;
     results["keywords"] = keywords->liquidate();
+    std::cout << "Keywords finished" << std::endl;
 
     return results;
 }

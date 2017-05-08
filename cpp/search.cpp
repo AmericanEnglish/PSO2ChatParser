@@ -8,6 +8,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QList>
+#include <QMap>
 
 /*************************************************************************
  * Search is the heart and soul of the program. The main prupose of      *
@@ -288,26 +289,35 @@ QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> paramete
     // For returning a QList
     // QStringList temp[len];
     // For returning an array of QStringLists
-    QList<QStringList> *temp = new QList<QStringList>[len];
+    // QList<QStringList> *temp = new QList<QStringList>[len];
+    QList<QList<QStringList>> temp;
     // std::cout << "Using " << omp_get_max_threads() << " threads" << std::endl;
-    #pragma omp parallel for
+    // This could be causing errors?
+    /* Bring this back after reader is finished... memory hungry!
+     * #pragma omp parallel for
+     * for (int i = 0; i < len; i++) {
+     *     QString name = allFiles.at(i);
+     *     // qDebug() << name;
+     *     temp[i] = searchFile(parameters, base + name);
+     * }
+     * #pragma omp barrier
+     * Build a perfect map
+     * for (int i = 0; i < len; i++) {
+     *     if (!temp[i].isEmpty()) {
+     *         results[allFiles.at(i)] = temp[i];
+     *     }
+     * }
+     * delete temp;
+     */
+    
     for (int i = 0; i < len; i++) {
-        QString name = allFiles.at(i);
-        // qDebug() << name;
-        temp[i] = searchfile(parameters, base + name);
+        temp.append(searchFile(parameters, base + allFiles.at(i)));
     }
-    #pragma omp barrier
-    // Build a perfect map
     for (int i = 0; i < len; i++) {
-        if (!temp[i].isEmpty()) {
-            results[allFiles.at(i)] = temp[i];
+        if (!temp.at(i).isEmpty()) {
+            results[allFiles.at(i)] = temp.at(i);
         }
     }
-    // Convert array to QList
-    // QList results = QList();
-    // for (int i = 0; i < len; i++) {
-        // results.push_back(temp[i])
-    // }
     return results;
     
 }

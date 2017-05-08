@@ -14,12 +14,12 @@ PID::PID(QWidget *parent) : QWidget(parent) {
     QGridLayout *grid = new QGridLayout(this);
     
     // Setup controls
-    QLineEdit *PIDEdit = new QLineEdit(this);
+    PIDEdit = new QLineEdit(this);
     QLabel *label = new QLabel("Player ID#(s): ", this);
     label->setBuddy(PIDEdit);
-    QCheckBox *relative = new QCheckBox("Absolute Match", this);
-    QCheckBox *casing = new QCheckBox("Case Sensitive", this);
-    QCheckBox *searchFor = new QCheckBox("Use", this);
+    relative = new QCheckBox("Absolute Match", this);
+    casing = new QCheckBox("Case Sensitive", this);
+    searchFor = new QCheckBox("Use", this);
 
     // Setup Grid
     grid->addWidget(label,     0, 0);

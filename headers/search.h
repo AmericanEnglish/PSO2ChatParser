@@ -7,6 +7,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QList>
+#include <QMap>
 
 // Functions
 bool date_check(QStringList parameters, QString item);
@@ -17,6 +18,6 @@ bool keyword_check(QStringList parameters, QString message);
 
 QStringList too_many_tabs(QStringList line);
 QStringList buildLine(QStringList file, QString str, int start);
-QList<QStringList> searchfile(QMap<QString, QStringList> parameters, QString filename);
+QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString filename);
 QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles);
 

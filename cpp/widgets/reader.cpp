@@ -31,7 +31,7 @@ Reader::Reader(QMap<QString, QList<QStringList>> allData, QWidget *parent) : QWi
     tree = new QTreeView(this);
     tree->setFixedWidth(300);
     treeModel = new QStandardItemModel(this);
-    tree->setModel(treeModel);
+    // tree->setModel(treeModel);
     connect(tree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(updateContent(QModelIndex)));
     
     headers = QStringList({"Time", "PID/SID", "Message"});
@@ -70,7 +70,8 @@ void Reader::generateTree(QMap<QString, QList<QStringList>> allData, QStandardIt
         for (int j = 0; j < lines; j++) {
             subItem = new QStandardItem(suspectLines.at(j));
             subItem->setEditable(false);
-            topItem->appendRow(subItem);        }
+            topItem->appendRow(subItem);
+        }
 
     }
 
@@ -80,6 +81,7 @@ void Reader::newTree(QMap<QString, QList<QStringList>> allData) {
     // Easier to just clear and rebuild the tree
     treeModel->clear();
     generateTree(allData, treeModel->invisibleRootItem());
+    tree->setModel(treeModel);
 
 }
 
@@ -108,7 +110,7 @@ void Reader::refresh(QMap<QString, QList<QStringList>> allData) {
     // Refresh Table
     logTitle->setText(keys.at(0));
     ChatTable *temp = new ChatTable(headers, allData[keys.at(0)], this);
-    tree->setModel(temp);
+    table->setModel(temp);
 
 }
 

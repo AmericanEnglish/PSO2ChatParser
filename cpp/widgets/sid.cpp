@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include <QWidget>
+#include <iostream>
 
 // Constructor
 SID::SID(QWidget *parent) : QWidget(parent) {
@@ -14,12 +15,12 @@ SID::SID(QWidget *parent) : QWidget(parent) {
     QGridLayout *grid = new QGridLayout(this);
     
     // Setup controls
-    QLineEdit *SIDEdit = new QLineEdit(this);
+    SIDEdit = new QLineEdit(this);
     QLabel *label = new QLabel("SID#(s): ", this);
     label->setBuddy(SIDEdit);
-    QCheckBox *relative = new QCheckBox("Absolute Match", this);
-    QCheckBox *casing = new QCheckBox("Case Sensitive", this);
-    QCheckBox *searchFor = new QCheckBox("Use", this);
+    relative = new QCheckBox("Absolute Match", this);
+    casing = new QCheckBox("Case Sensitive", this);
+    searchFor = new QCheckBox("Use", this);
 
     // Setup Grid
     grid->addWidget(label,     0, 0);
@@ -36,7 +37,9 @@ void SID::browseSID() {
 }
 
 QStringList SID::liquidate() {
+    std::cout << "Processing SID" << std::endl;
     if (searchFor->isChecked()) {
+        std::cout << "Parsing SID..." << std::endl;
         QStringList result = SIDEdit->text().split(QRegExp("\\s+|,"));
         if (casing->isChecked()){
             result.push_front("sensitive");
@@ -52,9 +55,8 @@ QStringList SID::liquidate() {
         }
         return result;
     }
-    else {
-        return QStringList();
-    }
+    std::cout << "SID Not Used" << std::endl;
+    return QStringList();
     
 }
 
