@@ -3,6 +3,7 @@
 #include <QAbstractTableModel>
 #include <QBrush>
 #include <QColor>
+#include <QDate>
 #include <QFile>
 #include <QList>
 #include <QMap>
@@ -56,7 +57,7 @@ Reader::Reader(QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(pare
 }
 
 void Reader::generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent) {
-    QStringList keys = allData.keys();
+    QList<QDate> keys = allData.keys();
     keys.sort();
     int len = keys.length();
     int lines;
@@ -66,7 +67,7 @@ void Reader::generateTree(QMap<QDate, QStringList> allData, QStandardItem *paren
     QString key;
     for (int i = 0; i < len; i++) {
         key = keys.at(i);
-        topItem = new QStandardItem(key);
+        topItem = new QStandardItem(key.toString("MMM dd, yyyy"));
         topItem->setEditable(false);
         parent->appendRow(topItem);
         suspectLines = allData[key];
@@ -103,7 +104,7 @@ void Reader::refresh(QMap<QDate, QStringList> allData) {
      * filename 2
      */
     // Get Keys
-    QStringList keys = allData.keys();
+    QList<QDate> keys = allData.keys();
     keys.sort();
 
 
