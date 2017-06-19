@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 // #include <ctime>
 // #include <omp.h>
 #include <search.h>
@@ -295,6 +296,8 @@ QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QSt
     // std::cout << "Using " << omp_get_max_threads() << " threads" << std::endl;
     // This could be causing errors?
     // Bring this back after reader is finished... memory hungry!
+    clock_t start;
+    start = clock();
     #pragma omp parallel for
     for (int i = 0; i < len; i++) {
         QString name = allFiles.at(i);
@@ -302,22 +305,27 @@ QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QSt
         temp[i] = searchFile(parameters, base + name);
     }
     #pragma omp barrier
+    std::cout << "Finished Searching " << len << " files!" << std::endl;
+    std::cout << "Time Taken: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
     // Build a perfect map
     for (int i = 0; i < len; i++) {
         if (!temp[i].isEmpty()) {
             results[allFiles.at(i)] = temp[i];
         }
     }
-    delete temp;
+
+    start = clock();
+    std::cout << "Map constructed!" << std::endl;
+    std::cout << "Time Taken: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+    //delete temp;
+    //std::cout << "Temp deleted!" << std::endl;
 //
     // for (int i = 0; i < len; i++) {
         // temp.append(searchFile(parameters, base + allFiles.at(i)));
     // }
-    // for (int i = 0; i < len; i++) {
-        // if (!temp.at(i).isEmpty()) {
-            // results[allFiles.at(i)] = temp.at(i);
-        // }
-    // }
+    
+    
     return results;
     //return temp;
 }
