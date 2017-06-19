@@ -17,10 +17,10 @@ class Reader : public QWidget {
     Q_OBJECT
 
     public:
-        Reader(QMap<QDate, QStringList> allData, QWidget *parent = 0);
+        Reader(QString base, QMap<QDate, QStringList> allData, QWidget *parent = 0);
         
         // Methods
-        void refresh(QMap<QDate, QStringList> allData);
+        void refresh(QString base, QMap<QDate, QStringList> allData);
 
     private slots:
         void updateContent(QModelIndex index);

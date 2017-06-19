@@ -4,6 +4,7 @@
 #include <QBrush>
 #include <QColor>
 #include <QDate>
+#include <QDebug>
 #include <QFile>
 #include <QList>
 #include <QMap>
@@ -15,10 +16,13 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QHeaderView>
+#include "search.h"
 
-Reader::Reader(QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(parent) {
+Reader::Reader(QString base, QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(parent) {
+    qDebug() << "Reader has been spawned!";
     setWindowTitle("PSO2 Chat Reader");
     resize(900, 500);
+    base = base;
     allData = allData;
     // Build Table
     table = new QTableView(this);
@@ -32,12 +36,10 @@ Reader::Reader(QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(pare
     tree = new QTreeView(this);
     tree->setFixedWidth(300);
     treeModel = new QStandardItemModel(this);
-    // tree->setModel(treeModel);
     connect(tree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(updateContent(QModelIndex)));
     
     headers = QStringList({"Time", "PID/SID", "Message"});
     
-    refresh(allData);
 
     // Setup
     QVBoxLayout *vbox = new QVBoxLayout(this);
@@ -51,20 +53,22 @@ Reader::Reader(QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(pare
     hbox->addWidget(vboxWidget);
 
     setLayout(hbox);
-
+    
     // Build Data
+    qDebug() << "Setting up initial data...";
+    refresh(base, allData);
 
 }
 
 void Reader::generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent) {
     QList<QDate> keys = allData.keys();
-    keys.sort();
+    qSort(keys.begin(), keys.end());
     int len = keys.length();
     int lines;
     QStandardItem *topItem;
     QStandardItem *subItem;
     QStringList suspectLines;
-    QString key;
+    QDate key;
     for (int i = 0; i < len; i++) {
         key = keys.at(i);
         topItem = new QStandardItem(key.toString("MMM dd, yyyy"));
@@ -94,7 +98,7 @@ void Reader::updateContent(QModelIndex index) {
 
 }
 
-void Reader::refresh(QMap<QDate, QStringList> allData) {
+void Reader::refresh(QString base, QMap<QDate, QStringList> allData) {
     /* Currently the structure is
      * filename 1
      * => QStringList(Suspect File Lines)
@@ -104,8 +108,9 @@ void Reader::refresh(QMap<QDate, QStringList> allData) {
      * filename 2
      */
     // Get Keys
+    base = base;
     QList<QDate> keys = allData.keys();
-    keys.sort();
+    qSort(keys.begin(), keys.end());
 
 
 
@@ -113,12 +118,18 @@ void Reader::refresh(QMap<QDate, QStringList> allData) {
     newTree(allData);
     
     // First log of the bunch
-    QList<QStringList> sheet;
+    qDebug() << "Begin digestion of:" << keys.at(0);
+    QList<QStringList> sheet = digestFile(base + keys.at(0).toString("ChatLogyyyyMMdd_00.txt"));
     // Refresh Table
-    logTitle->setText(keys.at(0));
+    logTitle->setText(keys.at(0).toString("MMM dd,  yyyy"));
     ChatTable *temp = new ChatTable(headers, sheet, this);
     table->setModel(temp);
-    table->update();
+    table->resizeColumnsToContents();
+    table->resizeRowsToContents();
+    QHeaderView *hh = table->horizontalHeader();
+    hh->setStretchLastSection(true);
+    //table->update();
+    show();
 
 }
 QList<QStringList> Reader::digestFile(QString filename) {
@@ -127,7 +138,55 @@ QList<QStringList> Reader::digestFile(QString filename) {
      * This version of the log contain minimal amounts of data
      * so most of the data can be left off or elegantly hidden.
      */
-    return QList<QStringList>();
+    QList<QStringList> allData;
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream input(&file);
+    QStringList contents = input.readAll().split("\n");
+    file.close();
+    int count = 0;
+    QStringList keepLine, line, results;
+    QString message;
+    int len;
+    while (count < contents.length()) {
+        line = contents.at(count).split("\t");
+        len = line.length();
+        // std::cout << "Line len=" << line.length() << std::endl;
+        // Possibly empty
+        if (line.isEmpty()) {
+            continue;
+        }
+        // Too many tabs
+        if (len > 6) {
+            // std::cout << "Place 2" << std::endl;
+            line = too_many_tabs(line);
+        }
+
+        // Victim of a bad newline
+        if (len < 6) {
+            // std::cout << "Place 3" << std::endl;
+            line = buildLine(contents, line.join("\t"), count - 1);
+            // std::cout << "Line len=" << line.length() << std::endl;
+        }
+
+        len = line.length();
+        if (len == 6) {
+            QStringList usable;
+            // Time
+            usable << line.at(0).split("T").at(0);
+            // IDs
+            usable << line.at(4) + QString("\n") + line.at(3);
+            // Message
+            usable << line.at(5);
+            // Chat Type
+            usable << line.at(2);
+            // Add this modified line
+            allData << usable;
+        }
+        count++;
+    }
+    qDebug() << filename << "has been digested!";
+    return allData;
 }
 
 // For the chats!
@@ -142,13 +201,13 @@ ChatTable::ChatTable(QStringList headers, QList<QStringList> logdata, QObject *p
 
 int ChatTable::rowCount(const QModelIndex &parent) const {
     if (!logdata.isEmpty()) {
-        return logdata.length() - 1;
+        return logdata.length();
     }
     return 0;
 }
 int ChatTable::columnCount(const QModelIndex &parent) const {
     if (!logdata.isEmpty() && !logdata.at(0).isEmpty()) {
-        return logdata.at(1).length() - 1;
+        return logdata.at(0).length() - 1;
     }
     return 0;
 
@@ -160,7 +219,8 @@ QVariant ChatTable::data(const QModelIndex &index, int role) const {
     }
     else if (role == Qt::BackgroundRole) {
         // Colors!
-        QString chat = logdata.at(index.row() + 1).at(0);
+        QStringList chat_info = logdata.at(index.row());
+        QString chat = chat_info.at(chat_info.length() - 1);
         if (chat == "PUBLIC") {
             return QBrush(Qt::lightGray);
         }
@@ -178,7 +238,7 @@ QVariant ChatTable::data(const QModelIndex &index, int role) const {
     else if (role != Qt::DisplayRole) {
         return QVariant();
     }
-    return QVariant(logdata.at(index.row() + 1).at(index.column() + 1));
+    return QVariant(logdata.at(index.row()).at(index.column()));
 }
 
 QVariant ChatTable::headerData(int section, Qt::Orientation orientation, int role) const {
