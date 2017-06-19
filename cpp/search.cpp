@@ -9,6 +9,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QList>
+#include <QDate>
 #include <QMap>
 
 /*************************************************************************
@@ -284,8 +285,8 @@ QStringList searchFile(QMap<QString, QStringList> parameters, QString filename) 
 // Builds a map for later use
 //QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
 // QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
-QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
-    QMap<QString, QStringList> results;
+QMap<QDate, QStringList> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+    QMap<QDate, QStringList> results;
     int len = allFiles.length();
     // For returning a QList
     // QStringList temp[len];
@@ -311,7 +312,7 @@ QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QSt
     // Build a perfect map
     for (int i = 0; i < len; i++) {
         if (!temp[i].isEmpty()) {
-            results[allFiles.at(i)] = temp[i];
+            results[QDate::fromString(allFiles.at(i),  "ChatLogyyyyMMdd_00.txt")] = temp[i];
         }
     }
 

@@ -117,7 +117,7 @@ void MainWindow::run() {
     allFiles.removeOne("..");
     // qDebug() << allFiles;
     std::cout << "Files Gathered!" << std::endl;
-    QMap<QString, QStringList> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
+    QMap<QDate, QStringList> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
     std::cout << "Search complete, Empty?: " << results.isEmpty() << std::endl;
     // qDebug() << results;
     if (results.isEmpty()) {

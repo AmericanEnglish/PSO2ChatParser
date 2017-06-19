@@ -1,4 +1,4 @@
-CONFIG += qt debug console
+CONFIG += qt debug_and_release console
 QT += widgets
 INCLUDEPATH += headers/widgets headers/
 HEADERS += headers/widgets/mainwindow.h headers/widgets/sid.h headers/widgets/pid.h headers/widgets/chattype.h headers/widgets/chatdate.h headers/widgets/keywords.h headers/widgets/reader.h headers/search.h

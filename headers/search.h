@@ -20,5 +20,5 @@ QStringList too_many_tabs(QStringList line);
 QStringList buildLine(QStringList file, QString str, int start);
 QStringList searchFile(QMap<QString, QStringList> parameters, QString filename);
 //QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles);
- QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles);
+ QMap<QDate, QStringList> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles);
 

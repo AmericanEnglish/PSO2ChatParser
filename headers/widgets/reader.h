@@ -17,10 +17,10 @@ class Reader : public QWidget {
     Q_OBJECT
 
     public:
-        Reader(QMap<QString, QStringList> allData, QWidget *parent = 0);
+        Reader(QMap<QDate, QStringList> allData, QWidget *parent = 0);
         
         // Methods
-        void refresh(QMap<QString, QStringList> allData);
+        void refresh(QMap<QDate, QStringList> allData);
 
     private slots:
         void updateContent(QModelIndex index);
@@ -34,8 +34,8 @@ class Reader : public QWidget {
         QStandardItemModel *treeModel;
 
         // Methods
-        void generateTree(QMap<QString, QStringList> allData, QStandardItem *parent);
-        void newTree(QMap<QString, QStringList> allData);
+        void generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent);
+        void newTree(QMap<QDate, QStringList> allData);
         QList<QStringList> digestFile(QString filename);
 
 

@@ -15,7 +15,7 @@
 #include <QWidget>
 #include <QHeaderView>
 
-Reader::Reader(QMap<QString, QStringList> allData, QWidget *parent) : QWidget(parent) {
+Reader::Reader(QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(parent) {
     setWindowTitle("PSO2 Chat Reader");
     resize(900, 500);
     allData = allData;
@@ -55,7 +55,7 @@ Reader::Reader(QMap<QString, QStringList> allData, QWidget *parent) : QWidget(pa
 
 }
 
-void Reader::generateTree(QMap<QString, QStringList> allData, QStandardItem *parent) {
+void Reader::generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent) {
     QStringList keys = allData.keys();
     keys.sort();
     int len = keys.length();
@@ -81,7 +81,7 @@ void Reader::generateTree(QMap<QString, QStringList> allData, QStandardItem *par
 
 }
 
-void Reader::newTree(QMap<QString, QStringList> allData) {
+void Reader::newTree(QMap<QDate, QStringList> allData) {
     // Easier to just clear and rebuild the tree
     treeModel->clear();
     generateTree(allData, treeModel->invisibleRootItem());
@@ -93,7 +93,7 @@ void Reader::updateContent(QModelIndex index) {
 
 }
 
-void Reader::refresh(QMap<QString, QStringList> allData) {
+void Reader::refresh(QMap<QDate, QStringList> allData) {
     /* Currently the structure is
      * filename 1
      * => QStringList(Suspect File Lines)
