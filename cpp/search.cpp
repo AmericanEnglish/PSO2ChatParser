@@ -212,7 +212,7 @@ QStringList buildLine(QStringList file, QString str, int start) {
 // Main Functions
 
 // QStringList searchfile(QMap<QString, QStringList> parameters, QString filename) {
-QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString filename) {
+QStringList searchFile(QMap<QString, QStringList> parameters, QString filename) {
     QFile file(filename);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream input(&file);
@@ -263,63 +263,63 @@ QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString fil
             // Append the line to data
         }
         // Build the keepable line
-        keepLine = QStringList();
+        // keepLine = QStringList();
         // Chat Type
-        keepLine << line.at(2);
+        // keepLine << line.at(2);
         // Time
-        keepLine << line.at(0).split("T").at(0);
+        // keepLine << line.at(0).split("T").at(0);
         // PID / SID
-        keepLine << (line.at(4) + "\n" + line.at(3));
-        allData << keepLine;
+        // keepLine << (line.at(4) + "\n" + line.at(3));
+        // allData << keepLine;
         count++;
 
     }
     if (results.isEmpty()) {
-        return QList<QStringList>();
+        return QStringList();
     }
-    allData.push_front(results);
-    return allData;
+    
+    return results;
 }
 // Builds a map for later use
-// QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
-QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+// QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
 // QList<QStringList> loopSearch(QString base, QStringList allFiles) {
-    QMap<QString, QList<QStringList>> results;
+    // QMap<QString, QList<QStringList>> results;
     int len = allFiles.length();
     // For returning a QList
     // QStringList temp[len];
+    QStringlist *temp = new QStringList[len];
     // For returning an array of QStringLists
     // QList<QStringList> *temp = new QList<QStringList>[len];
-    QList<QList<QStringList>> temp;
+    // QList<QList<QStringList>> temp;
     // std::cout << "Using " << omp_get_max_threads() << " threads" << std::endl;
     // This could be causing errors?
-    /* Bring this back after reader is finished... memory hungry!
-     * #pragma omp parallel for
-     * for (int i = 0; i < len; i++) {
-     *     QString name = allFiles.at(i);
-     *     // qDebug() << name;
-     *     temp[i] = searchFile(parameters, base + name);
-     * }
-     * #pragma omp barrier
-     * Build a perfect map
-     * for (int i = 0; i < len; i++) {
-     *     if (!temp[i].isEmpty()) {
-     *         results[allFiles.at(i)] = temp[i];
-     *     }
-     * }
-     * delete temp;
-     */
-    
+    // Bring this back after reader is finished... memory hungry!
+    #pragma omp parallel for
     for (int i = 0; i < len; i++) {
-        temp.append(searchFile(parameters, base + allFiles.at(i)));
+        QString name = allFiles.at(i);
+        // qDebug() << name;
+        temp[i] = searchFile(parameters, base + name);
     }
-    for (int i = 0; i < len; i++) {
-        if (!temp.at(i).isEmpty()) {
-            results[allFiles.at(i)] = temp.at(i);
-        }
-    }
-    return results;
-    
+    #pragma omp barrier
+    // Build a perfect map
+    // for (int i = 0; i < len; i++) {
+        // if (!temp[i].isEmpty()) {
+            // results[allFiles.at(i)] = temp[i];
+        // }
+    // }
+    // delete temp;
+//
+    // for (int i = 0; i < len; i++) {
+        // temp.append(searchFile(parameters, base + allFiles.at(i)));
+    // }
+    // for (int i = 0; i < len; i++) {
+        // if (!temp.at(i).isEmpty()) {
+            // results[allFiles.at(i)] = temp.at(i);
+        // }
+    // }
+    // return results;
+    return temp;
 }
 
 

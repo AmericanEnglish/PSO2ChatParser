@@ -18,6 +18,7 @@ bool keyword_check(QStringList parameters, QString message);
 
 QStringList too_many_tabs(QStringList line);
 QStringList buildLine(QStringList file, QString str, int start);
-QList<QStringList> searchFile(QMap<QString, QStringList> parameters, QString filename);
-QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles);
+QStringList searchFile(QMap<QString, QStringList> parameters, QString filename);
+QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles);
+// QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles);
 

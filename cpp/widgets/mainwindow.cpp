@@ -117,7 +117,7 @@ void MainWindow::run() {
     allFiles.removeOne("..");
     // qDebug() << allFiles;
     std::cout << "Files Gathered!" << std::endl;
-    QMap<QString, QList<QStringList>> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
+    QStringList *results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
     std::cout << "Search complete, Empty?: " << results.isEmpty() << std::endl;
     // qDebug() << results;
     if (results.isEmpty()) {
@@ -129,7 +129,7 @@ void MainWindow::run() {
         reader->show();
     }
     else {
-        std::cout << "Refreshing Old Reader" << std::endl;
+        std::cout << "Refreshing Old Reader.." << std::endl;
         reader->refresh(results);
     }
 
