@@ -15,7 +15,7 @@
 #include <QWidget>
 #include <QHeaderView>
 
-Reader::Reader(QStringList allFiles, QStringList allData, QWidget *parent) : QWidget(parent) {
+Reader::Reader(QMap<QString, QStringList> allData, QWidget *parent) : QWidget(parent) {
     setWindowTitle("PSO2 Chat Reader");
     resize(900, 500);
     allData = allData;
@@ -55,7 +55,7 @@ Reader::Reader(QStringList allFiles, QStringList allData, QWidget *parent) : QWi
 
 }
 
-void Reader::generateTree(QMap<QString, QList<QStringList>> allData, QStandardItem *parent) {
+void Reader::generateTree(QMap<QString, QStringList> allData, QStandardItem *parent) {
     QStringList keys = allData.keys();
     keys.sort();
     int len = keys.length();
@@ -69,8 +69,7 @@ void Reader::generateTree(QMap<QString, QList<QStringList>> allData, QStandardIt
         topItem = new QStandardItem(key);
         topItem->setEditable(false);
         parent->appendRow(topItem);
-        // Leading element are the suspect lines
-        suspectLines = allData[key].at(0);
+        suspectLines = allData[key];
         lines = suspectLines.length();
         for (int j = 0; j < lines; j++) {
             subItem = new QStandardItem(suspectLines.at(j));
@@ -82,7 +81,7 @@ void Reader::generateTree(QMap<QString, QList<QStringList>> allData, QStandardIt
 
 }
 
-void Reader::newTree(QMap<QString, QList<QStringList>> allData) {
+void Reader::newTree(QMap<QString, QStringList> allData) {
     // Easier to just clear and rebuild the tree
     treeModel->clear();
     generateTree(allData, treeModel->invisibleRootItem());
@@ -94,7 +93,7 @@ void Reader::updateContent(QModelIndex index) {
 
 }
 
-void Reader::refresh(QMap<QString, QList<QStringList>> allData) {
+void Reader::refresh(QMap<QString, QStringList> allData) {
     /* Currently the structure is
      * filename 1
      * => QStringList(Suspect File Lines)
@@ -111,13 +110,23 @@ void Reader::refresh(QMap<QString, QList<QStringList>> allData) {
 
     // Refresh Tree
     newTree(allData);
-    QList<QStringList> sheet = allData[keys.at(0)];
+    
+    // First log of the bunch
+    QList<QStringList> sheet;
     // Refresh Table
     logTitle->setText(keys.at(0));
     ChatTable *temp = new ChatTable(headers, sheet, this);
     table->setModel(temp);
     table->update();
 
+}
+QList<QStringList> Reader::digestFile(QString filename) {
+    /* When given a filename, it produces a special watered down
+     * version of the chat to be taken in by the chat table. 
+     * This version of the log contain minimal amounts of data
+     * so most of the data can be left off or elegantly hidden.
+     */
+    return QList<QStringList>();
 }
 
 // For the chats!

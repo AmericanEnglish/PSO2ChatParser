@@ -117,20 +117,20 @@ void MainWindow::run() {
     allFiles.removeOne("..");
     // qDebug() << allFiles;
     std::cout << "Files Gathered!" << std::endl;
-    QStringList *results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
-    std::cout << "Search complete, Empty?: " << results.isEmpty() << std::endl;
+    QMap<QString, QStringList> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
+    //std::cout << "Search complete, Empty?: " << results.isEmpty() << std::endl;
     // qDebug() << results;
     if (results.isEmpty()) {
         // Show some dialog box
     }
     else if (reader == nullptr) {
         std::cout << "Opening New Reader..." << std::endl;
-        reader = new Reader(allFiles, results);
+        reader = new Reader(results);
         reader->show();
     }
     else {
         std::cout << "Refreshing Old Reader.." << std::endl;
-        reader->refresh(allFiles, results);
+        reader->refresh(results);
     }
 
 }

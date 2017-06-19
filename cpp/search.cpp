@@ -281,14 +281,14 @@ QStringList searchFile(QMap<QString, QStringList> parameters, QString filename) 
     return results;
 }
 // Builds a map for later use
-QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+//QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
 // QMap<QString, QList<QStringList>> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
-// QList<QStringList> loopSearch(QString base, QStringList allFiles) {
-    // QMap<QString, QList<QStringList>> results;
+QMap<QString, QStringList> loopSearch(QMap<QString, QStringList> parameters, QString base, QStringList allFiles) {
+    QMap<QString, QStringList> results;
     int len = allFiles.length();
     // For returning a QList
     // QStringList temp[len];
-    QStringlist *temp = new QStringList[len];
+    QStringList *temp = new QStringList[len];
     // For returning an array of QStringLists
     // QList<QStringList> *temp = new QList<QStringList>[len];
     // QList<QList<QStringList>> temp;
@@ -303,12 +303,12 @@ QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QSt
     }
     #pragma omp barrier
     // Build a perfect map
-    // for (int i = 0; i < len; i++) {
-        // if (!temp[i].isEmpty()) {
-            // results[allFiles.at(i)] = temp[i];
-        // }
-    // }
-    // delete temp;
+    for (int i = 0; i < len; i++) {
+        if (!temp[i].isEmpty()) {
+            results[allFiles.at(i)] = temp[i];
+        }
+    }
+    delete temp;
 //
     // for (int i = 0; i < len; i++) {
         // temp.append(searchFile(parameters, base + allFiles.at(i)));
@@ -318,8 +318,8 @@ QStringList *loopSearch(QMap<QString, QStringList> parameters, QString base, QSt
             // results[allFiles.at(i)] = temp.at(i);
         // }
     // }
-    // return results;
-    return temp;
+    return results;
+    //return temp;
 }
 
 
