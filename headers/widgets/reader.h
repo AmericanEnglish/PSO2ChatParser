@@ -17,7 +17,7 @@ class Reader : public QWidget {
     Q_OBJECT
 
     public:
-        Reader(QMap<QString, QList<QStringList>> allData, QWidget *parent = 0);
+        Reader(QStringList allFiles, QStringList allData, QWidget *parent = 0);
         
         // Methods
         void refresh(QMap<QString, QList<QStringList>> allData);

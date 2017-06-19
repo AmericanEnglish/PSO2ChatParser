@@ -125,12 +125,12 @@ void MainWindow::run() {
     }
     else if (reader == nullptr) {
         std::cout << "Opening New Reader..." << std::endl;
-        reader = new Reader(results);
+        reader = new Reader(allFiles, results);
         reader->show();
     }
     else {
         std::cout << "Refreshing Old Reader.." << std::endl;
-        reader->refresh(results);
+        reader->refresh(allFiles, results);
     }
 
 }

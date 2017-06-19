@@ -15,7 +15,7 @@
 #include <QWidget>
 #include <QHeaderView>
 
-Reader::Reader(QMap<QString, QList<QStringList>> allData, QWidget *parent) : QWidget(parent) {
+Reader::Reader(QStringList allFiles, QStringList allData, QWidget *parent) : QWidget(parent) {
     setWindowTitle("PSO2 Chat Reader");
     resize(900, 500);
     allData = allData;
