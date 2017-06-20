@@ -40,10 +40,11 @@ Reader::Reader(QString base, QMap<QDate, QStringList> allData, QWidget *parent) 
     
     headers = QStringList({"Time", "PID/SID", "Message"});
     
+    logTitle = new QLabel("", this);
+
 
     // Setup
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    logTitle = new QLabel("", this);
     vbox->addWidget(logTitle);
     vbox->addWidget(table);
     QWidget *vboxWidget = new QWidget(this);
@@ -122,12 +123,13 @@ void Reader::refresh(QString base, QMap<QDate, QStringList> allData) {
     QList<QStringList> sheet = digestFile(base + keys.at(0).toString("ChatLogyyyyMMdd_00.txt"));
     // Refresh Table
     logTitle->setText(keys.at(0).toString("MMM dd,  yyyy"));
-    ChatTable *temp = new ChatTable(headers, sheet, this);
-    table->setModel(temp);
+    ChatTable *model = new ChatTable(headers, sheet, this);
+    table->setModel(model);
     table->resizeColumnsToContents();
     table->resizeRowsToContents();
     QHeaderView *hh = table->horizontalHeader();
     hh->setStretchLastSection(true);
+    //table->show();
     //table->update();
     show();
 
@@ -186,6 +188,7 @@ QList<QStringList> Reader::digestFile(QString filename) {
         count++;
     }
     qDebug() << filename << "has been digested!";
+    qDebug() << "Length:" << allData.length();
     return allData;
 }
 
@@ -195,19 +198,21 @@ ChatTable::ChatTable(QStringList headers, QList<QStringList> logdata, QObject *p
      * the first line are suspectLines
      * the first column of normal data is the chat type.
      */
-    logdata = logdata;
+    log = logdata;
     headerdata = headers;
 }
 
 int ChatTable::rowCount(const QModelIndex &parent) const {
-    if (!logdata.isEmpty()) {
-        return logdata.length();
+    Q_UNUSED(parent);
+    if (!log.isEmpty()) {
+        return log.length();
     }
     return 0;
 }
 int ChatTable::columnCount(const QModelIndex &parent) const {
-    if (!logdata.isEmpty() && !logdata.at(0).isEmpty()) {
-        return logdata.at(0).length() - 1;
+    Q_UNUSED(parent);
+    if (!log.isEmpty() && !log.at(0).isEmpty()) {
+        return log.at(0).length() - 1;
     }
     return 0;
 
@@ -219,7 +224,7 @@ QVariant ChatTable::data(const QModelIndex &index, int role) const {
     }
     else if (role == Qt::BackgroundRole) {
         // Colors!
-        QStringList chat_info = logdata.at(index.row());
+        QStringList chat_info = log.at(index.row());
         QString chat = chat_info.at(chat_info.length() - 1);
         if (chat == "PUBLIC") {
             return QBrush(Qt::lightGray);
@@ -238,7 +243,7 @@ QVariant ChatTable::data(const QModelIndex &index, int role) const {
     else if (role != Qt::DisplayRole) {
         return QVariant();
     }
-    return QVariant(logdata.at(index.row()).at(index.column()));
+    return log.at(index.row()).at(index.column());
 }
 
 QVariant ChatTable::headerData(int section, Qt::Orientation orientation, int role) const {

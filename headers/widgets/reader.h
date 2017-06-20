@@ -55,9 +55,8 @@ class ChatTable : public QAbstractTableModel {
 
     private:
         QStringList headerdata;
-        QList<QStringList> logdata;
+        QList<QStringList> log;
         QStringList chatTypes;
-        // QMap<QString, QList<QStringList>> allData;
 };
 
 
