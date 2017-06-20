@@ -16,6 +16,7 @@
 #include <QMap>
 #include <QDir>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include <iostream>
 #include <QDebug>
 #include <QFileDialog>
@@ -31,7 +32,7 @@ void MainWindow::initDB() {
     db.addDatabase("QSQLITE");
     if (current.exists("parser.sql")) {
         // Connect to db
-        db.setDatabase(current.absolutePath() + "\\" + "parser.sql");
+        db.setDatabaseName(current.absolutePath() + "\\" + "parser.sql");
         // Grab default path
         QSqlQuery query;
         bool err = query.exec("SELECT value FROM defaults WHERE name = 'path'");
@@ -39,14 +40,14 @@ void MainWindow::initDB() {
             qDebug() << "There was an error!";
         }
         else {
-            QString pth = query.at(0).toString();
+            QString pth = query.value(0).toString();
             qDebug() << "Path found is:" << pth;
             defaultPath = QDir(pth);
         }
     }
     else {
         // Create database
-        db.setDatabase(current.absolutePath() + "\\" + "parser.sql");
+        db.setDatabaseName(current.absolutePath() + "\\" + "parser.sql");
         // Ask for default path
         QString dir = QFileDialog::getExistingDirectory(this, "Select PSO2 Log Folder",
                                                 "./",
