@@ -28,8 +28,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
 }
 
 void MainWindow::initDB() {
-    QDir current = QDir("./");
-    db.addDatabase("QSQLITE");
+    QDir current = QDir(".");
+    db = QSqlDatabase::addDatabase("QSQLITE");
     if (current.exists("parser.sql")) {
         // Connect to db
         db.setDatabaseName(current.absolutePath() + "\\" + "parser.sql");
@@ -55,11 +55,12 @@ void MainWindow::initDB() {
                                                 "./",
                                                 QFileDialog::ShowDirsOnly
                                                 | QFileDialog::DontResolveSymlinks);
+        qDebug() << "Path selected:" << dir;
         // INSERT into db
         QSqlQuery query;
         bool err = query.exec("CREATE TABLE defaults (VARCHAR name, VARCHAR value)");
         if (err) {
-        
+            qDebug() << "There was an error!";
         }
         else {
             query.prepare("INSERT INTO defaults VALUES (:name, :value)");
