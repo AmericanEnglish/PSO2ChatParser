@@ -33,6 +33,7 @@ void MainWindow::initDB() {
     if (current.exists("parser.sql")) {
         // Connect to db
         db.setDatabaseName(current.absolutePath() + "\\" + "parser.sql");
+        db.open();
         // Grab default path
         QSqlQuery query;
         bool err = query.exec("SELECT value FROM defaults WHERE name = 'path'");
@@ -48,6 +49,7 @@ void MainWindow::initDB() {
     else {
         // Create database
         db.setDatabaseName(current.absolutePath() + "\\" + "parser.sql");
+        db.open()
         // Ask for default path
         QString dir = QFileDialog::getExistingDirectory(this, "Select PSO2 Log Folder",
                                                 "./",
