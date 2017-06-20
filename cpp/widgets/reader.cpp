@@ -25,11 +25,15 @@ Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *pare
     allData = allData;
     // Build Table
     table = new QTableView(this);
-    table->setWordWrap(true);
     table->setSortingEnabled(false);
     // (table->verticalHeader)()->setVisible(false);
     QHeaderView *vv = table->verticalHeader();
     vv->setVisible(false);
+    connect(
+        table->horizontalHeader(),
+        SIGNAL(sectionResized(int, int, int)),
+        table,
+        SLOT(resizeRowsToContents()));
 
     // Build Tree
     tree = new QTreeView(this);
@@ -111,10 +115,12 @@ void Reader::updateContent(QModelIndex index) {
     }
     logTitle->setText(newDate.toString("MMM dd, yyyy"));
     table->setModel(alltables[newDate]);
-    table->resizeColumnsToContents();
+    table->resizeColumnToContents(0);
+    table->resizeColumnToContents(1);
     table->resizeRowsToContents();
     QHeaderView *hh = table->horizontalHeader();
     hh->setStretchLastSection(true);
+    table->setWordWrap(true);
 }
 
 void Reader::refresh(QString basepath, QMap<QDate, QStringList> allData) {
@@ -141,10 +147,12 @@ void Reader::refresh(QString basepath, QMap<QDate, QStringList> allData) {
     alltables[first] = new ChatTable(headers, sheet, this);
     
     table->setModel(alltables[first]);
-    table->resizeColumnsToContents();
+    table->resizeColumnToContents(0);
+    table->resizeColumnToContents(1);
     table->resizeRowsToContents();
     QHeaderView *hh = table->horizontalHeader();
     hh->setStretchLastSection(true);
+    table->setWordWrap(true);
     //table->show();
     //table->update();
     show();

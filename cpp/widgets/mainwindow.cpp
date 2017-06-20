@@ -20,6 +20,8 @@
 #include <iostream>
 #include <QDebug>
 #include <QFileDialog>
+#include <QSqlError>
+#include <QSqlRecord>
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     initGUI();
@@ -30,25 +32,29 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
 void MainWindow::initDB() {
     QDir current = QDir(".");
     db = QSqlDatabase::addDatabase("QSQLITE");
-    if (current.exists("parser.sql")) {
+    if (current.exists("parserData.db")) {
         // Connect to db
-        db.setDatabaseName(current.absolutePath() + "\\" + "parser.sql");
+        db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
         db.open();
         // Grab default path
         QSqlQuery query;
-        bool err = query.exec("SELECT value FROM defaults WHERE name = 'path'");
-        if (err) {
-            qDebug() << "There was an error!";
+        bool noErr = query.exec("SELECT value "
+                "FROM defaults "
+                "WHERE name = 'path'");
+        if (!noErr) {
+            qDebug() << "ERROR:\n" << query.lastError().text();
         }
         else {
-            QString pth = query.value(0).toString();
+            query.next();
+            QSqlRecord result = query.record();
+            QString pth = result.value("value").toString();
             qDebug() << "Path found is:" << pth;
             defaultPath = QDir(pth);
         }
     }
     else {
         // Create database
-        db.setDatabaseName(current.absolutePath() + "\\" + "parser.sql");
+        db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
         db.open();
         // Ask for default path
         QString dir = QFileDialog::getExistingDirectory(this, "Select PSO2 Log Folder",
@@ -58,15 +64,17 @@ void MainWindow::initDB() {
         qDebug() << "Path selected:" << dir;
         // INSERT into db
         QSqlQuery query;
-        bool err = query.exec("CREATE TABLE defaults (VARCHAR name, VARCHAR value)");
-        if (err) {
-            qDebug() << "There was an error!";
+        bool noErr = query.exec("CREATE TABLE defaults "
+                "(name VARCHAR PRIMARY KEY," 
+                "value VARCHAR)");
+        if (!noErr) {
+            qDebug() << "ERROR:\n" << query.lastError().text();
         }
         else {
             query.prepare("INSERT INTO defaults VALUES (:name, :value)");
             query.bindValue(":name",  "path");
             query.bindValue(":value", dir);
-            err = query.exec();
+            noErr = query.exec();
             defaultPath = QDir(dir);
         }
     }
