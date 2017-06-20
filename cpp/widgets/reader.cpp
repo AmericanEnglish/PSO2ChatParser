@@ -35,7 +35,9 @@ Reader::Reader(QString base, QMap<QDate, QStringList> allData, QWidget *parent) 
     // Build Tree
     tree = new QTreeView(this);
     tree->setFixedWidth(300);
+    tree->header()->hide();
     treeModel = new QStandardItemModel(this);
+
     connect(tree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(updateContent(QModelIndex)));
     
     headers = QStringList({"Time", "PID/SID", "Message"});
@@ -100,14 +102,8 @@ void Reader::updateContent(QModelIndex index) {
 }
 
 void Reader::refresh(QString base, QMap<QDate, QStringList> allData) {
-    /* Currently the structure is
-     * filename 1
-     * => QStringList(Suspect File Lines)
-     * => FILE LINE 1
-     * => FILE LINE 2
-     * => ...
-     * filename 2
-     */
+    // Reset the table map
+    alltables = QMap<QDate, ChatTable*>();
     // Get Keys
     base = base;
     QList<QDate> keys = allData.keys();
@@ -117,14 +113,16 @@ void Reader::refresh(QString base, QMap<QDate, QStringList> allData) {
 
     // Refresh Tree
     newTree(allData);
-    
+    QDate first = keys.at(0);
     // First log of the bunch
-    qDebug() << "Begin digestion of:" << keys.at(0);
-    QList<QStringList> sheet = digestFile(base + keys.at(0).toString("ChatLogyyyyMMdd_00.txt"));
+    qDebug() << "Begin digestion of:" << first;
+    QList<QStringList> sheet = digestFile(base + first.toString("ChatLogyyyyMMdd_00.txt"));
     // Refresh Table
-    logTitle->setText(keys.at(0).toString("MMM dd,  yyyy"));
-    ChatTable *model = new ChatTable(headers, sheet, this);
-    table->setModel(model);
+    logTitle->setText(first.toString("MMM dd,  yyyy"));
+    // Store the tables in a map
+    alltables[first] = new ChatTable(headers, sheet, this);
+    
+    table->setModel(alltables[first]);
     table->resizeColumnsToContents();
     table->resizeRowsToContents();
     QHeaderView *hh = table->horizontalHeader();
