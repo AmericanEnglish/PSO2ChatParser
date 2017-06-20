@@ -1,1 +1,0 @@
-pyinstaller --onedir guiparser.py
