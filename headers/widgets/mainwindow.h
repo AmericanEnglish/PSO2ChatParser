@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QCloseEvent>
 #include <QMap>
+#include <QSqlDatabase>
 #include <sid.h>
 #include <pid.h>
 #include <chattype.h>
@@ -57,6 +58,7 @@ class MainWindow : public QWidget {
         QMap<QString, QWidget*> popups;
         Reader *reader;
         QDir defaultPath;
+        QSqlDatabase db;
         
         
         // SQLITE STUFF HERE

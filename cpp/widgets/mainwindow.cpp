@@ -15,8 +15,10 @@
 #include <QCloseEvent>
 #include <QMap>
 #include <QDir>
+#include <QSqlDatabase>
 #include <iostream>
 #include <QDebug>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     initGUI();
@@ -25,6 +27,48 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
 }
 
 void MainWindow::initDB() {
+    QDir current = QDir("./");
+    db.addDatabase("QSQLITE");
+    if (current.exists("parser.sql")) {
+        // Connect to db
+        db.setDatabase(current.absolutePath() + "\\" + "parser.sql");
+        // Grab default path
+        QSqlQuery query;
+        bool err = query.exec("SELECT value FROM defaults WHERE name = 'path'");
+        if (err) {
+            qDebug() << "There was an error!";
+        }
+        else {
+            QString pth = query.at(0).toString();
+            qDebug() << "Path found is:" << pth;
+            defaultPath = QDir(pth);
+        }
+    }
+    else {
+        // Create database
+        db.setDatabase(current.absolutePath() + "\\" + "parser.sql");
+        // Ask for default path
+        QString dir = QFileDialog::getExistingDirectory(this, "Select PSO2 Log Folder",
+                                                "./",
+                                                QFileDialog::ShowDirsOnly
+                                                | QFileDialog::DontResolveSymlinks);
+        // INSERT into db
+        QSqlQuery query;
+        bool err = query.exec("CREATE TABLE defaults (VARCHAR name, VARCHAR value)");
+        if (err) {
+        
+        }
+        else {
+            query.prepare("INSERT INTO defaults VALUES (:name, :value)");
+            query.bindValue(":name",  "path");
+            query.bindValue(":value", dir);
+            err = query.exec();
+            defaultPath = QDir(dir);
+        }
+    }
+    // Check if default path is valid
+    // if valid
+    // else grab again
 
 }
 
@@ -91,7 +135,7 @@ void MainWindow::initGUI() {
     // popups["Settings"] = settings;
 
     // Hardset defaultpath
-    defaultPath = QDir("C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs\\");
+    //defaultPath = QDir("C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs\\");
     // Figure out filters laters
     // defaultPath.setFilter(QDir::NoDotAndDotDot);
 
