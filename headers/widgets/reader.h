@@ -36,16 +36,17 @@ class Reader : public QWidget {
     Q_OBJECT
 
     public:
-        Reader(QString base, QMap<QDate, QStringList> allData, QWidget *parent = 0);
+        Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *parent = 0);
         
         // Methods
-        void refresh(QString base, QMap<QDate, QStringList> allData);
+        void refresh(QString basepath, QMap<QDate, QStringList> allData);
 
     private slots:
         void updateContent(QModelIndex index);
         
     private:
         // Variables
+        QString base;
         QStringList headers;
         QTableView *table;
         QTreeView *tree;

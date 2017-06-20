@@ -18,11 +18,10 @@
 #include <QHeaderView>
 #include "search.h"
 
-Reader::Reader(QString base, QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(parent) {
+Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(parent) {
     qDebug() << "Reader has been spawned!";
     setWindowTitle("PSO2 Chat Reader");
     resize(900, 500);
-    base = base;
     allData = allData;
     // Build Table
     table = new QTableView(this);
@@ -59,7 +58,7 @@ Reader::Reader(QString base, QMap<QDate, QStringList> allData, QWidget *parent) 
     
     // Build Data
     qDebug() << "Setting up initial data...";
-    refresh(base, allData);
+    refresh(basepath, allData);
 
 }
 
@@ -98,14 +97,33 @@ void Reader::newTree(QMap<QDate, QStringList> allData) {
 }
 
 void Reader::updateContent(QModelIndex index) {
-
+    while (index.parent().isValid()) {
+        index = index.parent();
+    }
+    QVariant data = tree->model()->data(index);
+    QDate newDate = QDate::fromString(data.toString(), "MMM dd, yyyy");
+    //qDebug() << "QVariant:" << data.toString() << "\n\tQDate:" << newDate;
+    QList<QDate> keys = alltables.keys();
+    if (!keys.contains(newDate)) {
+        // Reuse
+        QList<QStringList> sheet = digestFile(this->base + newDate.toString("ChatLogyyyyMMdd_00.txt"));
+        alltables[newDate] = new ChatTable(headers, sheet, this);
+    }
+    logTitle->setText(newDate.toString("MMM dd, yyyy"));
+    table->setModel(alltables[newDate]);
+    table->resizeColumnsToContents();
+    table->resizeRowsToContents();
+    QHeaderView *hh = table->horizontalHeader();
+    hh->setStretchLastSection(true);
 }
 
-void Reader::refresh(QString base, QMap<QDate, QStringList> allData) {
+void Reader::refresh(QString basepath, QMap<QDate, QStringList> allData) {
     // Reset the table map
-    alltables = QMap<QDate, ChatTable*>();
+    //alltables = QMap<QDate, ChatTable*>();
+    qDeleteAll(alltables);
+    alltables.clear();
     // Get Keys
-    base = base;
+    base = basepath;
     QList<QDate> keys = allData.keys();
     qSort(keys.begin(), keys.end());
 
