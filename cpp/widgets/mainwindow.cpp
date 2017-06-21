@@ -181,7 +181,7 @@ void MainWindow::run() {
     if (results.keys().isEmpty()) {
         // Show some dialog box
         NoResults *noresults = new NoResults("No Logs Matched Your Search!", this);
-        noresults->show();
+        noresults->exec();
         delete noresults;
     }
     else if (reader == nullptr) {

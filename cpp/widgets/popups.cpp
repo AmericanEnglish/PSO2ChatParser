@@ -7,13 +7,16 @@
 
 
 NoResults::NoResults(QString message, QWidget *parent) : QDialog(parent) {
-   QVBoxLayout *layout = new QVBoxLayout(this);
-   QLabel *displayMessage = new QLabel(message, this);
-   QPushButton *accept = new QPushButton("OK", this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    QLabel *displayMessage = new QLabel(message, this);
+    QPushButton *acceptButton = new QPushButton("OK", this);
 
-   layout->addWidget(displayMessage);
-   layout->addWidget(accept);
-   setLayout(layout);
+    connect(acceptButton, SIGNAL(clicked()), this, SLOT(accept()));
+
+    layout->addWidget(displayMessage);
+    layout->addWidget(acceptButton);
+    setModal(true);
+    setLayout(layout);
 }
 
 
