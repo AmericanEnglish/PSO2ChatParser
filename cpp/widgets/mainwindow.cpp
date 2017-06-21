@@ -165,12 +165,13 @@ void MainWindow::add_new_file() {
 }
 
 void MainWindow::run() {
-    QRegExp filepattern("ChatLog\\d{8}\\_00.txt");
+    QRegExp filepattern("^ChatLog\\d{8}\\_00.txt$");
     std::cout << "Run begin" << std::endl;
     QMap<QString, QStringList> parameters = fullLiquidate();
     std::cout << "Liquidation of assests complete" << std::endl;
     QStringList allFiles  = defaultPath.entryList();
     allFiles = allFiles.filter(filepattern);
+    qDebug() << allFiles;
     // allFiles.removeOne(".");
     // allFiles.removeOne("..");
     // qDebug() << allFiles;
