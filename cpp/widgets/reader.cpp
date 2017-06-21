@@ -124,6 +124,7 @@ void Reader::updateContent(QModelIndex index) {
 }
 
 void Reader::refresh(QString basepath, QMap<QDate, QStringList> allData) {
+    qDebug() << "Reader here! Keys:" << allData.keys();
     // Reset the table map
     //alltables = QMap<QDate, ChatTable*>();
     qDeleteAll(alltables);

@@ -22,6 +22,8 @@
 #include <QFileDialog>
 #include <QSqlError>
 #include <QSqlRecord>
+#include <QRegExp>
+#include "popups.h"
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     initGUI();
@@ -146,8 +148,6 @@ void MainWindow::initGUI() {
     popups["Keywords"] = keywords;
     // popups["Settings"] = settings;
 
-    // Hardset defaultpath
-    //defaultPath = QDir("C:\\Users\\12bar\\Documents\\code\\pso2parser\\logs\\");
     // Figure out filters laters
     // defaultPath.setFilter(QDir::NoDotAndDotDot);
 
@@ -165,19 +165,24 @@ void MainWindow::add_new_file() {
 }
 
 void MainWindow::run() {
+    QRegExp filepattern("ChatLog\\d{8}\\_00.txt");
     std::cout << "Run begin" << std::endl;
     QMap<QString, QStringList> parameters = fullLiquidate();
     std::cout << "Liquidation of assests complete" << std::endl;
     QStringList allFiles  = defaultPath.entryList();
-    allFiles.removeOne(".");
-    allFiles.removeOne("..");
+    allFiles = allFiles.filter(filepattern);
+    // allFiles.removeOne(".");
+    // allFiles.removeOne("..");
     // qDebug() << allFiles;
     std::cout << "Files Gathered!" << std::endl;
     QMap<QDate, QStringList> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
-    std::cout << "Search complete, Empty?: " << results.isEmpty() << std::endl;
+    qDebug() << "Search complete, Empty?: " << results.keys().isEmpty() << results.keys();
     // qDebug() << results;
-    if (results.isEmpty()) {
+    if (results.keys().isEmpty()) {
         // Show some dialog box
+        NoResults *noresults = new NoResults("No Logs Matched Your Search!", this);
+        noresults->show();
+        delete noresults;
     }
     else if (reader == nullptr) {
         std::cout << "Opening New Reader..." << std::endl;
