@@ -11,6 +11,7 @@
 #include <QList>
 #include <QDate>
 #include <QMap>
+#include <QDebug>
 
 /*************************************************************************
  * Search is the heart and soul of the program. The main prupose of      *
@@ -125,6 +126,7 @@ bool chat_check(QStringList parameters, QString term) {
 // PID and Keyword check is the same. However they might be expanded differntly in the future
 bool keyword_check(QStringList parameters, QString message) {
     // std::cout << "Place 11" << std::endl;
+    // qDebug() << parameters;
     int len = parameters.length();
     // Relative, Sensitive, Terms
     if (len > 2) {

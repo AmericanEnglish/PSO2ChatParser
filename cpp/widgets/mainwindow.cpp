@@ -23,6 +23,9 @@
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QRegExp>
+// For threading
+#include <QThread>
+
 #include "popups.h"
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {

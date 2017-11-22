@@ -17,12 +17,50 @@
 #include <QWidget>
 #include <QHeaderView>
 #include "search.h"
+#include "rsearch.h"
 
 Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *parent) : QWidget(parent) {
     qDebug() << "Reader has been spawned!";
+    allData = allData;
+    // Build the GUI
+    initGui();
+    // Build Data
+    qDebug() << "Setting up initial data...";
+    refresh(basepath, allData);
+}
+
+// Dynamic Reader!
+Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent) : QWidget(parent) {
+    initGui();
+    int len = Files.length();
+    // Build additional objects on the heap
+    entries = new QStringList[len];
+    complete = new bool[len];
+    // Build the search object
+    searchObj = new rSearch(Dates, Params, basepath, Files, entries, complete);
+    // Move the thing to a QThread
+    searchThd = new QThread;
+    // Move object to thread
+    searchObj->moveToThread(searchThd);
+    // Connect all of it!
+    connect(searchObj, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
+    connect(searchThd, SIGNAL(started()), searchObj, SLOT(run()));
+    connect(searchObj, SIGNAL(finished()), searchThd, SLOT(quit()));
+    connect(searchObj, SIGNAL(finished()), searchObj, SLOT(deleteLater()));
+    connect(searchThd, SIGNAL(finished()), searchThd, SLOT(deleteLater()));
+    // Start the threads!
+    searchThd->start();
+
+    // Establish a timer to poll every second
+    // Use it to poll the QThread
+    // QThread finished should shutdown the timer as well
+    
+    // Will need to write a new refresh method
+}
+
+void Reader::initGui() {
     setWindowTitle("PSO2 Chat Reader");
     resize(900, 500);
-    allData = allData;
     // Build Table
     table = new QTableView(this);
     table->setSortingEnabled(false);
@@ -59,11 +97,6 @@ Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *pare
     hbox->addWidget(vboxWidget);
 
     setLayout(hbox);
-    
-    // Build Data
-    qDebug() << "Setting up initial data...";
-    refresh(basepath, allData);
-
 }
 
 void Reader::generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent) {

@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <ctime>
 #include <QString>
@@ -15,7 +16,6 @@ class rSearch : public QObject {
 
     public:
         rSearch(QStringList Dates, QMap<QString, QRegularExpression> Params, QString Base, QStringList Files, QStringList *Entries, bool *Complete);
-        void run();
         // Variables
         QStringList dates; 
         QMap<QString, QRegularExpression> params;
@@ -23,7 +23,7 @@ class rSearch : public QObject {
         QStringList files; 
         QStringList *entries; 
         bool *complete;
-    slots:
+    public slots:
         void run();
 
     signals:

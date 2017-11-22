@@ -11,6 +11,8 @@
 #include <QMap>
 #include <QList>
 #include <QVariant>
+#include <QThread>
+#include "rsearch.h"
 
 class ChatTable : public QAbstractTableModel {
     
@@ -37,14 +39,19 @@ class Reader : public QWidget {
 
     public:
         Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *parent = 0);
+        Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent);
         
         // Methods
         void refresh(QString basepath, QMap<QDate, QStringList> allData);
 
     private slots:
         void updateContent(QModelIndex index);
+        // Need a slot for the timer polling here
         
     private:
+        void initGui();
+        rSearch *searchObj;
+        QThread *searchThd;
         // Variables
         QString base;
         QStringList headers;
@@ -58,6 +65,10 @@ class Reader : public QWidget {
         void generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent);
         void newTree(QMap<QDate, QStringList> allData);
         QList<QStringList> digestFile(QString filename);
+
+        // Dynamic Reader
+        QStringList *entries;
+        bool *complete;
 
 
 };
