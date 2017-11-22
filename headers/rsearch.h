@@ -23,6 +23,8 @@ class rSearch : public QObject {
         QStringList files; 
         QStringList *entries; 
         bool *complete;
+    slots:
+        void run();
 
     signals:
         void finished();
