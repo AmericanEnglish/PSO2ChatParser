@@ -46,6 +46,7 @@ class Reader : public QWidget {
         // void refresh(QString basepath, QMap<QDate, QStringList> allData);
         void newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params);
         void clear();
+        void stopExecution();
 
     private slots:
         void updateContent(QModelIndex index);
@@ -80,6 +81,7 @@ class Reader : public QWidget {
         QMap<QDate, QStringList> allData;
         void appendToTree(QDate newDate);
         int tickCount = 0;
+        bool *stopped;
 
 
 };

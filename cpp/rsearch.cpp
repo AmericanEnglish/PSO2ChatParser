@@ -39,14 +39,28 @@ void rSearch::run() {
     qDebug() << "=rSearch: Beginning...";
     // #pragma omp parallel for
     for (int i = 0; i < len; i++) {
+        if (*stopped) {
+            qDebug() << "=rSearch: Searching halted, shutting down...";    
+            break;
+        }
         entries[i] = searchFile(i);
         // Thread Saftey at its finest
         complete[i] = true;
     }
     // #pragma omp barrier
-    qDebug() << "=rSearch: Finished!";
+    if (*stopped) {
+        qDebug() << "=rSearch (Old): Successfully killed!";
+    }
+    else {
+        qDebug() << "=rSearch: Finished!";
+    }
+    delete stopped;
     // Finished
     emit finished();
+}
+
+void rSearch::setStop(bool *cond) {
+    stopped = cond;
 }
 
 // Dates have to be done with QStringList

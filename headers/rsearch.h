@@ -25,6 +25,7 @@ class rSearch : public QObject {
         bool *complete;
     public slots:
         void run();
+        void setStop(bool *cond);
 
     signals:
         void finished();
@@ -40,5 +41,8 @@ class rSearch : public QObject {
         QStringList too_many_tabs(QStringList line);
         QStringList buildLine(QStringList file, QString str, int start);
         QStringList searchFile(int i);
+        // bool stopped = false;
+        // Allows the object to be stopped outside of the thread
+        bool *stopped;
 
 };

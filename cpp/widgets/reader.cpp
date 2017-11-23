@@ -46,6 +46,9 @@ void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, Q
     complete = new bool[len];
     qDebug() << "+Reader: Building the search object...";
     searchObj = new rSearch(Dates, Params, basepath, Files, entries, complete);
+    stopped = new bool;
+    *stopped = false;
+    searchObj->setStop(stopped);
     qDebug() << "+Reader: Moving searchObj to a QThread...";
     searchThd = new QThread;
     // Move object to thread
@@ -184,12 +187,26 @@ void Reader::updateContent(QModelIndex index) {
     table->setWordWrap(true);
 }
 
+void Reader::stopExecution() {
+    // Stops QThread if it's still running
+    if (searchThd->isRunning()) {
+        *stopped = true;
+    }
+}
+
 void Reader::clear() {
+    stopExecution();
+    if (poll->isActive()) {
+        poll->stop();
+    }
     tickCount = 0;
+    totalComplete = 0;
     qDeleteAll(alltables);
     alltables.clear();
     treeModel->clear();
     allData.clear();
+    stopped = new bool;
+    *stopped = false;
 }
 
 void Reader::tRefresh() {
@@ -225,7 +242,7 @@ void Reader::tRefresh() {
                 if (!entries[i].isEmpty()) { // Add only entries which matter
                     newDate =  QDate::fromString(files.at(i), "ChatLogyyyyMMdd_00.txt");
                     if (!allData.contains(newDate)) { // Add new data only
-                        qDebug() << "+Reader: Match!" << newDate;
+                        // qDebug() << "+Reader: Match!" << newDate;
                         allData[newDate] = entries[i];
                         appendToTree(newDate);
                     }
