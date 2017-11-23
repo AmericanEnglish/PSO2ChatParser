@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QAbstractItemView>
+#include <QProgressBar>
 #include "search.h"
 #include "rsearch.h"
 
@@ -42,7 +43,9 @@ Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QStr
 
 void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params) {
     base = basepath;
-    int len = Files.length();
+    len = Files.length();
+    filesSearched->setMaximum(len);
+    progWidget->show();
     files = Files;
     qDebug() << "+Reader: Building additional objects on the heap...";
     entries = new QStringList[len];
@@ -107,6 +110,15 @@ void Reader::initGui() {
     
     logTitle = new QLabel("", this);
 
+    // Progress Bar
+    filesSearched = new QProgressBar(this);
+    filesSearched->setMinimum(0);
+    filesSearched->setFixedWidth(225);
+    filesSearched->setTextVisible(true);
+    filesSearched->setAlignment(Qt::AlignCenter);
+    QHBoxLayout *progBox = new QHBoxLayout(this);
+    progWidget = new QWidget(this);
+    progWidget->setLayout(progBox);
 
     // Setup
     QVBoxLayout *vbox = new QVBoxLayout(this);
@@ -117,8 +129,16 @@ void Reader::initGui() {
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->addWidget(tree);
     hbox->addWidget(vboxWidget);
+    QWidget *hboxWidget = new QWidget(this);
+    hboxWidget->setLayout(hbox);
+    progBox->addWidget(filesSearched);
+    
+    QVBoxLayout *outerVBox = new QVBoxLayout(this);
+    outerVBox->setAlignment(Qt::AlignCenter);
+    outerVBox->addWidget(hboxWidget);
+    outerVBox->addWidget(progWidget);
 
-    setLayout(hbox);
+    setLayout(outerVBox);
 }
 
 void Reader::generateTree() {
@@ -227,6 +247,7 @@ void Reader::tRefresh() {
     }
     
     if ((currentComplete > totalComplete) || (currentComplete == files.length())) {
+        filesSearched->setFormat("Searched: " + QString::number(totalComplete) + "/" + QString::number(len));
         // Searching has finished!
         if (totalComplete == 0) {
             tree->setModel(treeModel);
@@ -234,6 +255,7 @@ void Reader::tRefresh() {
         // This should stop the tree from being rebuilt if everything is done
         if (currentComplete == files.length()) {
             poll->stop();
+            progWidget->hide();
             // delete searchObj;
             // delete searchThd;
         }
@@ -254,6 +276,7 @@ void Reader::tRefresh() {
             }
         }
         totalComplete = currentComplete;
+        filesSearched->setValue(totalComplete);
         // Eventually add a progress bar, then update that here
         // Rebuild tree
         // newTree();

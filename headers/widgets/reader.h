@@ -14,6 +14,7 @@
 #include <QList>
 #include <QVariant>
 #include <QThread>
+#include <QProgressBar>
 #include "rsearch.h"
 
 class ChatTable : public QAbstractTableModel {
@@ -68,6 +69,7 @@ class Reader : public QWidget {
         
     private:
         void initGui();
+        int len;
         rSearch *searchObj;
         QThread *searchThd;
         // Variables
@@ -95,7 +97,7 @@ class Reader : public QWidget {
         void appendToTree(QDate newDate);
         int tickCount = 0;
         bool *stopped;
-
-
+        QProgressBar *filesSearched;
+        QWidget *progWidget;
 };
 
