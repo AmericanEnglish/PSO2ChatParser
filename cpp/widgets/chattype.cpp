@@ -3,7 +3,7 @@
 #include <QGridLayout>
 #include <QStringList>
 #include <QWidget>
-
+#include <QRegularExpression>
 
 
 ChatType::ChatType(QWidget *parent) : QWidget(parent) {
@@ -30,7 +30,7 @@ ChatType::ChatType(QWidget *parent) : QWidget(parent) {
 
 }
 
-QStringList ChatType::liquidate() {
+QRegularExpression ChatType::rLiquidate() {
     QStringList results;
     if (publix->isChecked()) {
         results.append("PUBLIC");
@@ -44,5 +44,9 @@ QStringList ChatType::liquidate() {
     if (reply->isChecked()) {
         results.append("REPLY");
     }
-    return results;
+    QRegularExpression re(results.join("|"));
+    re.setPatternOptions(
+        QRegularExpression::UseUnicodePropertiesOption |
+        QRegularExpression::OptimizeOnFirstUsageOption);
+    return re;
 }

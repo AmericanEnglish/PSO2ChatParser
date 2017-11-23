@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QStringList>
 #include <Qstring>
+#include <QRegularExpression>
 
 // Declaration
 class PID : public QWidget {
@@ -20,7 +21,7 @@ class PID : public QWidget {
 
         // Methods
         void browsePID();
-        QStringList liquidate();
+        QRegularExpression rLiquidate();
 
     private:
 

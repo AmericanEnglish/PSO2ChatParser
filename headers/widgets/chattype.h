@@ -2,6 +2,8 @@
 // Include
 #include <QCheckBox>
 #include <QStringList>
+#include <QRegularExpression>
+
 // Declaration
 class ChatType : public QWidget {
     
@@ -11,7 +13,7 @@ class ChatType : public QWidget {
         ChatType(QWidget *parent = 0);
 
         // Methods
-        QStringList liquidate();
+        QRegularExpression rLiquidate();
 
     private:
 
