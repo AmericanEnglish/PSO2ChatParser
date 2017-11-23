@@ -17,6 +17,9 @@
 #include <QWidget>
 #include <QHeaderView>
 #include <QTimer>
+#include <QApplication>
+#include <QClipboard>
+#include <QAbstractItemView>
 #include "search.h"
 #include "rsearch.h"
 
@@ -80,7 +83,8 @@ void Reader::initGui() {
     setWindowTitle("PSO2 Chat Reader");
     resize(900, 500);
     // Build Table
-    table = new QTableView(this);
+    // table = new QTableView(this);
+    table = new SimpleTableView(this);
     table->setSortingEnabled(false);
     // (table->verticalHeader)()->setVisible(false);
     QHeaderView *vv = table->verticalHeader();
@@ -298,7 +302,7 @@ QList<QStringList> Reader::digestFile(QString filename) {
         if (len == 6) {
             QStringList usable;
             // Time
-            usable << line.at(0).split("T").at(0);
+            usable << line.at(0).split("T").at(1);
             // IDs
             usable << line.at(4) + QString("\n") + line.at(3);
             // Message
@@ -378,4 +382,48 @@ QVariant ChatTable::headerData(int section, Qt::Orientation orientation, int rol
         return QVariant(headerdata.at(section));
     }
     return QVariant();
+}
+
+SimpleTableView::SimpleTableView(QWidget *parent) : QTableView(parent) {
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+}
+
+void SimpleTableView::keyPressEvent(QKeyEvent *event) {
+    // If Ctrl-C typed
+    // Or use event->matches(QKeySequence::Copy)
+    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
+    {
+        QModelIndexList cells = this->selectionModel()->selectedIndexes();
+        qDebug() << "+Reader: Copy count" << cells.count();
+        qSort(cells); // Necessary, otherwise they are in column order
+        QString toClip;
+        // QModelIndex cell;
+        for (int i = 0; i < cells.count() / 3; i++) {
+            // qDebug() << cells.at(i).row() << cells.at(i).column();
+            // First column
+            toClip += "[" + cells.at(3*i + 0).data().toString() + "] ";
+            // Second column
+            toClip += cells.at(3*i + 1).data().toString().split(QRegExp("\\s+")).at(0) +  ": ";
+            // Third column
+            toClip += cells.at(3*i+2).data().toString() + "\n";
+        }
+        // QString text;
+        // int currentRow = 0; // To determine when to insert newlines
+        // foreach (const QModelIndex& cell, cells) {
+            // if (text.length() == 0) {
+                // // First item
+            // } else if (cell.row() != currentRow) {
+                // // New row
+                // text += '\n';
+            // } else {
+                // // Next cell
+                // text += '\t';
+            // }
+            // currentRow = cell.row();
+            // text += cell.data().toString();
+        // }
+//
+        qDebug() << toClip;
+        QApplication::clipboard()->setText(toClip);
+    }
 }

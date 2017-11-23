@@ -2,6 +2,7 @@
 // Includes
 #include <QAbstractTableModel>
 #include <QStandardItemModel>
+#include <QTableWidget>
 #include <QTableView>
 #include <QTreeView>
 #include <QWidget>
@@ -33,6 +34,17 @@ class ChatTable : public QAbstractTableModel {
         QStringList chatTypes;
 };
 
+class SimpleTableView : public QTableView {
+    Q_OBJECT
+    public:
+        SimpleTableView(QWidget *parent = Q_NULLPTR);
+    protected:
+        void keyPressEvent(QKeyEvent *event);
+
+
+};
+
+
 
 class Reader : public QWidget {
 
@@ -61,7 +73,8 @@ class Reader : public QWidget {
         // Variables
         QString base;
         QStringList headers;
-        QTableView *table;
+        // QTableView *table;
+        SimpleTableView *table;
         QTreeView *tree;
         QLabel *logTitle;
         QStandardItemModel *treeModel;

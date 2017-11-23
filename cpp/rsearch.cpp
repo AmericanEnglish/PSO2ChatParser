@@ -47,7 +47,6 @@ void rSearch::run() {
         // Thread Saftey at its finest
         complete[i] = true;
     }
-    // #pragma omp barrier
     if (*stopped) {
         qDebug() << "=rSearch (Old): Successfully killed!";
     }
