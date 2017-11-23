@@ -45,6 +45,8 @@ void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, Q
     base = basepath;
     len = Files.length();
     filesSearched->setMaximum(len);
+    tMatchesLabel->hide();
+    tMatches = 0;
     progWidget->show();
     files = Files;
     qDebug() << "+Reader: Building additional objects on the heap...";
@@ -120,6 +122,9 @@ void Reader::initGui() {
     progWidget = new QWidget(this);
     progWidget->setLayout(progBox);
 
+    tMatchesLabel = new QLabel(this);
+    tMatchesLabel->hide();
+
     // Setup
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->addWidget(logTitle);
@@ -137,6 +142,7 @@ void Reader::initGui() {
     outerVBox->setAlignment(Qt::AlignCenter);
     outerVBox->addWidget(hboxWidget);
     outerVBox->addWidget(progWidget);
+    outerVBox->addWidget(tMatchesLabel);
 
     setLayout(outerVBox);
 }
@@ -256,6 +262,8 @@ void Reader::tRefresh() {
         if (currentComplete == files.length()) {
             poll->stop();
             progWidget->hide();
+            tMatchesLabel->setText("Total Matches: " + QString::number(tMatches));
+            tMatchesLabel->show();
             // delete searchObj;
             // delete searchThd;
         }
@@ -271,6 +279,7 @@ void Reader::tRefresh() {
                         // qDebug() << "+Reader: Match!" << newDate;
                         allData[newDate] = entries[i];
                         appendToTree(newDate);
+                        tMatches += entries[i].length();
                     }
                 }
             }

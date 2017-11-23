@@ -99,5 +99,7 @@ class Reader : public QWidget {
         bool *stopped;
         QProgressBar *filesSearched;
         QWidget *progWidget;
+        QLabel *tMatchesLabel;
+        int tMatches = 0;
 };
 
