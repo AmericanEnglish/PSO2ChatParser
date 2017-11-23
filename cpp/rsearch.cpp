@@ -37,13 +37,13 @@ void rSearch::run() {
     int len = files.length();
     // Run
     qDebug() << "=rSearch: Beginning...";
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int i = 0; i < len; i++) {
         entries[i] = searchFile(i);
         // Thread Saftey at its finest
         complete[i] = true;
     }
-    #pragma omp barrier
+    // #pragma omp barrier
     qDebug() << "=rSearch: Finished!";
     // Finished
     emit finished();

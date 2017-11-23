@@ -66,7 +66,7 @@ void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, Q
     poll = new QTimer(this);
     // Use it to poll the QThread
     connect(poll, SIGNAL(timeout()), this, SLOT(tRefresh()));
-    poll->start(500); // ms
+    poll->start(100); // ms
     qDebug() << "+Reader: Established!";
 
     // The signal should start the updating
@@ -136,9 +136,22 @@ void Reader::generateTree() {
             subItem->setEditable(false);
             topItem->appendRow(subItem);
         }
-
     }
+}
 
+void Reader::appendToTree(QDate newDate) {
+    QStandardItem *parent = treeModel->invisibleRootItem();
+    QStandardItem *topItem = new QStandardItem(newDate.toString("MMM dd, yyyy"));
+    topItem->setEditable(false);
+    parent->appendRow(topItem);
+    QStringList suspectLines = allData[newDate];
+    int lines = suspectLines.length();
+    QStandardItem *subItem;
+    for (int j = 0; j < lines; j++) {
+        subItem = new QStandardItem(suspectLines.at(j));
+        subItem->setEditable(false);
+        topItem->appendRow(subItem);
+    }
 }
 
 void Reader::newTree() {
@@ -177,7 +190,7 @@ void Reader::clear() {
 }
 
 void Reader::tRefresh() {
-    qDebug() << "Tick! Time to refresh!";
+    qDebug() << "+Reader: Tick! Time to refresh!";
 
     // Check how many have been complete thus far
     int currentComplete = 0;
@@ -190,29 +203,33 @@ void Reader::tRefresh() {
     
     if ((currentComplete > totalComplete) || (currentComplete == files.length())) {
         // Searching has finished!
-        if (currentComplete > totalComplete) {
-            totalComplete = currentComplete;
-            // Eventually add a progress bar, then update that here
+        if (totalComplete == 0) {
+            tree->setModel(treeModel);
         }
         // This should stop the tree from being rebuilt if everything is done
-        else if (currentComplete == files.length()) {
+        if (currentComplete == files.length()) {
             poll->stop();
+            // delete searchObj;
+            // delete searchThd;
         }
 
         // Add new values to the map
         QDate newDate;
-        for (int i = 0; i < len; i++) {
+        for (int i = totalComplete; i < len; i++) {
             if (complete[i]) { // Add complete entries only
                 if (!entries[i].isEmpty()) { // Add only entries which matter
                     newDate =  QDate::fromString(files.at(i), "ChatLogyyyyMMdd_00.txt");
                     if (!allData.contains(newDate)) { // Add new data only
                         allData[newDate] = entries[i];
+                        appendToTree(newDate);
                     }
                 }
             }
         }
+        totalComplete = currentComplete;
+        // Eventually add a progress bar, then update that here
         // Rebuild tree
-        newTree();
+        // newTree();
     }
     // Else means no additonal files have been completed
 }

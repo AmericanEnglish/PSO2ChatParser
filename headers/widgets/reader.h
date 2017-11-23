@@ -78,6 +78,7 @@ class Reader : public QWidget {
         int totalComplete = 0;
         QStringList files;
         QMap<QDate, QStringList> allData;
+        void appendToTree(QDate newDate);
 
 
 };

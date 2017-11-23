@@ -197,6 +197,7 @@ void MainWindow::run() {
     else {
         // std::cout << "Refreshing Old Reader.." << std::endl;
         reader->clear();
+        reader->show();
         reader->newSearch(defaultPath.absolutePath() + "\\", allFiles, datez->liquidate(), parameters);
     }
 
