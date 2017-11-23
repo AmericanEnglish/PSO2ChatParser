@@ -240,7 +240,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 
 QMap<QString, QRegularExpression> MainWindow::fullRLiquidate() {
-    QMap<QString, QStringList> results;
+    QMap<QString, QRegularExpression> results;
     // QStringList keys = popups.keys();
     // int len = keys.length();
     // QString key;

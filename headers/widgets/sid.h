@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QCheckBox>
+#include <QRegularExpression>
 
 // Declaration
 class SID : public QWidget {
@@ -17,7 +18,7 @@ class SID : public QWidget {
 
         // Methods
         void browseSID();
-        QStringList liquidate();
+        QRegularExpression rLiquidate();
 
     private:
         QCheckBox *searchFor;

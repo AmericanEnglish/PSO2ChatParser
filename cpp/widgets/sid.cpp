@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include <QWidget>
+#include <QRegularExpression>
 #include <iostream>
 
 // Constructor
@@ -36,27 +37,52 @@ void SID::browseSID() {
 
 }
 
-QStringList SID::liquidate() {
+QRegularExpression SID::rLiquidate() {
     std::cout << "Processing SID" << std::endl;
+    QRegularExpression re;
     if (searchFor->isChecked()) {
         std::cout << "Parsing SID..." << std::endl;
-        QStringList result = SIDEdit->text().split(QRegExp("\\s+|,"));
+        QStringList results = SIDEdit->text().split(QRegExp("\\s+|,"));
         if (casing->isChecked()){
-            result.push_front("sensitive");
+            if (relative->isChecked()) { // Absolute
+                // Build a partial regex
+                QStringList adjusted;
+                for (int i = 0; i < results.length(); i++) {
+                    adjusted.append("^" + results.at(i) + "$");
+                }
+                re.setPattern(adjusted.join("|"));
+            }
+            else {
+                re.setPattern(results.join("|"));
+            }
+            re.setPatternOptions(
+                    QRegularExpression::UseUnicodePropertiesOption |
+                    QRegularExpression::OptimizeOnFirstUsageOption);
         }
         else {
-            result.push_front("not sensitive");
+            if (relative->isChecked()) {
+                QStringList adjusted;
+                for (int i = 0; i < results.length(); i++) {
+                    adjusted.append( "^" + results.at(i) + "$");
+                }
+                re.setPattern(adjusted.join("|"));
+            }
+            else {
+                re.setPattern(results.join("|"));
+            }
+            re.setPatternOptions(QRegularExpression::CaseInsensitiveOption | 
+                    QRegularExpression::UseUnicodePropertiesOption |
+                    QRegularExpression::OptimizeOnFirstUsageOption);
         }
-        if (relative->isChecked()) {
-            result.push_front("relative");
-        }
-        else {
-            result.push_front("not relative");
-        }
-        return result;
+        return re;
     }
     std::cout << "SID Not Used" << std::endl;
-    return QStringList();
+    // Matches whitespace and not Whitespace aka everything
+    re.setPattern("[\\s\\S]*");
+    re.setPatternOptions(
+        QRegularExpression::UseUnicodePropertiesOption |
+        QRegularExpression::OptimizeOnFirstUsageOption);
+    return re;
     
 }
 
