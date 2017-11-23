@@ -17,6 +17,7 @@ class Keywords : public QWidget {
 
         // Methods
         QRegularExpression rLiquidate();
+        QString createRegex(QStringList words, bool OR, bool relative);
 
     private:
         QPlainTextEdit *text;
@@ -25,7 +26,8 @@ class Keywords : public QWidget {
         QRadioButton *nothing;
         QButtonGroup *radioGroup;
         QCheckBox *casing;
-        QCheckBox *relative;
+        QCheckBox *absolute;
+        QCheckBox *orCheckBox;
 
 
 };
