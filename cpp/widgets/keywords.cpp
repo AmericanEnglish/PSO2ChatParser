@@ -41,14 +41,6 @@ Keywords::Keywords(QWidget *parent) : QWidget(parent) {
     radiolayout->setAlignment(Qt::AlignCenter);
     radios->setLayout(radiolayout);
     
-    QWidget *boolBoxes = new QWidget(this);
-    QHBoxLayout *boolBoxLayout = new QHBoxLayout(this);
-    boolBoxLayout->addWidget(orCheckBox);
-    boolBoxLayout->addWidget(andCheckBox);
-    // boolRadioLayout->setAlignment(Qt::AlignCenter);
-    boolBoxes->setLayout(boolBoxLayout);
-
-
     nothing->setChecked(true);
     orCheckBox->setChecked(true);
 
