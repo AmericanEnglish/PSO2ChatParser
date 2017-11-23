@@ -184,15 +184,16 @@ void Reader::tRefresh() {
         if (currentCompelete > totalComplete) {
             totalComplete = currentComplete;
         }
-        // This should stop the tree from being rebuilt
+        // This should stop the tree from being rebuilt if everything is done
         else if (currentComplete == files.length()) {
-            pool->stop();
+            poll->stop();
         }
 
         // Add new values to the map
         QDate newDate;
         for (int i = 0; i < len; i++) {
             if (complete[i]) { // Add complete entries only
+                newDate = QDate
                 if (!allData.contains()) { // Add new data only
                     allData[newDate] = entries[i];
                 }
