@@ -19,7 +19,7 @@
 #include <chatdate.h>
 #include <keywords.h>
 #include <reader.h>
-#include <search.h>
+#include <QRegularExpression>
 
 // Class declaration
 class MainWindow : public QWidget {
@@ -47,7 +47,7 @@ class MainWindow : public QWidget {
         void initGUI();
         void add_new_file();
         void closeEvent(QCloseEvent *event) override;
-        QMap<QString, QStringList> fullLiquidate();
+        QMap<QString, QRegularExpression> fullRLiquidate();
         // Private Variables
         QWidget *latest_window;
         SID *segaid;

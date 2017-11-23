@@ -25,6 +25,7 @@
 #include <QRegExp>
 // For threading
 #include <QThread>
+#include <QRegularExpression>
 
 #include "popups.h"
 
@@ -170,7 +171,7 @@ void MainWindow::add_new_file() {
 void MainWindow::run() {
     QRegExp filepattern("^ChatLog\\d{8}\\_00.txt$");
     std::cout << "Run begin" << std::endl;
-    QMap<QString, QStringList> parameters = fullLiquidate();
+    QMap<QString, QRegularExpression> parameters = fullRLiquidate();
     std::cout << "Liquidation of assests complete" << std::endl;
     QStringList allFiles  = defaultPath.entryList();
     allFiles = allFiles.filter(filepattern);
@@ -190,13 +191,13 @@ void MainWindow::run() {
     // }
     if (reader == nullptr) {
         // std::cout << "Opening New Reader..." << std::endl;
-        reader = new Reader(defaultPath.absolutePath() + "\\", allFiles, dates, parameters);
+        reader = new Reader(defaultPath.absolutePath() + "\\", allFiles, datez->liquidate(), parameters);
         reader->show();
     }
     else {
         // std::cout << "Refreshing Old Reader.." << std::endl;
         reader->clear();
-        reader->newSearch(defaultPath.absolutePath*() + "\\", allFiles, dates, parameters);
+        reader->newSearch(defaultPath.absolutePath() + "\\", allFiles, datez->liquidate(), parameters);
     }
 
 }
@@ -238,7 +239,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 
-QMap<QString, QStringList> MainWindow::fullLiquidate() {
+QMap<QString, QRegularExpression> MainWindow::fullRLiquidate() {
     QMap<QString, QStringList> results;
     // QStringList keys = popups.keys();
     // int len = keys.length();
@@ -248,15 +249,13 @@ QMap<QString, QStringList> MainWindow::fullLiquidate() {
         // results[key] = popups[key]->liquidate();
     // }
     std::cout << "Checking Assests.." << std::endl;
-    results["sid"] = segaid->liquidate();
+    results["sid"] = segaid->rLiquidate();
     std::cout << "SID finished" << std::endl;
-    results["pid"] = playerid->liquidate();
+    results["pid"] = playerid->rLiquidate();
     std::cout << "PID finished" << std::endl;
-    results["chat"] = chat->liquidate();
+    results["chat"] = chat->rLiquidate();
     std::cout << "Chat Type finished" << std::endl;
-    results["dates"] = datez->liquidate();
-    std::cout << "Date Range finished" << std::endl;
-    results["keywords"] = keywords->liquidate();
+    results["word"] = keywords->rLiquidate();
     std::cout << "Keywords finished" << std::endl;
 
     return results;

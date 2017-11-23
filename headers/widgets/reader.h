@@ -44,6 +44,7 @@ class Reader : public QWidget {
         // Methods
         void refresh(QString basepath, QMap<QDate, QStringList> allData);
         void newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params);
+        void clear();
 
     private slots:
         void updateContent(QModelIndex index);
@@ -72,7 +73,7 @@ class Reader : public QWidget {
         QStringList *entries;
         bool *complete;
         QTimer *poll;
-        int totalSearched = 0;
+        int totalComplete = 0;
         QStringList files;
         QMap<QDate, QStringList> allData;
 

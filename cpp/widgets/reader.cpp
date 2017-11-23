@@ -34,7 +34,7 @@ Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *pare
 Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent) : QWidget(parent) {
     qDebug() << "New reader has been spawned!";
     initGui();
-    newSearch(Files, Dates, Params);
+    newSearch(basepath, Files, Dates, Params);
 }
 
 void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params) {
@@ -169,7 +169,7 @@ void Reader::updateContent(QModelIndex index) {
 
 void Reader::clear() {
     qDeleteAll(alltables);
-    altables.clear();
+    alltables.clear();
 }
 
 void Reader::tRefresh() {
@@ -177,7 +177,7 @@ void Reader::tRefresh() {
 
     // Check how many have been complete thus far
     int currentComplete = 0;
-    intlen = files.length();
+    int len = files.length();
     for (int i = 0; i < len; i++) {
         if (complete[i]) {
             currentComplete++;
@@ -186,7 +186,7 @@ void Reader::tRefresh() {
     
     if ((currentComplete > totalComplete) || (currentComplete == files.length())) {
         // Searching has finished!
-        if (currentCompelete > totalComplete) {
+        if (currentComplete > totalComplete) {
             totalComplete = currentComplete;
             // Eventually add a progress bar, then update that here
         }
@@ -208,7 +208,7 @@ void Reader::tRefresh() {
             }
         }
         // Rebuild tree
-        newTree(allData);
+        newTree();
     }
     // Else means no additonal files have been completed
 }
