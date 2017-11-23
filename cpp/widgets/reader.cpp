@@ -189,6 +189,7 @@ void Reader::clear() {
     qDeleteAll(alltables);
     alltables.clear();
     treeModel->clear();
+    allData.clear();
 }
 
 void Reader::tRefresh() {
@@ -224,6 +225,7 @@ void Reader::tRefresh() {
                 if (!entries[i].isEmpty()) { // Add only entries which matter
                     newDate =  QDate::fromString(files.at(i), "ChatLogyyyyMMdd_00.txt");
                     if (!allData.contains(newDate)) { // Add new data only
+                        qDebug() << "+Reader: Match!" << newDate;
                         allData[newDate] = entries[i];
                         appendToTree(newDate);
                     }
