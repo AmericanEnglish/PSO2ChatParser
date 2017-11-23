@@ -407,22 +407,6 @@ void SimpleTableView::keyPressEvent(QKeyEvent *event) {
             // Third column
             toClip += cells.at(3*i+2).data().toString() + "\n";
         }
-        // QString text;
-        // int currentRow = 0; // To determine when to insert newlines
-        // foreach (const QModelIndex& cell, cells) {
-            // if (text.length() == 0) {
-                // // First item
-            // } else if (cell.row() != currentRow) {
-                // // New row
-                // text += '\n';
-            // } else {
-                // // Next cell
-                // text += '\t';
-            // }
-            // currentRow = cell.row();
-            // text += cell.data().toString();
-        // }
-//
         qDebug() << toClip;
         QApplication::clipboard()->setText(toClip);
     }
