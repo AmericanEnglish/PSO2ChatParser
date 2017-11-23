@@ -56,34 +56,65 @@ Keywords::Keywords(QWidget *parent) : QWidget(parent) {
 
 }
 
-QStringList Keywords::liquidate() {
+QRegularExpression Keywords::rLiquidate() {
     QStringList results;
+    QRegularExpression re;
     if (nothing->isChecked()) {
-        return results;
+        re.setPattern("[\\s\\S]*");
+        re.setPatternOptions(
+            QRegularExpression::UseUnicodePropertiesOption |
+            QRegularExpression::OptimizeOnFirstUsageOption);
+        return re;
     }
     else {
-        if (relative->isChecked()) {
-            results << "relative";
-        }
-        else {
-            results << "not relative";
-        }
-        if (casing->isChecked()) {
-            results << "sensitive";
-        }
-        else {
-            results << "not sensitive";
-        }
         QString all_words = text->toPlainText();
         if (words->isChecked()) {
-            results.append(all_words.split(QRegExp("\\s+|,")));
+            QStringList results = all_words.split(QRegExp("\\s+|,"));
         }
         else {
+            QStringList results;
             results.append(all_words);
         }
+        if (relative->isChecked()) {
+            // results << "not relative";
+            // Adjust words to be matches absolutely
+            QStringList adjusted;
+            for (int i = 0; i < results.length(); i++) {
+                adjusted.append("(\\W|^)" + results.at(i) + "(\\W|$)");
+            }
+            re.setPattern(adjusted.join("|"));
+            if (casing->isChecked()) {
+                // results << "sensitive";
+                re.setPatternOptions(
+                    QRegularExpression::UseUnicodePropertiesOption |
+                    QRegularExpression::OptimizeOnFirstUsageOption);
+            }
+            else {
+                re.setPatternOptions(QRegularExpression::CaseInsensitiveOption |
+                    QRegularExpression::UseUnicodePropertiesOption |
+                    QRegularExpression::OptimizeOnFirstUsageOption);
+                // << "not sensitive";
+            }
+        }
+        else {
+            // results << "relative";
+            re.setPattern(results.join("|"));
+            if (casing->isChecked()) {
+                re.setPatternOptions(
+                    QRegularExpression::UseUnicodePropertiesOption |
+                    QRegularExpression::OptimizeOnFirstUsageOption);
+                results << "sensitive";
+            }
+            else {
+                re.setPatternOptions(QRegularExpression::CaseInsensitiveOption |
+                    QRegularExpression::UseUnicodePropertiesOption |
+                    QRegularExpression::OptimizeOnFirstUsageOption);
+                results << "not sensitive";
+            }
+        }
     }
-
-    return results;
+    // qDebug() << re;
+    return re;
 
 
 }

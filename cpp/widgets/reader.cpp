@@ -27,7 +27,7 @@ Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *pare
     initGui();
     // Build Data
     qDebug() << "Setting up initial data...";
-    refresh(basepath, allData);
+    // refresh(basepath, allData);
 }
 
 // Dynamic Reader!

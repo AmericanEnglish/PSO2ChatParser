@@ -5,6 +5,7 @@
 #include <QTableView>
 #include <QTreeView>
 #include <QWidget>
+#include <QString>
 #include <QStringList>
 #include <QObject>
 #include <QLabel>
@@ -42,7 +43,7 @@ class Reader : public QWidget {
         Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent = 0);
         
         // Methods
-        void refresh(QString basepath, QMap<QDate, QStringList> allData);
+        // void refresh(QString basepath, QMap<QDate, QStringList> allData);
         void newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params);
         void clear();
 

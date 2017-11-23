@@ -5,6 +5,7 @@
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QStringList>
+#include <QRegularExpression>
 
 class Keywords : public QWidget {
     
@@ -15,7 +16,7 @@ class Keywords : public QWidget {
         Keywords(QWidget *parent = 0);
 
         // Methods
-        QStringList liquidate();
+        QRegularExpression rLiquidate();
 
     private:
         QPlainTextEdit *text;
