@@ -188,15 +188,16 @@ void MainWindow::run() {
         // noresults->exec();
         // delete noresults;
     // }
-    // else if (reader == nullptr) {
+    if (reader == nullptr) {
         // std::cout << "Opening New Reader..." << std::endl;
-        // reader = new Reader(defaultPath.absolutePath() + "\\", results);
-        // reader->show();
-    // }
-    // else {
+        reader = new Reader(defaultPath.absolutePath() + "\\", allFiles, dates, parameters);
+        reader->show();
+    }
+    else {
         // std::cout << "Refreshing Old Reader.." << std::endl;
-        // reader->refresh(defaultPath.absolutePath() + "\\", results);
-    // }
+        reader->clear();
+        reader->newSearch(defaultPath.absolutePath*() + "\\", allFiles, dates, parameters);
+    }
 
 }
 

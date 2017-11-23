@@ -39,10 +39,11 @@ class Reader : public QWidget {
 
     public:
         Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *parent = 0);
-        Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent);
+        Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent = 0);
         
         // Methods
         void refresh(QString basepath, QMap<QDate, QStringList> allData);
+        void newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params);
 
     private slots:
         void updateContent(QModelIndex index);

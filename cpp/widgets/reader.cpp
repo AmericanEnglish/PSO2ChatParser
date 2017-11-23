@@ -34,6 +34,10 @@ Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *pare
 Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent) : QWidget(parent) {
     qDebug() << "New reader has been spawned!";
     initGui();
+    newSearch(Files, Dates, Params);
+}
+
+void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params) {
     base = basepath;
     int len = Files.length();
     files = Files;
@@ -63,6 +67,7 @@ Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QStr
 
     // The signal should start the updating
 }
+
 
 void Reader::initGui() {
     setWindowTitle("PSO2 Chat Reader");
@@ -183,6 +188,7 @@ void Reader::tRefresh() {
         // Searching has finished!
         if (currentCompelete > totalComplete) {
             totalComplete = currentComplete;
+            // Eventually add a progress bar, then update that here
         }
         // This should stop the tree from being rebuilt if everything is done
         else if (currentComplete == files.length()) {
@@ -193,15 +199,15 @@ void Reader::tRefresh() {
         QDate newDate;
         for (int i = 0; i < len; i++) {
             if (complete[i]) { // Add complete entries only
-                newDate = QDate
-                if (!allData.contains()) { // Add new data only
-                    allData[newDate] = entries[i];
+                if (!entries[i].isEmpty()) { // Add only entries which matter
+                    newDate =  QDate::fromString(files.at(i), "ChatLogyyyyMMdd_00.txt");
+                    if (!allData.contains(newDate)) { // Add new data only
+                        allData[newDate] = entries[i];
+                    }
                 }
             }
         }
         // Rebuild tree
-        QList<QDate> keys = allData.keys();
-        qSort(keys.begin(), keys.end());
         newTree(allData);
     }
     // Else means no additonal files have been completed
