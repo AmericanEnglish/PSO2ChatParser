@@ -31,12 +31,12 @@ rSearch::rSearch(QStringList Dates, QMap<QString, QRegularExpression> Params, QS
     // 4. Pointers to two heap allocated arrays
     //      a. QStringList array but make sure it's null
     //      b. an integer array which can be incremented when a thread "finishes"
-    run();
 }
 
 void rSearch::run() {
     int len = files.length();
     // Run
+    qDebug() << "=rSearch: Beginning...";
     #pragma omp parallel for
     for (int i = 0; i < len; i++) {
         entries[i] = searchFile(i);
@@ -44,6 +44,7 @@ void rSearch::run() {
         complete[i] = true;
     }
     #pragma omp barrier
+    qDebug() << "=rSearch: Finished!";
     // Finished
     emit finished();
 }
@@ -129,7 +130,7 @@ bool rSearch::full_check(QStringList line) {
 
 // QStringList searchfile(QMap<QString, QStringList> parameters, QString filename) {
 QStringList rSearch::searchFile(int i) {
-    QString filename = files[i];
+    QString filename = base + files[i];
     QFile file(filename);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream input(&file);

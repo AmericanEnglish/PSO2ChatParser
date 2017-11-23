@@ -51,6 +51,7 @@ class Reader : public QWidget {
         void updateContent(QModelIndex index);
         // Need a slot for the timer polling here
         void tRefresh();
+        void errorString(QString err);
         
     private:
         void initGui();

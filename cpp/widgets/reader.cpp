@@ -41,29 +41,33 @@ void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, Q
     base = basepath;
     int len = Files.length();
     files = Files;
-    // Build additional objects on the heap
+    qDebug() << "+Reader: Building additional objects on the heap...";
     entries = new QStringList[len];
     complete = new bool[len];
-    // Build the search object
+    qDebug() << "+Reader: Building the search object...";
     searchObj = new rSearch(Dates, Params, basepath, Files, entries, complete);
-    // Move the thing to a QThread
+    qDebug() << "+Reader: Moving searchObj to a QThread...";
     searchThd = new QThread;
     // Move object to thread
     searchObj->moveToThread(searchThd);
     // Connect all of it!
+    qDebug() << "+Reader: Connecting the slots and signals...";
     connect(searchObj, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
     connect(searchThd, SIGNAL(started()), searchObj, SLOT(run()));
     connect(searchObj, SIGNAL(finished()), searchThd, SLOT(quit()));
     connect(searchObj, SIGNAL(finished()), searchObj, SLOT(deleteLater()));
     connect(searchThd, SIGNAL(finished()), searchThd, SLOT(deleteLater()));
     // Start the threads!
+    qDebug() << "+Reader: Start the threads!";
     searchThd->start();
 
     // Establish a timer to poll every second
+    qDebug() << "+Reader: Establishing the polling system...";
     poll = new QTimer(this);
     // Use it to poll the QThread
     connect(poll, SIGNAL(timeout()), this, SLOT(tRefresh()));
     poll->start(500); // ms
+    qDebug() << "+Reader: Established!";
 
     // The signal should start the updating
 }
@@ -269,6 +273,10 @@ QList<QStringList> Reader::digestFile(QString filename) {
     qDebug() << filename << "has been digested!";
     qDebug() << "Length:" << allData.length();
     return allData;
+}
+
+void Reader::errorString(QString err) {
+    qDebug() << err;
 }
 
 // For the chats!
