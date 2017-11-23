@@ -179,24 +179,24 @@ void MainWindow::run() {
     // allFiles.removeOne("..");
     // qDebug() << allFiles;
     std::cout << "Files Gathered!" << std::endl;
-    QMap<QDate, QStringList> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
-    qDebug() << "Search complete, Empty?: " << results.keys().isEmpty() << results.keys();
+    // QMap<QDate, QStringList> results = loopSearch(parameters, defaultPath.absolutePath() + "\\", allFiles);
+    // qDebug() << "Search complete, Empty?: " << results.keys().isEmpty() << results.keys();
     // qDebug() << results;
-    if (results.keys().isEmpty()) {
-        // Show some dialog box
-        NoResults *noresults = new NoResults("No Logs Matched Your Search!", this);
-        noresults->exec();
-        delete noresults;
-    }
-    else if (reader == nullptr) {
-        std::cout << "Opening New Reader..." << std::endl;
-        reader = new Reader(defaultPath.absolutePath() + "\\", results);
-        reader->show();
-    }
-    else {
-        std::cout << "Refreshing Old Reader.." << std::endl;
-        reader->refresh(defaultPath.absolutePath() + "\\", results);
-    }
+    // if (results.keys().isEmpty()) {
+        // // Show some dialog box
+        // NoResults *noresults = new NoResults("No Logs Matched Your Search!", this);
+        // noresults->exec();
+        // delete noresults;
+    // }
+    // else if (reader == nullptr) {
+        // std::cout << "Opening New Reader..." << std::endl;
+        // reader = new Reader(defaultPath.absolutePath() + "\\", results);
+        // reader->show();
+    // }
+    // else {
+        // std::cout << "Refreshing Old Reader.." << std::endl;
+        // reader->refresh(defaultPath.absolutePath() + "\\", results);
+    // }
 
 }
 

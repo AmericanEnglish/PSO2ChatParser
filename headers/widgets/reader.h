@@ -47,6 +47,7 @@ class Reader : public QWidget {
     private slots:
         void updateContent(QModelIndex index);
         // Need a slot for the timer polling here
+        void tRefresh();
         
     private:
         void initGui();
@@ -62,13 +63,17 @@ class Reader : public QWidget {
         QMap<QDate, ChatTable*> alltables;
 
         // Methods
-        void generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent);
-        void newTree(QMap<QDate, QStringList> allData);
+        void generateTree();
+        void newTree();
         QList<QStringList> digestFile(QString filename);
 
         // Dynamic Reader
         QStringList *entries;
         bool *complete;
+        QTimer *poll;
+        int totalSearched = 0;
+        QStringList files;
+        QMap<QDate, QStringList> allData;
 
 
 };

@@ -16,6 +16,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QHeaderView>
+#include <QTimer>
 #include "search.h"
 #include "rsearch.h"
 
@@ -31,8 +32,11 @@ Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *pare
 
 // Dynamic Reader!
 Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent) : QWidget(parent) {
+    qDebug() << "New reader has been spawned!";
     initGui();
+    base = basepath;
     int len = Files.length();
+    files = Files;
     // Build additional objects on the heap
     entries = new QStringList[len];
     complete = new bool[len];
@@ -52,10 +56,12 @@ Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QStr
     searchThd->start();
 
     // Establish a timer to poll every second
+    poll = new QTimer(this);
     // Use it to poll the QThread
-    // QThread finished should shutdown the timer as well
-    
-    // Will need to write a new refresh method
+    connect(poll, SIGNAL(timeout()), this, SLOT(tRefresh()));
+    poll->start(500); // ms
+
+    // The signal should start the updating
 }
 
 void Reader::initGui() {
@@ -99,7 +105,8 @@ void Reader::initGui() {
     setLayout(hbox);
 }
 
-void Reader::generateTree(QMap<QDate, QStringList> allData, QStandardItem *parent) {
+void Reader::generateTree() {
+    QStandardItem *parent = treeModel->invisibleRootItem();
     QList<QDate> keys = allData.keys();
     qSort(keys.begin(), keys.end());
     int len = keys.length();
@@ -125,12 +132,11 @@ void Reader::generateTree(QMap<QDate, QStringList> allData, QStandardItem *paren
 
 }
 
-void Reader::newTree(QMap<QDate, QStringList> allData) {
+void Reader::newTree() {
     // Easier to just clear and rebuild the tree
     treeModel->clear();
-    generateTree(allData, treeModel->invisibleRootItem());
+    generateTree();
     tree->setModel(treeModel);
-
 }
 
 void Reader::updateContent(QModelIndex index) {
@@ -156,42 +162,50 @@ void Reader::updateContent(QModelIndex index) {
     table->setWordWrap(true);
 }
 
-void Reader::refresh(QString basepath, QMap<QDate, QStringList> allData) {
-    qDebug() << "Reader here! Keys:" << allData.keys();
-    // Reset the table map
-    //alltables = QMap<QDate, ChatTable*>();
+void Reader::clear() {
     qDeleteAll(alltables);
-    alltables.clear();
-    // Get Keys
-    base = basepath;
-    QList<QDate> keys = allData.keys();
-    qSort(keys.begin(), keys.end());
-
-
-
-    // Refresh Tree
-    newTree(allData);
-    QDate first = keys.at(0);
-    // First log of the bunch
-    qDebug() << "Begin digestion of:" << first;
-    QList<QStringList> sheet = digestFile(base + first.toString("ChatLogyyyyMMdd_00.txt"));
-    // Refresh Table
-    logTitle->setText(first.toString("MMM dd,  yyyy"));
-    // Store the tables in a map
-    alltables[first] = new ChatTable(headers, sheet, this);
-    
-    table->setModel(alltables[first]);
-    table->resizeColumnToContents(0);
-    table->resizeColumnToContents(1);
-    table->resizeRowsToContents();
-    QHeaderView *hh = table->horizontalHeader();
-    hh->setStretchLastSection(true);
-    table->setWordWrap(true);
-    //table->show();
-    //table->update();
-    show();
-
+    altables.clear();
 }
+
+void Reader::tRefresh() {
+    qDebug() << "Tick! Time to refresh!";
+
+    // Check how many have been complete thus far
+    int currentComplete = 0;
+    intlen = files.length();
+    for (int i = 0; i < len; i++) {
+        if (complete[i]) {
+            currentComplete++;
+        }
+    }
+    
+    if ((currentComplete > totalComplete) || (currentComplete == files.length())) {
+        // Searching has finished!
+        if (currentCompelete > totalComplete) {
+            totalComplete = currentComplete;
+        }
+        // This should stop the tree from being rebuilt
+        else if (currentComplete == files.length()) {
+            pool->stop();
+        }
+
+        // Add new values to the map
+        QDate newDate;
+        for (int i = 0; i < len; i++) {
+            if (complete[i]) { // Add complete entries only
+                if (!allData.contains()) { // Add new data only
+                    allData[newDate] = entries[i];
+                }
+            }
+        }
+        // Rebuild tree
+        QList<QDate> keys = allData.keys();
+        qSort(keys.begin(), keys.end());
+        newTree(allData);
+    }
+    // Else means no additonal files have been completed
+}
+
 QList<QStringList> Reader::digestFile(QString filename) {
     /* When given a filename, it produces a special watered down
      * version of the chat to be taken in by the chat table. 
