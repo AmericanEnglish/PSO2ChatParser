@@ -185,12 +185,15 @@ void Reader::updateContent(QModelIndex index) {
 }
 
 void Reader::clear() {
+    tickCount = 0;
     qDeleteAll(alltables);
     alltables.clear();
+    treeModel->clear();
 }
 
 void Reader::tRefresh() {
-    qDebug() << "+Reader: Tick! Time to refresh!";
+    tickCount++;
+    qDebug() << "+Reader: Tick! Time to refresh!" << tickCount;
 
     // Check how many have been complete thus far
     int currentComplete = 0;
@@ -215,7 +218,8 @@ void Reader::tRefresh() {
 
         // Add new values to the map
         QDate newDate;
-        for (int i = totalComplete; i < len; i++) {
+        // for (int i = totalComplete; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             if (complete[i]) { // Add complete entries only
                 if (!entries[i].isEmpty()) { // Add only entries which matter
                     newDate =  QDate::fromString(files.at(i), "ChatLogyyyyMMdd_00.txt");

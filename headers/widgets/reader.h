@@ -79,6 +79,7 @@ class Reader : public QWidget {
         QStringList files;
         QMap<QDate, QStringList> allData;
         void appendToTree(QDate newDate);
+        int tickCount = 0;
 
 
 };

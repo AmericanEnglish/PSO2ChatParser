@@ -175,7 +175,7 @@ void MainWindow::run() {
     std::cout << "Liquidation of assests complete" << std::endl;
     QStringList allFiles  = defaultPath.entryList();
     allFiles = allFiles.filter(filepattern);
-    qDebug() << allFiles;
+    // qDebug() << allFiles;
     // allFiles.removeOne(".");
     // allFiles.removeOne("..");
     // qDebug() << allFiles;
