@@ -175,7 +175,7 @@ void MainWindow::run() {
     std::cout << "Liquidation of assests complete" << std::endl;
     QStringList allFiles  = defaultPath.entryList();
     allFiles = allFiles.filter(filepattern);
-    // qDebug() << allFiles;
+    qDebug() << allFiles;
     // allFiles.removeOne(".");
     // allFiles.removeOne("..");
     // qDebug() << allFiles;
@@ -190,14 +190,16 @@ void MainWindow::run() {
         // delete noresults;
     // }
     if (reader == nullptr) {
-        // std::cout << "Opening New Reader..." << std::endl;
+        qDebug() << "Opening New Reader...";// << std::endl;
         reader = new Reader(defaultPath.absolutePath() + "\\", allFiles, datez->liquidate(), parameters);
         reader->show();
     }
     else {
-        // std::cout << "Refreshing Old Reader.." << std::endl;
+        qDebug() << "Refreshing Old Reader..."; // << std::endl;
         reader->clear();
+        qDebug() << "Cleared out old data!";
         reader->show();
+        qDebug() << "Brought Reader to foreground!";
         reader->newSearch(defaultPath.absolutePath() + "\\", allFiles, datez->liquidate(), parameters);
     }
 

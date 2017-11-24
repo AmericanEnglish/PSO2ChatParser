@@ -53,7 +53,7 @@ void rSearch::run() {
     else {
         qDebug() << "=rSearch: Finished!";
     }
-    delete stopped;
+    // delete stopped;
     // Finished
     emit finished();
 }

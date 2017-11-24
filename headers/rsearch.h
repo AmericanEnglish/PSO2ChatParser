@@ -16,6 +16,7 @@ class rSearch : public QObject {
 
     public:
         rSearch(QStringList Dates, QMap<QString, QRegularExpression> Params, QString Base, QStringList Files, QStringList *Entries, bool *Complete);
+        ~rSearch() {qDebug() << "=rSearch Destroyed!";}
         // Variables
         QStringList dates; 
         QMap<QString, QRegularExpression> params;

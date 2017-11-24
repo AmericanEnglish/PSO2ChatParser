@@ -219,24 +219,29 @@ void Reader::updateContent(QModelIndex index) {
 
 void Reader::stopExecution() {
     // Stops QThread if it's still running
-    if (searchThd->isRunning()) {
+    qDebug() << "Nullptr?:" << (searchThd == nullptr);
+    if (searchThd != nullptr) {
         *stopped = true;
     }
 }
 
 void Reader::clear() {
     stopExecution();
+    qDebug() << "+Reader: Stopped old thread execution!";
     if (poll->isActive()) {
         poll->stop();
     }
+    qDebug() << "+Reader: Stopped old timer";
     tickCount = 0;
     totalComplete = 0;
     qDeleteAll(alltables);
     alltables.clear();
     treeModel->clear();
     allData.clear();
+    qDebug() <<  "+Reader: Cleared tables, tree, and data!";
     stopped = new bool;
     *stopped = false;
+    qDebug() << "+Reader: Refreshed stopped boolean!";
 }
 
 void Reader::tRefresh() {
