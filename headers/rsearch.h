@@ -15,14 +15,15 @@ class rSearch : public QObject {
     Q_OBJECT
 
     public:
-        rSearch(QStringList Dates, QMap<QString, QRegularExpression> Params, QString Base, QStringList Files, QStringList *Entries, bool *Complete);
+        rSearch(QList<QDate> Dates, QMap<QString, QRegularExpression> Params, QString Base, QStringList Files, QStringList *Entries, bool *Complete);
         ~rSearch() {qDebug() << "=rSearch Destroyed!";}
         // Variables
-        QStringList dates; 
         QMap<QString, QRegularExpression> params;
         QString base;
         QStringList files; 
         QStringList *entries; 
+        QDate bDate;
+        QDate aDate;
         bool *complete;
     public slots:
         void run();
@@ -38,7 +39,7 @@ class rSearch : public QObject {
         bool pidCheck(QString name);
         bool chatCheck(QString term);
         bool keywordCheck(QString message);
-        bool dateCheck(QString date);
+        bool dateCheck(QDate date);
         QStringList too_many_tabs(QStringList line);
         QStringList buildLine(QStringList file, QString str, int start);
         QStringList searchFile(int i);

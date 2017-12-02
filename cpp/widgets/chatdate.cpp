@@ -80,20 +80,21 @@ void ChatDate::clearDate2() {
     endLabel->setText(QString());
 }
 
-QStringList ChatDate::liquidate() {
-    QStringList results;
-    if (begin.isValid()) {
-        results << begin.toString("yyyy-MM-dd") + "T00:00:00";
-    }
-    else {
-        results << QString();
-    }
-    if (end.isValid()) {
-        results << end.toString("yyyy-MM-dd") + "T23:59:59";
-    }
-    else {
-        results << QString();
-    }
+QList<QDate> ChatDate::liquidate() {
+    QList<QDate> results;
+    results << begin << end;
+    // if (begin.isValid()) {
+    //     results << begin.toString("yyyy-MM-dd") + "T00:00:00";
+    // }
+    // else {
+    //     results << QString();
+    // }
+    // if (end.isValid()) {
+    //     results << end.toString("yyyy-MM-dd") + "T23:59:59";
+    // }
+    // else {
+    //     results << QString();
+    // }
 
     return results;
 }

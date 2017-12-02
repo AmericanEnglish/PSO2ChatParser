@@ -15,9 +15,12 @@
 // and additionally it will also be designed to
 // be done with QThread in conjuction with a 
 // master thread reading it data as it worked
-rSearch::rSearch(QStringList Dates, QMap<QString, QRegularExpression> Params, QString Base, QStringList Files, QStringList *Entries, bool *Complete) {
+rSearch::rSearch(QList<QDate> Dates, QMap<QString, QRegularExpression> Params, QString Base, QStringList Files, QStringList *Entries, bool *Complete) {
     // Fill internal variables
-    dates = Dates;
+    bDate = Dates.at(0);
+    qDebug() << "bDate.isValid():" << bDate.isValid();
+    aDate = Dates.at(1);
+    qDebug() << "aDate.isValid():" << aDate.isValid();
     params = Params;
     base = Base;
     files = Files;
@@ -38,12 +41,23 @@ void rSearch::run() {
     // Run
     qDebug() << "=rSearch: Beginning...";
     // #pragma omp parallel for
+    QDate newDate;
+    QString file;
+    QString comp = "ChatLogyyyyMMdd_00.txt";
     for (int i = 0; i < len; i++) {
         if (*stopped) {
             qDebug() << "=rSearch: Searching halted, shutting down...";    
             break;
         }
-        entries[i] = searchFile(i);
+        file = files.at(i);
+        newDate =  QDate::fromString(file, comp);
+        // qDebug() << file + ".isValid():" << newDate.isValid();
+        if (dateCheck(newDate)) {
+            entries[i] = searchFile(i);
+        }
+        else {
+            entries[i] = QStringList();
+        }
         // Thread Saftey at its finest
         complete[i] = true;
     }
@@ -63,17 +77,30 @@ void rSearch::setStop(bool *cond) {
 }
 
 // Dates have to be done with QStringList
-bool rSearch::dateCheck(QString date) {
+bool rSearch::dateCheck(QDate date) {
     // std::cout << "Place 7 paramlen=" << parameters.length() << std::endl;
-    if (!dates.at(0).isEmpty()) {
-        if (!dates.at(1).isEmpty()) {
-            return (dates.at(0) <= date) && (date <= dates.at(1));
+    // Checks if the date is valid
+    QDate newDate =  date;
+    // if (!dates.at(0).isEmpty()) { // Checks for a valid date
+    if (bDate.isValid()) { // Checks for a valid date
+        // if (!dates.at(1).isEmpty()) { // Checks for a valid date
+        if (aDate.isValid()) { // Checks for a valid date
+            // qDebug() << bDate.toString("MM dd, yyy") + " <=" << newDate.toString("MM dd, yyyy") + " <=" << aDate.toString("MM dd, yyyy") + " :" <<
+                // ((bDate <= newDate) && (newDate <= aDate));
+            return (bDate <= newDate) && (newDate <= aDate);
         }
-        return dates.at(0) <= date;
+        // qDebug() << bDate.toString("MM dd, yyy") + " <=" << newDate.toString("MM dd, yyyy") + " :" <<
+            // ((bDate <= newDate));
+        return bDate <= newDate;
     }
-    else if (!dates.at(1).isEmpty()) {
-        return date <= dates.at(1);
+    // else if (!dates.at(1).isEmpty()) {
+    else if (aDate.isValid()) {
+        // qDebug() << newDate.toString("MM dd, yyyy") + " <=" << aDate.toString("MM dd, yyyy") + " :" <<
+            // ((newDate <= aDate));
+        return newDate <= aDate;
     }
+    // qDebug() << bDate.toString("MM dd, yyy") + " <=" << newDate.toString("MM dd, yyyy") + " <=" << aDate.toString("MM dd, yyyy") + " :" <<
+        // ((bDate <= newDate) && (newDate <= aDate));
     return true;
 }
 
@@ -128,7 +155,7 @@ QStringList rSearch::buildLine(QStringList file, QString str, int start) {
 // Main Functions
 bool rSearch::full_check(QStringList line) {
     // std::cout << "Place 6 linelen=" << line.length() << std::endl;
-    bool res1 = dateCheck(line.at(0));// &&
+    // bool res1 = dateCheck(line.at(0));// &&
     // std::cout << "Place 12" << std::endl;
     bool res2 = sidCheck(line.at(3)); // &&
     // std::cout << "Place 13" << std::endl;
@@ -138,7 +165,7 @@ bool rSearch::full_check(QStringList line) {
     // std::cout << "Place 15" << std::endl;
     bool res5 = keywordCheck(line.at(5));
     // std::cout << "Place 16" << std::endl;
-    return res1 && res2 && res3 && res4 && res5;
+    return res2 && res3 && res4 && res5;
 }
 
 // QStringList searchfile(QMap<QString, QStringList> parameters, QString filename) {

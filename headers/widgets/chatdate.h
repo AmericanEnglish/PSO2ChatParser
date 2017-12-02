@@ -13,7 +13,7 @@ class ChatDate : public QWidget {
     public:
         ChatDate(QWidget *parent = 0);
         // Methods
-        QStringList liquidate();
+        QList<QDate> liquidate();
 
         // Variables
 

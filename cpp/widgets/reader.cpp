@@ -35,13 +35,13 @@ Reader::Reader(QString basepath, QMap<QDate, QStringList> allData, QWidget *pare
 }
 
 // Dynamic Reader!
-Reader::Reader(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params, QWidget *parent) : QWidget(parent) {
+Reader::Reader(QString basepath, QStringList Files, QList<QDate> Dates, QMap<QString, QRegularExpression> Params, QWidget *parent) : QWidget(parent) {
     qDebug() << "New reader has been spawned!";
     initGui();
     newSearch(basepath, Files, Dates, Params);
 }
 
-void Reader::newSearch(QString basepath, QStringList Files, QStringList Dates, QMap<QString, QRegularExpression> Params) {
+void Reader::newSearch(QString basepath, QStringList Files, QList<QDate> Dates, QMap<QString, QRegularExpression> Params) {
     base = basepath;
     len = Files.length();
     filesSearched->setMaximum(len);
