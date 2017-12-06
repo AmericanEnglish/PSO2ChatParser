@@ -28,10 +28,16 @@
 #include <QRegularExpression>
 
 #include "popups.h"
+// #define cHash(CHASH) #CHASH
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     initGUI();
     initDB();
+    myHash = CHASH;
+    // char *cHash = CHASH;
+    // std::cout << cHash;
+    // std::cout << CHASH;
+    qDebug() << "Hash: " + myHash;
 
 }
 

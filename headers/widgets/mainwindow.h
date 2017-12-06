@@ -59,6 +59,7 @@ class MainWindow : public QWidget {
         Reader *reader;
         QDir defaultPath;
         QSqlDatabase db;
+        QString myHash;
         
         
         // SQLITE STUFF HERE
