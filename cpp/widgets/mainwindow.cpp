@@ -40,7 +40,8 @@ void MainWindow::initDB() {
     db = QSqlDatabase::addDatabase("QSQLITE");
     if (current.exists("parserData.db")) {
         // Connect to db
-        db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
+        //db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
+        db.setDatabaseName("parserData.db");
         db.open();
         // Grab default path
         QSqlQuery query;
@@ -60,7 +61,8 @@ void MainWindow::initDB() {
     }
     else {
         // Create database
-        db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
+        //db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
+        db.setDatabaseName("parserData.db");
         db.open();
         // Ask for default path
         QString dir = QFileDialog::getExistingDirectory(this, "Select PSO2 Log Folder",
