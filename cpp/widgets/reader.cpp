@@ -1,4 +1,4 @@
-#include <reader.h>
+#include "reader.h"
 // #include <search.h>
 #include <QAbstractTableModel>
 #include <QBrush>
@@ -21,6 +21,7 @@
 #include <QClipboard>
 #include <QAbstractItemView>
 #include <QProgressBar>
+#include <QKeyEvent>
 #include "search.h"
 #include "rsearch.h"
 

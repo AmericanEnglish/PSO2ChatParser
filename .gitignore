@@ -16,3 +16,4 @@ release/
 .qmake.stash
 moc_*
 *_plugin_*
+!CMakeLists.txt

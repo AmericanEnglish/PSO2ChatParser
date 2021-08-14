@@ -7,7 +7,7 @@
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QStringList>
-#include <Qstring>
+#include <QString>
 #include <QRegularExpression>
 
 // Declaration

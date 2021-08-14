@@ -1,4 +1,4 @@
-#include <sid.h>
+#include "sid.h"
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QLabel>
@@ -32,6 +32,7 @@ SID::SID(QWidget *parent) : QWidget(parent) {
 
     setLayout(grid);
 }
+
 
 void SID::browseSID() {
 

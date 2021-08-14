@@ -16,6 +16,9 @@ class SID : public QWidget {
         // Constructor
         SID(QWidget *parent = 0);
 
+        // Deconstructor 
+        virtual ~SID() {};
+
         // Methods
         void browseSID();
         QRegularExpression rLiquidate();
