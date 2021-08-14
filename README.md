@@ -44,12 +44,17 @@ StackOverflow post about how to compile Qt5 to be FULLY static.
 If you don't follow this guide by adding the correct flags you'll still have
 Qt dll dependancies even if the Window's Runtime is statically linked.
 
-Get Jom from [here](https://wiki.qt.io/Jom).
-
-Once you have every in place just follow these steps:
+For Debian based systems simply use:
 ```
-> qmake
-> jom release
+sudo apt-get install build-essential qt5-default
+```
+
+Once you have everything in place just follow these steps:
+```
+mkdir build
+cd build
+cmake ../
+make
 ```
 
 Done!
