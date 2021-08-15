@@ -60,16 +60,34 @@ void MainWindow::initDB() {
         }
     }
     else {
-        // Create database
-        //db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
-        db.setDatabaseName("parserData.db");
-        db.open();
         // Ask for default path
         QString dir = QFileDialog::getExistingDirectory(this, "Select PSO2 Log Folder",
                                                 "./",
                                                 QFileDialog::ShowDirsOnly
                                                 | QFileDialog::DontResolveSymlinks);
         qDebug() << "Path selected:" << dir;
+        qDebug() << "Empty Path?" << dir.isEmpty();
+        qDebug() << "Path exists? " << QDir(dir).exists();
+        // Check if default path is valid
+        // if valid
+        if (!QDir(dir).exists() || dir.isEmpty()) {
+            qDebug() << "Empty or invalid path";
+            // Produce an error popup for the user
+            QMessageBox invalidFolderBox(this);
+            invalidFolderBox.setText("You have selected and invalid folder for the parser to read search.");
+            invalidFolderBox.setStandardButtons(QMessageBox::Ok);
+            //invalidFolderBox.setWindowModality(Qt::W)
+            invalidFolderBox.exec();
+            // then close
+            exit(0);
+        }
+        // else grab again 
+
+
+        // Create database
+        //db.setDatabaseName(current.absolutePath() + "\\" + "parserData.db");
+        db.setDatabaseName("parserData.db");
+        db.open();
         // INSERT into db
         QSqlQuery query;
         bool noErr = query.exec("CREATE TABLE defaults "
@@ -86,9 +104,6 @@ void MainWindow::initDB() {
             defaultPath = QDir(dir);
         }
     }
-    // Check if default path is valid
-    // if valid
-    // else grab again
 
 }
 
