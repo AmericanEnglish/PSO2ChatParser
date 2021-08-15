@@ -74,7 +74,7 @@ void MainWindow::initDB() {
             qDebug() << "Empty or invalid path";
             // Produce an error popup for the user
             QMessageBox invalidFolderBox(this);
-            invalidFolderBox.setText("You have selected and invalid folder for the parser to read search.");
+            invalidFolderBox.setText("You have selected an invalid folder for the parser to read search.");
             invalidFolderBox.setStandardButtons(QMessageBox::Ok);
             //invalidFolderBox.setWindowModality(Qt::W)
             invalidFolderBox.exec();
